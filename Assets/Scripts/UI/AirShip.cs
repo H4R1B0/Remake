@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class AirShip : MonoBehaviour
 {
-    public float speed = 50;
+    public float speed = 50; //이동 속도
 
     void Update()
     {

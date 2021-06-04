@@ -12,6 +12,7 @@ public class Map : MonoBehaviour
 
     void Start()
     {
+        //처음 이미지와 위치 가져오기
         map = GetComponent<Image>();
         MapOriginPos = this.transform.localPosition;
     }
@@ -19,6 +20,7 @@ public class Map : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //맵 상하 움직임
         Vector3 v = MapOriginPos;
         v.y += delta * Mathf.Sin(Time.time * speed);
         map.transform.localPosition = v;

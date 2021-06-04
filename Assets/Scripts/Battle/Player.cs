@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    private int coin = 1000000;
+    private int coin = 1000000; //ÄÚÀÎ
     public int Coin 
     {
         get
