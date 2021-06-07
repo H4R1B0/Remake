@@ -15,6 +15,7 @@ public class CoinText : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //코인 수 세 자리마다 , 표시
         this.GetComponent<Text>().text = GetThousandCommaText(Player.GetComponent<Player>().Coin);
     }
     public string GetThousandCommaText(int data)
