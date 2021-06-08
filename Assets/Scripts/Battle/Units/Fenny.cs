@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Tilemaps;
 using System.Text.RegularExpressions;
+using NaughtyAttributes;
 
 public class Fenny : LivingEntity
 {
@@ -14,6 +15,12 @@ public class Fenny : LivingEntity
     public Slider MPSliderPrefab; //마나 게이지 프리팹
     private Slider HPSlider; //체력 게이지
     private Slider MPSlider; //마나 게이지
+
+    public bool isWeapon = true; //무기가 있는지
+    public bool isWeaponRotate = true; //무기가 회전하는지
+    [ShowIf("isWeapon")] //무기 있을때만 표시
+    //public float attackAnimTime = 0; //공격 애니메이션 쿨타임
+    public GameObject attackPrefab; //공격 프리팹
 
     private void Start()
     {
@@ -39,6 +46,8 @@ public class Fenny : LivingEntity
         MPSlider = Instantiate(MPSliderPrefab, Camera.main.WorldToScreenPoint(transform.Find("MPPosition").position), Quaternion.identity);
         MPSlider.transform.SetParent(GameObject.Find("UnitUIManager").transform);
         MPSlider.value = mana;
+
+        isAttack = true;
     }
     private void Update()
     {
@@ -83,15 +92,20 @@ public class Fenny : LivingEntity
             //공격
             if (isAttack == true)
             {
-                //StartCoroutine(nameof(AttackAnim));
+                StartCoroutine(nameof(AttackAnim));
                 StartCoroutine(nameof(AttackCoroutine));
             }
         }
         //타겟쪽으로 이동
-        else if (target != null)
+        else if (target != null && FoundTargets.Count != 0)
         {
             animators[0].SetBool("isMove", true);
             transform.Translate(vec3dir * Time.deltaTime * moveSpeed);
+        }
+        //맵에 몬스터가 없을경우
+        else if(FoundTargets.Count == 0)
+        {
+
         }
     }
 
@@ -135,6 +149,34 @@ public class Fenny : LivingEntity
     }
 
     //공격 코루틴
+    IEnumerator AttackAnim()
+    {
+        animators[1].SetBool("isAttack", true);
+        mana += 10; //공격시 마나 10획득
+        yield return new WaitForSeconds(animators[1].GetFloat("attackTime")); //공격 쿨타임
+        // 원거리        
+        target.GetComponent<LivingEntity>().OnDamage(power,false); //공격
+        //GameObject attack = Instantiate(attackPrefab, transform.position, Quaternion.identity);
+        //vec3dir = target.transform.position - transform.position;
+        //vec3dir.Normalize();
+        //attack.GetComponent<Attack>().target = target;
+        //attack.GetComponent<Bullet>().setDir(vec3dir);
+        ////크리티컬
+        //int rand = Random.Range(0, 100);
+        //if (rand >= 0 && rand <= critical)
+        //{
+        //    attack.GetComponent<Attack>().isCritical = true;
+        //    attack.GetComponent<Bullet>().Power = power * 2;
+        //}
+        //else
+        //{
+        //    attack.GetComponent<Attack>().isCritical = false;
+        //    attack.GetComponent<Bullet>().Power = power;
+        //}
+        animators[1].SetBool("isAttack", false);
+    }
+
+    //공격 쿨타임 코루틴
     IEnumerator AttackCoroutine()
     {
         isAttack = false;

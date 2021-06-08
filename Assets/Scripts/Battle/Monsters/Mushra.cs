@@ -17,6 +17,11 @@ public class Mushra : LivingEntity
 
     void Start()
     {
+        isDie = false;
+
+        defaultMaterial = transform.GetChild(0).GetComponent<SpriteRenderer>().material; //이미지 메테리얼 저장
+        renderer = GetComponentInChildren<SpriteRenderer>();
+
         //생성시 원래 공격력과 체력 저장
         power = basePower; //공격력
         health = baseHP; //체력
@@ -26,6 +31,8 @@ public class Mushra : LivingEntity
         attackRange = 0.5f; //공격 범위
         attackSpeed = 0.5f; //공격 속도
 
+        animators = GetComponentsInChildren<Animator>(); //애니메이터들 가져오기
+
         //HP, MP 생성
         HPSlider = Instantiate(HPSliderPrefab, Camera.main.WorldToScreenPoint(transform.Find("HPPosition").position), Quaternion.identity);
         HPSlider.transform.SetParent(GameObject.Find("UnitUIManager").transform);
@@ -33,15 +40,60 @@ public class Mushra : LivingEntity
         HPSlider.value = health;
     }
 
-    // Update is called once per frame
     void Update()
     {
         //체력 게이지값, 위치 변경
         HPSlider.value = health;
         HPSlider.maxValue = maxHealth;
         //HP
-        HPSlider.transform.Find("HPCount").GetComponent<Text>().text = HPSlider.value.ToString();
-        HPSlider.transform.Find("AttackCount").GetComponent<Text>().text = "공격력 : " + power.ToString();
-        HPSlider.transform.position = Camera.main.WorldToScreenPoint(transform.Find("HPPosition").position);
+        //HP
+        if (HPSlider != null)
+        {
+            HPSlider.transform.Find("HPCount").GetComponent<Text>().text = HPSlider.value.ToString();
+            HPSlider.transform.Find("AttackCount").GetComponent<Text>().text = "공격력 : " + power.ToString();
+            HPSlider.transform.position = Camera.main.WorldToScreenPoint(transform.Find("HPPosition").position);
+        }
+        
+
+        if (isDie == false && health <= 0)
+        {
+            isDie = true;
+            StartCoroutine(nameof(DestroyCoroutine));
+        }
+    }
+
+    //피격
+    public override void OnDamage(int damage, bool isCritical)
+    {
+        if (runningCoroutine != null)
+        {
+            StartCoroutine(nameof(FlashCoroutine));
+        }
+        runningCoroutine = StartCoroutine(nameof(FlashCoroutine));
+        base.OnDamage(damage, isCritical);
+    }
+
+    //피격시 메테리얼 변경 메서드
+    IEnumerator FlashCoroutine()
+    {
+        //현재 메테리얼 변경
+        renderer.material = flashWhite;
+
+        //0.15초간 대기
+        yield return new WaitForSeconds(0.15f);
+
+        //원래 메테리얼 변경
+        renderer.material = defaultMaterial;
+    }
+
+    //죽었을때 코루틴
+    IEnumerator DestroyCoroutine()
+    {
+        Destroy(HPSlider.gameObject);
+        //transform.SetParent(GameManagerTest.instance.deactiveObj.transform);
+        animators[0].SetBool("isDie", isDie);
+        yield return new WaitForSeconds(animators[0].GetFloat("dieTime")); //죽는 모션 시간
+        //gameObject.SetActive(false);
+        Destroy(this.gameObject);
     }
 }
