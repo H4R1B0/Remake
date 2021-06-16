@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class Mushra : LivingEntity
 {
-    private int baseHP = 400; //기본 체력
+    private int baseHP = 40000; //기본 체력
     private int roundHP = 40; //라운드당 추가되는 체력
     private int basePower = 20; //기본 공격력
     private int roundPower = 2; //라운드당 추가되는 공격력
@@ -53,7 +53,7 @@ public class Mushra : LivingEntity
             HPSlider.transform.Find("AttackCount").GetComponent<Text>().text = "공격력 : " + power.ToString();
             HPSlider.transform.position = Camera.main.WorldToScreenPoint(transform.Find("HPPosition").position);
         }
-        
+
 
         if (isDie == false && health <= 0)
         {
@@ -65,23 +65,25 @@ public class Mushra : LivingEntity
     //피격
     public override void OnDamage(int damage, bool isCritical)
     {
+        
+        base.OnDamage(damage, isCritical);
         if (runningCoroutine != null)
         {
             StartCoroutine(nameof(FlashCoroutine));
         }
-        runningCoroutine = StartCoroutine(nameof(FlashCoroutine));
-        base.OnDamage(damage, isCritical);
+        else
+        {
+            runningCoroutine = StartCoroutine(nameof(FlashCoroutine));
+        }
     }
 
     //피격시 메테리얼 변경 메서드
     IEnumerator FlashCoroutine()
     {
         //현재 메테리얼 변경
-        renderer.material = flashWhite;
-
+        renderer.material = FlashWhite;
         //0.15초간 대기
         yield return new WaitForSeconds(0.15f);
-
         //원래 메테리얼 변경
         renderer.material = defaultMaterial;
     }
@@ -89,11 +91,30 @@ public class Mushra : LivingEntity
     //죽었을때 코루틴
     IEnumerator DestroyCoroutine()
     {
+        //플래시 코루틴 멈추고 원래 메테리얼로 복구
+        StopCoroutine(nameof(FlashCoroutine));
+        renderer.material = defaultMaterial;
+        //Debug.Log("FlashCoroutine 멈춤");
+
         Destroy(HPSlider.gameObject);
         //transform.SetParent(GameManagerTest.instance.deactiveObj.transform);
         animators[0].SetBool("isDie", isDie);
-        yield return new WaitForSeconds(animators[0].GetFloat("dieTime")); //죽는 모션 시간
+
+        StartCoroutine(nameof(FadeutCoroutine)); //죽을때 페이드아웃
+        //yield return new WaitForSeconds(animators[0].GetFloat("dieTime")); //죽는 모션 시간
+        yield return new WaitForSeconds(animators[0].GetFloat("dieTime") + 1); //죽는 모션 시간 + 1초
+
         //gameObject.SetActive(false);
         Destroy(this.gameObject);
+    }
+
+    //이미지 페이드아웃
+    IEnumerator FadeutCoroutine()
+    {
+        for (float i = 1f; i > 0; i -= 0.1f)
+        {
+            renderer.material.color = new Vector4(1, 1, 1, i);
+            yield return new WaitForSeconds(0.1f);
+        }
     }
 }

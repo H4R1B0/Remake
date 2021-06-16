@@ -13,6 +13,12 @@ public class LivingEntity : MonoBehaviour
     protected int mana; //마나
     protected float attackRange = 1f; //공격 범위
     protected float attackSpeed = 0f; //공격 속도
+    protected int criticalRate; //치명타율
+    protected int originCriticalRate; //원래 치명타율
+    protected int CriticalDamageRate; //치명타 피해율
+    protected int originCriticalDamageRate; //원래 치명타 피해율
+
+
     //public GameObject DamageText;
     //public bool isStern; //스턴인지
     protected float moveSpeed = 1.3f; // 이동 속도
@@ -21,12 +27,23 @@ public class LivingEntity : MonoBehaviour
     protected bool isAttack; //공격 가능한지
     protected Animator[] animators; //애니메이터
 
-    public Material flashWhite; //피격시 변경할 메테리얼
+    public Material FlashWhite; //피격시 변경할 메테리얼
     protected Material defaultMaterial; //기본 메테리얼
     protected Coroutine runningCoroutine = null; //실행중인 코루틴
-    protected Renderer renderer; //이미지 렌더러
+    protected new Renderer renderer; //이미지 렌더러
 
     protected bool isDie; //죽었는지
+    public bool IsDie
+    {
+        get
+        {
+            return isDie;
+        }
+        set
+        {
+            isDie = value;
+        }
+    }
 
     //OnDamage 메서드
     public virtual void OnDamage(int damage, bool isCritical)
@@ -36,10 +53,17 @@ public class LivingEntity : MonoBehaviour
         //DGText.GetComponent<DamageText>().damage = damage;
         if (isCritical == true)
         {
+            //데미지 표시
             //DGText.transform.localScale = new Vector3(1.3f, 1.3f, 1);
             //DGText.GetComponent<Text>().color = Color.red;
         }
         health -= damage;
         //mana += 5; //피격시 마나 5획득
+    }
+
+    //마나 count만큼 회복
+    public void HealMP(int count)
+    {
+        mana += count;
     }
 }

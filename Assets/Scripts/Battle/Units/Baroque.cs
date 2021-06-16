@@ -1,45 +1,43 @@
-ï»¿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.Tilemaps;
-using System.Text.RegularExpressions;
 using NaughtyAttributes;
 
-public class Fenny : LivingEntity
+public class Baroque : LivingEntity
 {
-    private List<GameObject> FoundTargets; //ì°¾ì€ íƒ€ê²Ÿë“¤
-    private float shortDis; //íƒ€ê²Ÿë“¤ ì¤‘ì— ê°€ì¥ ì§§ì€ ê±°ë¦¬
+    private List<GameObject> FoundTargets; //Ã£Àº Å¸°Ùµé
+    private float shortDis; //Å¸°Ùµé Áß¿¡ °¡Àå ÂªÀº °Å¸®
 
-    public Slider HPSliderPrefab; //ì²´ë ¥ ê²Œì´ì§€ í”„ë¦¬íŒ¹
-    public Slider MPSliderPrefab; //ë§ˆë‚˜ ê²Œì´ì§€ í”„ë¦¬íŒ¹
-    private Slider HPSlider; //ì²´ë ¥ ê²Œì´ì§€
-    private Slider MPSlider; //ë§ˆë‚˜ ê²Œì´ì§€
-    private int level=1; //ìœ ë‹› ë ˆë²¨
+    public Slider HPSliderPrefab; //Ã¼·Â °ÔÀÌÁö ÇÁ¸®ÆÕ
+    public Slider MPSliderPrefab; //¸¶³ª °ÔÀÌÁö ÇÁ¸®ÆÕ
+    private Slider HPSlider; //Ã¼·Â °ÔÀÌÁö
+    private Slider MPSlider; //¸¶³ª °ÔÀÌÁö
+    private int level = 1; //À¯´Ö ·¹º§
 
-    public bool isWeapon = true; //ë¬´ê¸°ê°€ ìˆëŠ”ì§€
-    //public bool isWeaponRotate = true; //ë¬´ê¸°ê°€ íšŒì „í•˜ëŠ”ì§€
-    [ShowIf("isWeapon")] //ë¬´ê¸° ìˆì„ë•Œë§Œ í‘œì‹œ
-    //public float attackAnimTime = 0; //ê³µê²© ì• ë‹ˆë©”ì´ì…˜ ì¿¨íƒ€ì„
-    public GameObject attackPrefab; //ê³µê²© í”„ë¦¬íŒ¹
+    //public bool isWeapon = true; //¹«±â°¡ ÀÖ´ÂÁö
+    //public bool isWeaponRotate = true; //¹«±â°¡ È¸ÀüÇÏ´ÂÁö
+    //[ShowIf("isWeapon")] //¹«±â ÀÖÀ»¶§¸¸ Ç¥½Ã
+    //public float attackAnimTime = 0; //°ø°İ ¾Ö´Ï¸ŞÀÌ¼Ç ÄğÅ¸ÀÓ
+    //public GameObject attackPrefab; //°ø°İ ÇÁ¸®ÆÕ
 
     private void Start()
     {
-        //ìƒì„±ì‹œ ì›ë˜ ê³µê²©ë ¥ê³¼ ì²´ë ¥ ì €ì¥
-        originPower = 50; //ì›ë˜ ê³µê²©ë ¥
-        power = originPower; //ê³µê²©ë ¥
-        originHealth = 500; //ì›ë˜ ì²´ë ¥
-        health = originHealth; //ì²´ë ¥
+        //»ı¼º½Ã ¿ø·¡ °ø°İ·Â°ú Ã¼·Â ÀúÀå
+        originPower = 60; //¿ø·¡ °ø°İ·Â
+        power = originPower; //°ø°İ·Â
+        originHealth = 600; //¿ø·¡ Ã¼·Â
+        health = originHealth; //Ã¼·Â
         maxHealth = health;
         mana = 0;
         //originCritical = critical;
 
-        attackRange = 4; //ê³µê²© ë²”ìœ„
-        attackSpeed = 0.6f; //ê³µê²© ì†ë„
+        attackRange = 0.5f; //°ø°İ ¹üÀ§
+        attackSpeed = 0.8f; //°ø°İ ¼Óµµ
 
-        animators = GetComponentsInChildren<Animator>(); //ì• ë‹ˆë©”ì´í„°ë“¤ ê°€ì ¸ì˜¤ê¸°
+        animators = GetComponentsInChildren<Animator>(); //¾Ö´Ï¸ŞÀÌÅÍµé °¡Á®¿À±â
 
-        //HP, MP ìƒì„±
+        //HP, MP »ı¼º
         HPSlider = Instantiate(HPSliderPrefab, Camera.main.WorldToScreenPoint(transform.Find("HPPosition").position), Quaternion.identity);
         HPSlider.transform.SetParent(GameObject.Find("UnitUIManager").transform);
         HPSlider.maxValue = maxHealth;
@@ -52,20 +50,20 @@ public class Fenny : LivingEntity
     }
     private void Update()
     {
-        //ì²´ë ¥ ê²Œì´ì§€ê°’, ìœ„ì¹˜ ë³€ê²½
+        //Ã¼·Â °ÔÀÌÁö°ª, À§Ä¡ º¯°æ
         HPSlider.value = health;
         MPSlider.value = mana;
         HPSlider.maxValue = maxHealth;
 
         //HP
         HPSlider.transform.Find("HPCount").GetComponent<Text>().text = HPSlider.value.ToString();
-        HPSlider.transform.Find("AttackCount").GetComponent<Text>().text = "ê³µê²©ë ¥ : " + power.ToString();
+        HPSlider.transform.Find("AttackCount").GetComponent<Text>().text = "°ø°İ·Â : " + power.ToString();
         HPSlider.transform.position = Camera.main.WorldToScreenPoint(transform.Find("HPPosition").position);
         //MP
         MPSlider.transform.Find("MPCount").GetComponent<Text>().text = MPSlider.value.ToString();
         MPSlider.transform.position = Camera.main.WorldToScreenPoint(transform.Find("MPPosition").position);
 
-        //íƒ€ê²Ÿ í–¥í•˜ëŠ” 
+        //Å¸°Ù ÇâÇÏ´Â 
         if (vec3dir.x < 0)
         {
             transform.localScale = new Vector3(-1, transform.localScale.y, transform.localScale.z);
@@ -75,42 +73,38 @@ public class Fenny : LivingEntity
             transform.localScale = new Vector3(1, transform.localScale.y, transform.localScale.z);
         }
 
-        //íƒ€ê²Ÿì´ ì •í•´ì§€ì§€ ì•Šì•˜ê±°ë‚˜ ì£½ì—ˆì„ê²½ìš° FindMonster
-        if (target == null || target.gameObject.activeSelf == false)
+        //Å¸°ÙÀÌ Á¤ÇØÁöÁö ¾Ê¾Ò°Å³ª Á×¾úÀ»°æ¿ì FindMonster
+        if (target == null || target.GetComponent<LivingEntity>().IsDie == true)
         {
-            //Debug.Log("íƒ€ê²Ÿ ì°¾ê¸°");
-            if (target != null && target.gameObject.activeSelf == false)
-            {
-                //Beastì¼ê²½ìš° ì ì´ ì£½ì€ ê²½ìš° ì²´ë ¥ íšŒë³µ
-                Debug.Log("íƒ€ê²Ÿ ì£½ìŒ");
-            }
+            animators[1].SetBool("isAttack", false);
+            //Debug.Log("Å¸°Ù Ã£±â");
             FindMonster();
         }
-        //íƒ€ê²Ÿì´ ê³µê²© ë²”ìœ„ ì•ˆì— ìˆì„ ê²½ìš°
-        if (MonsterInCircle() == true)
+        //Å¸°ÙÀÌ °ø°İ ¹üÀ§ ¾È¿¡ ÀÖÀ» °æ¿ì
+        else if (MonsterInCircle() == true)
         {
-            //ë§ˆë‚˜ 100ì¼ ê²½ìš° ìŠ¤í‚¬ ì‹œì „
+            //¸¶³ª 100ÀÏ °æ¿ì ½ºÅ³ ½ÃÀü
             if (mana >= 100)
             {
                 Skill();
                 mana = 0;
             }
             animators[0].SetBool("isMove", false);
-            //ê³µê²©
+            //°ø°İ
             if (isAttack == true)
             {
                 StartCoroutine(nameof(AttackAnim));
                 StartCoroutine(nameof(AttackCoroutine));
             }
         }
-        //íƒ€ê²Ÿìª½ìœ¼ë¡œ ì´ë™
+        //Å¸°ÙÂÊÀ¸·Î ÀÌµ¿
         else if (target != null && FoundTargets.Count != 0)
         {
             animators[0].SetBool("isMove", true);
             transform.Translate(vec3dir * Time.deltaTime * moveSpeed);
         }
-        //ë§µì— ëª¬ìŠ¤í„°ê°€ ì—†ì„ê²½ìš°
-        else if(FoundTargets.Count == 0)
+        //¸Ê¿¡ ¸ó½ºÅÍ°¡ ¾øÀ»°æ¿ì
+        else if (FoundTargets.Count == 0)
         {
             animators[1].SetBool("isAttack", false);
         }
@@ -118,31 +112,18 @@ public class Fenny : LivingEntity
 
     private void Skill()
     {
-        Debug.Log("í˜ë‹ˆ ìŠ¤í‚¬ ì‹œì „");
-        List<GameObject> FoundMonsters = new List<GameObject>(GameObject.FindGameObjectsWithTag("Monster")); //ì°¾ì€ ëª¨ë“  ëª¬ìŠ¤í„°ë“¤
-        int cnt = FoundMonsters.Count;
-        //ì ì´ 1ëª… ì´ìƒì¼ ê²½ìš°ë§Œ
-        if (cnt > 0)
-        {
-            //ìœ ë‹› ë ˆë²¨ë‹¹ +1ì”© ê³µê²©í•  ì  ëŠ˜ì–´ë‚¨
-            int mnstr = level <= cnt ? level : cnt; //ë ˆë²¨ì´ë‚˜ ì ì˜ ìˆ˜ ì¤‘ì— ì‘ì€ ê°’ ì„¤ì •
-            for (int i = 0; i < mnstr; i++)
-            {
-                //ê¸°ë³¸ ê³µê²©ë ¥ì˜ 500% ë°ë¯¸ì§€ í¬ë¦¬í‹°ì»¬ falseë¡œ ê³µê²©
-                FoundMonsters[i].GetComponent<LivingEntity>().OnDamage(power*5, false); //ê³µê²©
-            }
-        }
-
+        Debug.Log("¹Ù·ÎÅ© ½ºÅ³ ½ÃÀü");
+        StartCoroutine(nameof(BaroqueSkill)); //¹Ù·ÎÅ© ½ºÅ³ ½ÃÀü
     }
 
-    //ëª¬ìŠ¤í„° ì°¾ê¸°
+    //¸ó½ºÅÍ Ã£±â
     public void FindMonster()
     {
-        //Debug.Log("ì°¾ê¸°");
+        //Debug.Log("Ã£±â");
         FoundTargets = new List<GameObject>(GameObject.FindGameObjectsWithTag("Monster"));
         if (FoundTargets.Count != 0)
         {
-            //ì§§ì€ ê±°ë¦¬ ì°¾ê¸°
+            //ÂªÀº °Å¸® Ã£±â
             shortDis = Vector3.Distance(transform.position, FoundTargets[0].transform.position);
             target = FoundTargets[0];
             foreach (GameObject found in FoundTargets)
@@ -159,7 +140,7 @@ public class Fenny : LivingEntity
         }
     }
 
-    //ì¼ì •í•œ ë²”ìœ„ ë‚´ì— ëª¬ìŠ¤í„° ìˆëŠ”ì§€ í™•ì¸
+    //ÀÏÁ¤ÇÑ ¹üÀ§ ³»¿¡ ¸ó½ºÅÍ ÀÖ´ÂÁö È®ÀÎ
     public bool MonsterInCircle()
     {
         Collider2D[] colliders = Physics2D.OverlapCircleAll(new Vector2(transform.position.x, transform.position.y), attackRange);
@@ -174,20 +155,20 @@ public class Fenny : LivingEntity
         return false;
     }
 
-    //ê³µê²© ì½”ë£¨í‹´
+    //°ø°İ ÄÚ·çÆ¾
     IEnumerator AttackAnim()
     {
         animators[1].SetBool("isAttack", true);
-        mana += 10; //ê³µê²©ì‹œ ë§ˆë‚˜ 10íšë“
-        yield return new WaitForSeconds(animators[1].GetFloat("attackTime")); //ê³µê²© ì¿¨íƒ€ì„
-        // ì›ê±°ë¦¬        
-        target.GetComponent<LivingEntity>().OnDamage(power,false); //ê³µê²©
+        mana += 10; //°ø°İ½Ã ¸¶³ª 10È¹µæ
+        yield return new WaitForSeconds(animators[1].GetFloat("attackTime")); //°ø°İ ÄğÅ¸ÀÓ
+        // ¿ø°Å¸®        
+        target.GetComponent<LivingEntity>().OnDamage(power, false); //°ø°İ
         //GameObject attack = Instantiate(attackPrefab, transform.position, Quaternion.identity);
         //vec3dir = target.transform.position - transform.position;
         //vec3dir.Normalize();
         //attack.GetComponent<Attack>().target = target;
         //attack.GetComponent<Bullet>().setDir(vec3dir);
-        ////í¬ë¦¬í‹°ì»¬
+        ////Å©¸®Æ¼ÄÃ
         //int rand = Random.Range(0, 100);
         //if (rand >= 0 && rand <= critical)
         //{
@@ -202,11 +183,22 @@ public class Fenny : LivingEntity
         animators[1].SetBool("isAttack", false);
     }
 
-    //ê³µê²© ì¿¨íƒ€ì„ ì½”ë£¨í‹´
+    //°ø°İ ÄğÅ¸ÀÓ ÄÚ·çÆ¾
     IEnumerator AttackCoroutine()
     {
         isAttack = false;
         yield return new WaitForSeconds(1f / attackSpeed);
         isAttack = true;
+    }
+    //¹Ù·ÎÅ© ½ºÅ³ : Ã¼·ÂÀ» 200/400/800 È¸º¹ÇÏ°í °ø°İ·ÂÀÌ 10/20/40Áõ°¡ÇÕ´Ï´Ù -> 10ÃÊ°£
+    IEnumerator BaroqueSkill()
+    {
+        //Ã¼·Â È¸º¹
+        health = maxHealth > health + (int)(Mathf.Pow(2, level - 1)) * 200 ? health + (int)(Mathf.Pow(2, level - 1)) * 200 : maxHealth;
+
+        //10ÃÊ°£ °ø°İ·Â 2^(level-1)*10 ¸¸Å­ Áõ°¡
+        power += (int)(Mathf.Pow(2, level - 1)) * 10;
+        yield return new WaitForSeconds(10); //10ÃÊ°£ Áõ°¡
+        power -= (int)(Mathf.Pow(2, level - 1)) * 10;
     }
 }
