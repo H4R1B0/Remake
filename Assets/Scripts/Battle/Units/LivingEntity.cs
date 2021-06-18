@@ -66,4 +66,23 @@ public class LivingEntity : MonoBehaviour
     {
         mana += count;
     }
+
+    //출혈 코루틴 : time초간 매 초 damage 피해
+    public IEnumerator BleedingCoroutine(int time, int damage)
+    {
+        for(int i = 0; i < time; i++)
+        {
+            OnDamage(damage, false);
+            Debug.Log(damage + " 출혈");
+            yield return new WaitForSeconds(1); //1초 쿨
+        }
+    }
+
+    //time초간 스턴 코루틴
+    public IEnumerator SternCoroutine(int time)
+    {
+        isAttack = false;
+        yield return new WaitForSeconds(time); //time초 쿨
+        isAttack = true;
+    }
 }

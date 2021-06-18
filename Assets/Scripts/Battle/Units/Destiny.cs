@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using NaughtyAttributes;
 
-public class Beomho : LivingEntity
+public class Destiny : LivingEntity
 {
     private List<GameObject> FoundTargets; //찾은 타겟들
     private float shortDis; //타겟들 중에 가장 짧은 거리
@@ -14,9 +14,6 @@ public class Beomho : LivingEntity
     private Slider HPSlider; //체력 게이지
     private Slider MPSlider; //마나 게이지
     private int level = 1; //유닛 레벨
-
-
-    private bool isSkill; //스킬 사용 가능 여부
 
     //public bool isWeapon = true; //무기가 있는지
     //public bool isWeaponRotate = true; //무기가 회전하는지
@@ -29,7 +26,7 @@ public class Beomho : LivingEntity
         //생성시 원래 공격력과 체력 저장
         originPower = 50; //원래 공격력
         power = originPower; //공격력
-        originHealth = 700; //원래 체력
+        originHealth = 300; //원래 체력
         health = originHealth; //체력
         maxHealth = health;
         mana = 0;
@@ -53,8 +50,6 @@ public class Beomho : LivingEntity
         MPSlider.value = mana;
 
         isAttack = true;
-
-        isSkill = false;
     }
     private void Update()
     {
@@ -94,10 +89,8 @@ public class Beomho : LivingEntity
             //마나 100일 경우 스킬 시전
             if (mana >= 100)
             {
-                isSkill = true;
                 mana = 0;
-                //Skill();
-                
+                Skill();
             }
             animators[0].SetBool("isMove", false);
             //공격
@@ -118,6 +111,12 @@ public class Beomho : LivingEntity
         {
             animators[1].SetBool("isAttack", false);
         }
+    }
+
+    private void Skill()
+    {
+        Debug.Log("데스티니 스킬 시전");
+        StartCoroutine(nameof(DestinySkill)); //데스티니 스킬 시전
     }
     //몬스터 찾기
     public void FindMonster()
@@ -162,29 +161,9 @@ public class Beomho : LivingEntity
     IEnumerator AttackAnim()
     {
         animators[1].SetBool("isAttack", true);
-        if (isSkill == false) //스킬 시전이 안돼야 마나 획득
-            mana += 10; //공격시 마나 10획득
+        mana += 10; //공격시 마나 10획득
         yield return new WaitForSeconds(animators[1].GetFloat("attackTime")); //공격 쿨타임
-        //크리티컬
-        int rand = Random.Range(0, 100);
-        if (rand >= 0 && rand <= criticalRate)
-        {
-            target.GetComponent<LivingEntity>().OnDamage(power * CriticalDamageRate / 100, true); //크리티컬 공격
-            if (isSkill == true) //스킬 시전시에만 크리티컬시 가능
-            {
-                int rand2 = Random.Range(0, 100);
-                if (rand >= 0 && rand < 20 && runningCoroutine == null)
-                {
-                    Debug.Log("범호 스킬");
-                    runningCoroutine = StartCoroutine(nameof(BeomhoSkill));
-                }                
-            } 
-        }
-        else
-        {
-            target.GetComponent<LivingEntity>().OnDamage(power, false); //공격
-        }
-        
+        target.GetComponent<LivingEntity>().OnDamage(power, false); //공격
         animators[1].SetBool("isAttack", false);
     }
 
@@ -195,15 +174,12 @@ public class Beomho : LivingEntity
         yield return new WaitForSeconds(1f / attackSpeed);
         isAttack = true;
     }
-    //범호 스킬 : 크리티컬 공격인 경우 20% 확률로 10초간 공격력 20/40/80 증가
-    IEnumerator BeomhoSkill()
+    //데스티니 스킬 : 적에게 500/1000/2000%의 피해를 입히고 2초간 기절시킵니다
+    IEnumerator DestinySkill()
     {
-        //20% 확률로 10초간 공격력 증가
-        int origin = power;        
-        power = originPower + (int)(Mathf.Pow(2, level - 1)) * 20;
-        yield return new WaitForSeconds(10); //10초간 증가
-        Debug.Log("10초 끝");
-        power = origin;
-        isSkill = false;
+        int damage = (int)(Mathf.Pow(2, level - 1)) * 5 * power;
+        target.GetComponent<LivingEntity>().OnDamage(damage, false); //공격
+        StartCoroutine(target.GetComponent<LivingEntity>().SternCoroutine(2)); //2초간 기절
+        yield return null;
     }
 }
