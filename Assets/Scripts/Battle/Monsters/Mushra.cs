@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class Mushra : LivingEntity
 {
-    private int baseHP = 40000; //기본 체력
+    private int baseHP = 700; //기본 체력
     private int roundHP = 40; //라운드당 추가되는 체력
     private int basePower = 20; //기본 공격력
     private int roundPower = 2; //라운드당 추가되는 공격력
@@ -38,6 +38,7 @@ public class Mushra : LivingEntity
         HPSlider.transform.SetParent(GameObject.Find("UnitUIManager").transform);
         HPSlider.maxValue = maxHealth;
         HPSlider.value = health;
+        //animators[0].SetBool("isDie", true);
     }
 
     void Update()
@@ -96,20 +97,22 @@ public class Mushra : LivingEntity
         renderer.material = defaultMaterial;
         //Debug.Log("FlashCoroutine 멈춤");
 
-        Destroy(HPSlider.gameObject);
-        //transform.SetParent(GameManagerTest.instance.deactiveObj.transform);
-        animators[0].SetBool("isDie", isDie);
+        Destroy(HPSlider.gameObject); //체력바 파괴
+        animators[0].SetBool("isDie", isDie); //isDie로 애니메이션 실행
+        yield return new WaitForSeconds(animators[0].GetFloat("dieTime")); //죽는 모션
+        animators[0].speed = 0; //죽은 후에 애니메이션 멈춤
+        //Debug.Log(animators[0].GetBool("isDie"));
 
-        StartCoroutine(nameof(FadeutCoroutine)); //죽을때 페이드아웃
+        StartCoroutine(nameof(FadeoutCoroutine)); //죽을때 페이드아웃
         //yield return new WaitForSeconds(animators[0].GetFloat("dieTime")); //죽는 모션 시간
-        yield return new WaitForSeconds(animators[0].GetFloat("dieTime") + 1); //죽는 모션 시간 + 1초
+        yield return new WaitForSeconds(1); //1초
 
         //gameObject.SetActive(false);
         Destroy(this.gameObject);
     }
 
     //이미지 페이드아웃
-    IEnumerator FadeutCoroutine()
+    IEnumerator FadeoutCoroutine()
     {
         for (float i = 1f; i > 0; i -= 0.1f)
         {
