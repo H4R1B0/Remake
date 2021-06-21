@@ -39,6 +39,8 @@ public class Mushra : LivingEntity
         HPSlider.maxValue = maxHealth;
         HPSlider.value = health;
         //animators[0].SetBool("isDie", true);
+
+        rigid = GetComponent<Rigidbody2D>();
     }
 
     void Update()

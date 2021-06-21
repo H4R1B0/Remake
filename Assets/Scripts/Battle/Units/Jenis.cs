@@ -2,9 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using NaughtyAttributes;
 
-public class Batti : LivingEntity
+public class Jenis : LivingEntity
 {
     private List<GameObject> FoundTargets; //찾은 타겟들
     private float shortDis; //타겟들 중에 가장 짧은 거리
@@ -24,16 +23,16 @@ public class Batti : LivingEntity
     private void Start()
     {
         //생성시 원래 공격력과 체력 저장
-        originPower = 30; //원래 공격력
+        originPower = 40; //원래 공격력
         power = originPower; //공격력
-        originHealth = 400; //원래 체력
+        originHealth = 600; //원래 체력
         health = originHealth; //체력
         maxHealth = health;
         mana = 0;
         //originCritical = critical;
 
-        attackRange = 3f; //공격 범위
-        attackSpeed = 0.6f; //공격 속도
+        attackRange = 5f; //공격 범위
+        attackSpeed = 0.7f; //공격 속도
 
         animators = GetComponentsInChildren<Animator>(); //애니메이터들 가져오기
 
@@ -112,8 +111,8 @@ public class Batti : LivingEntity
 
     private void Skill()
     {
-        Debug.Log("배티 스킬 시전");
-        StartCoroutine(nameof(BattiSkill)); //배티 스킬 시전
+        Debug.Log("제니스 스킬 시전");
+        StartCoroutine(nameof(JenisSkill)); //제니스 스킬 시전
     }
     //몬스터 찾기
     public void FindMonster()
@@ -171,13 +170,11 @@ public class Batti : LivingEntity
         yield return new WaitForSeconds(1f / attackSpeed);
         isAttack = true;
     }
-    //배티 스킬 : 적에게 500/1000/2000%의 피해를 입히고 200/400/800만큼 회복합니다
-    IEnumerator BattiSkill()
+    //제니스 스킬 : 근접한 적에게 100/200/400%의 피해를 입히고 밀쳐냅니다
+    IEnumerator JenisSkill()
     {
-        target.GetComponent<LivingEntity>().OnDamage((int)(Mathf.Pow(2, level - 1)) * 5 * power, false); //공격
-
-        //max체력과 2^level*100 회복후의 작은 값으로 회복
-        health = maxHealth > health + (int)(Mathf.Pow(2, level-1)) * 200 ? health + (int)(Mathf.Pow(2, level-1)) * 200 : maxHealth;
+        target.GetComponent<LivingEntity>().OnDamage((int)(Mathf.Pow(2, level - 1)) * power, false); //공격
+        target.GetComponent<LivingEntity>().Knockback(new Vector2(this.transform.position.x, this.transform.position.y)); //넉백
         yield return null;
     }
 }

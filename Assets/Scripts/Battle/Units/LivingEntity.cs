@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -17,7 +18,7 @@ public class LivingEntity : MonoBehaviour
     protected int originCriticalRate; //원래 치명타율
     protected int CriticalDamageRate; //치명타 피해율
     protected int originCriticalDamageRate; //원래 치명타 피해율
-
+    protected Rigidbody2D rigid; //물리
 
     //public GameObject DamageText;
     //public bool isStern; //스턴인지
@@ -84,5 +85,11 @@ public class LivingEntity : MonoBehaviour
         isAttack = false;
         yield return new WaitForSeconds(time); //time초 쿨
         isAttack = true;
+    }
+
+    public void Knockback(Vector2 pos)
+    {
+        int reaction = transform.position.x - pos.x > 0 ? 1 : -1;
+        rigid.AddForce(new Vector2(reaction, 1) * 10, ForceMode2D.Impulse); //넉백 정도
     }
 }
