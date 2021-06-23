@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class Mushra : LivingEntity
 {
-    private int baseHP = 700; //기본 체력
+    private int baseHP = 10000; //기본 체력
     private int roundHP = 40; //라운드당 추가되는 체력
     private int basePower = 20; //기본 공격력
     private int roundPower = 2; //라운드당 추가되는 공격력

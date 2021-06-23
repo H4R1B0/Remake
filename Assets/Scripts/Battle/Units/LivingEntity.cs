@@ -20,6 +20,15 @@ public class LivingEntity : MonoBehaviour
     protected int originCriticalDamageRate; //원래 치명타 피해율
     protected Rigidbody2D rigid; //물리
 
+    protected string tribe; //종족
+    public string Tribe
+    {
+        get
+        {
+            return tribe;
+        }
+    }
+
     //public GameObject DamageText;
     //public bool isStern; //스턴인지
     protected float moveSpeed = 1.3f; // 이동 속도
@@ -40,16 +49,12 @@ public class LivingEntity : MonoBehaviour
         {
             return isDie;
         }
-        set
-        {
-            isDie = value;
-        }
     }
 
     //OnDamage 메서드
     public virtual void OnDamage(int damage, bool isCritical)
     {
-        
+
         //GameObject DGText = Instantiate(DamageText, Camera.main.WorldToScreenPoint(transform.Find("Damage").position), Quaternion.identity);
         //DGText.GetComponent<DamageText>().damage = damage;
         if (isCritical == true)
@@ -62,16 +67,28 @@ public class LivingEntity : MonoBehaviour
         //mana += 5; //피격시 마나 5획득
     }
 
+    //체력 count만큼 회복
+    public void HealHP(int count)
+    {
+        health = maxHealth > health + count ? health + count : maxHealth;
+    }
+
     //마나 count만큼 회복
     public void HealMP(int count)
     {
-        mana += count;
+        mana = 100 > mana + count ? mana + count : 100;
+    }
+
+    public void Knockback(Vector2 pos)
+    {
+        int reaction = transform.position.x - pos.x > 0 ? 1 : -1;
+        rigid.AddForce(new Vector2(reaction, 1) * 10, ForceMode2D.Impulse); //넉백 정도
     }
 
     //출혈 코루틴 : time초간 매 초 damage 피해
     public IEnumerator BleedingCoroutine(int time, int damage)
     {
-        for(int i = 0; i < time; i++)
+        for (int i = 0; i < time; i++)
         {
             OnDamage(damage, false);
             Debug.Log(damage + " 출혈");
@@ -87,9 +104,22 @@ public class LivingEntity : MonoBehaviour
         isAttack = true;
     }
 
-    public void Knockback(Vector2 pos)
+    //일정 시간동안 공격력 증가 코루틴
+    public IEnumerator IncreasingPowerCoroutine(int powercnt, int time) //증가하는 공격력량, 증가하는 시간
     {
-        int reaction = transform.position.x - pos.x > 0 ? 1 : -1;
-        rigid.AddForce(new Vector2(reaction, 1) * 10, ForceMode2D.Impulse); //넉백 정도
+        int origin = power;
+        power += powercnt;
+        yield return new WaitForSeconds(time);
+        power = origin;
+    }
+
+    //몇초간 count만큼 체력 회복하는 코루틴
+    public IEnumerator IncreasingHPCoroutine(int count, int time) //회복하는 체력량
+    {
+        for(int i = 0; i < time; i++)
+        {
+            HealHP(count);
+            yield return new WaitForSeconds(1);
+        }
     }
 }
