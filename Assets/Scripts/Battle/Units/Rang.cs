@@ -76,7 +76,7 @@ public class Rang : LivingEntity
         MPSlider.transform.Find("MPCount").GetComponent<Text>().text = MPSlider.value.ToString();
         MPSlider.transform.position = Camera.main.WorldToScreenPoint(transform.Find("MPPosition").position);
 
-        //타겟 향하는 
+        //타겟 향하는
         if (vec3dir.x < 0)
         {
             transform.localScale = new Vector3(transform.localScale.x * -1, transform.localScale.y, transform.localScale.z);

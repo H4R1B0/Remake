@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Kelsy : LivingEntity
+public class Squil : LivingEntity
 {
     private List<GameObject> FoundTargets; //찾은 타겟들
     private float shortDis; //타겟들 중에 가장 짧은 거리
@@ -14,29 +14,26 @@ public class Kelsy : LivingEntity
     private Slider MPSlider; //마나 게이지
     private int level = 1; //유닛 레벨
 
-    private bool isSkill; //스킬 사용 가능 여부
-
     //public bool isWeapon = true; //무기가 있는지
     //public bool isWeaponRotate = true; //무기가 회전하는지
     //[ShowIf("isWeapon")] //무기 있을때만 표시
     //public float attackAnimTime = 0; //공격 애니메이션 쿨타임
     //public GameObject attackPrefab; //공격 프리팹
+    public GameObject DronPrefab; //드론 프리팹
 
     private void Start()
     {
-        tribe = "Mammal";
-
         //생성시 원래 공격력과 체력 저장
         originPower = 30; //원래 공격력
         power = originPower; //공격력
-        originHealth = 500; //원래 체력
+        originHealth = 400; //원래 체력
         health = originHealth; //체력
         maxHealth = health;
         mana = 0;
         //originCritical = critical;
 
         attackRange = 0.5f; //공격 범위
-        attackSpeed = 0.6f; //공격 속도
+        attackSpeed = 0.5f; //공격 속도
 
         animators = GetComponentsInChildren<Animator>(); //애니메이터들 가져오기
 
@@ -115,8 +112,8 @@ public class Kelsy : LivingEntity
 
     private void Skill()
     {
-        Debug.Log("켈시 스킬 시전");
-        StartCoroutine(nameof(KelsySkill)); //켈시 스킬 시전
+        Debug.Log("스퀼 스킬 시전");
+        StartCoroutine(nameof(SquilSkill)); //스퀼 스킬 시전
     }
     //몬스터 찾기
     public void FindMonster()
@@ -161,8 +158,7 @@ public class Kelsy : LivingEntity
     IEnumerator AttackAnim()
     {
         animators[1].SetBool("isAttack", true);
-        if (isSkill == false) //스킬 시전이 안돼야 마나 획득
-            mana += 10; //공격시 마나 10획득
+        mana += 10; //공격시 마나 10획득
         yield return new WaitForSeconds(animators[1].GetFloat("attackTime")); //공격 쿨타임
         target.GetComponent<LivingEntity>().OnDamage(power, false); //공격
         animators[1].SetBool("isAttack", false);
@@ -175,20 +171,11 @@ public class Kelsy : LivingEntity
         yield return new WaitForSeconds(1f / attackSpeed);
         isAttack = true;
     }
-    //켈시 스킬 : 모든 메멀의 공격력이 10초간 10/20/40 증가합니다
-    IEnumerator KelsySkill()
+    //스퀼 스킬 : 10초간 10(+10)의 공격력, 300(+100)의 체력을 지닌 드론을 소환(사정거리 3/ 공격속도 보통)
+    IEnumerator SquilSkill()
     {
-        isSkill = true;
-        int powercnt = (int)(Mathf.Pow(2, level - 1)) * 10;
-        GameObject[] foundUnits = GameObject.FindGameObjectsWithTag("Unit");
-        foreach(GameObject foundUnit in foundUnits)
-        {
-            if(foundUnit.GetComponent<LivingEntity>().Tribe == "Mammal")
-            {
-                StartCoroutine(foundUnit.GetComponent<LivingEntity>().IncreasingPowerCoroutine(powercnt,10)); //10초간 powercnt만큼 공격력 증가
-            }
-        }
-        yield return new WaitForSeconds(10);
-        isSkill = false;
+        GameObject dron = Instantiate(DronPrefab);
+        dron.GetComponent<Dron>().SetDron(10 * level, 100 * (level + 2));        
+        yield return null;
     }
 }

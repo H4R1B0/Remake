@@ -63,14 +63,14 @@ public class Baroque : LivingEntity
         MPSlider.transform.Find("MPCount").GetComponent<Text>().text = MPSlider.value.ToString();
         MPSlider.transform.position = Camera.main.WorldToScreenPoint(transform.Find("MPPosition").position);
 
-        //타겟 향하는 
+        //타겟 향하는
         if (vec3dir.x < 0)
         {
-            transform.localScale = new Vector3(-1, transform.localScale.y, transform.localScale.z);
+            transform.localScale = new Vector3(transform.localScale.x * -1, transform.localScale.y, transform.localScale.z);
         }
         else
         {
-            transform.localScale = new Vector3(1, transform.localScale.y, transform.localScale.z);
+            transform.localScale = new Vector3(transform.localScale.x * 1, transform.localScale.y, transform.localScale.z);
         }
 
         //타겟이 정해지지 않았거나 죽었을경우 FindMonster

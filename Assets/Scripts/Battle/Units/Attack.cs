@@ -7,7 +7,7 @@ public class Attack : MonoBehaviour
     protected int power = 0;
     protected float moveSpeed = 8f; // 이동 속도
     protected Vector3 vec3dir = Vector3.right; //움직이는 방향
-
+    
     public void SetPowerDir(int p, GameObject target)
     {
         power = p;

@@ -14,8 +14,6 @@ public class Crusher : LivingEntity
     private Slider MPSlider; //마나 게이지
     private int level = 1; //유닛 레벨
 
-    private int flag = 0;
-
     //public bool isWeapon = true; //무기가 있는지
     //public bool isWeaponRotate = true; //무기가 회전하는지
     //[ShowIf("isWeapon")] //무기 있을때만 표시
@@ -64,14 +62,14 @@ public class Crusher : LivingEntity
         MPSlider.transform.Find("MPCount").GetComponent<Text>().text = MPSlider.value.ToString();
         MPSlider.transform.position = Camera.main.WorldToScreenPoint(transform.Find("MPPosition").position);
 
-        //타겟 향하는 방향
+        //타겟 향하는
         if (vec3dir.x < 0)
         {
-            transform.localScale = new Vector3(-1, transform.localScale.y, transform.localScale.z);
+            transform.localScale = new Vector3(transform.localScale.x * -1, transform.localScale.y, transform.localScale.z);
         }
         else
         {
-            transform.localScale = new Vector3(1, transform.localScale.y, transform.localScale.z);
+            transform.localScale = new Vector3(transform.localScale.x * 1, transform.localScale.y, transform.localScale.z);
         }
 
         //타겟이 정해지지 않았을 경우
@@ -88,7 +86,6 @@ public class Crusher : LivingEntity
             //Debug.Log("타겟 찾기");
             FindMonster();
             animators[0].SetBool("isMove", true);
-            flag = 0;
         }
         //공격 범위에 타겟이 없을경우 이동
         else if (target != null && MonsterInCircle() == false)

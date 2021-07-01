@@ -97,7 +97,7 @@ public class LivingEntity : MonoBehaviour
         for (int i = 0; i < time; i++)
         {
             OnDamage(damage, false);
-            Debug.Log(damage + " 출혈");
+            Debug.Log(damage + " 피해");
             yield return new WaitForSeconds(1); //1초 쿨
         }
     }

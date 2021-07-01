@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Kelsy : LivingEntity
+public class Spinps : LivingEntity
 {
     private List<GameObject> FoundTargets; //찾은 타겟들
     private float shortDis; //타겟들 중에 가장 짧은 거리
@@ -14,29 +14,27 @@ public class Kelsy : LivingEntity
     private Slider MPSlider; //마나 게이지
     private int level = 1; //유닛 레벨
 
-    private bool isSkill; //스킬 사용 가능 여부
+    private int attackCount;//공격 카운트
 
     //public bool isWeapon = true; //무기가 있는지
     //public bool isWeaponRotate = true; //무기가 회전하는지
     //[ShowIf("isWeapon")] //무기 있을때만 표시
     //public float attackAnimTime = 0; //공격 애니메이션 쿨타임
-    //public GameObject attackPrefab; //공격 프리팹
+    public GameObject attackPrefab; //공격 프리팹
 
     private void Start()
     {
-        tribe = "Mammal";
-
         //생성시 원래 공격력과 체력 저장
         originPower = 30; //원래 공격력
         power = originPower; //공격력
-        originHealth = 500; //원래 체력
+        originHealth = 400; //원래 체력
         health = originHealth; //체력
         maxHealth = health;
         mana = 0;
         //originCritical = critical;
 
-        attackRange = 0.5f; //공격 범위
-        attackSpeed = 0.6f; //공격 속도
+        attackRange = 5; //공격 범위
+        attackSpeed = 0.9f; //공격 속도
 
         animators = GetComponentsInChildren<Animator>(); //애니메이터들 가져오기
 
@@ -50,6 +48,7 @@ public class Kelsy : LivingEntity
         MPSlider.value = mana;
 
         isAttack = true;
+        attackCount = 0; //공격 카운트 초기화
     }
     private void Update()
     {
@@ -57,6 +56,8 @@ public class Kelsy : LivingEntity
         HPSlider.value = health;
         MPSlider.value = mana;
         HPSlider.maxValue = maxHealth;
+
+        mana = 0; //아군 마나 획득 버프 방지
 
         //HP
         HPSlider.transform.Find("HPCount").GetComponent<Text>().text = HPSlider.value.ToString();
@@ -76,48 +77,49 @@ public class Kelsy : LivingEntity
             transform.localScale = new Vector3(transform.localScale.x * 1, transform.localScale.y, transform.localScale.z);
         }
 
-        //타겟이 정해지지 않았거나 죽었을경우 FindMonster
-        if (target == null || target.GetComponent<LivingEntity>().IsDie == true)
+        //타겟이 정해지지 않았을 경우
+        if (target == null)
         {
-            animators[1].SetBool("isAttack", false);
             //Debug.Log("타겟 찾기");
             FindMonster();
-        }
-        //타겟이 공격 범위 안에 있을 경우
-        else if (MonsterInCircle() == true)
-        {
-            //마나 100일 경우 스킬 시전
-            if (mana >= 100)
-            {
-                Skill();
-                mana = 0;
-            }
             animators[0].SetBool("isMove", false);
-            //공격
-            if (isAttack == true)
-            {
-                StartCoroutine(nameof(AttackAnim));
-                StartCoroutine(nameof(AttackCoroutine));
-            }
         }
-        //타겟쪽으로 이동
-        else if (target != null && FoundTargets.Count != 0)
+        //타겟이 죽었을경우
+        else if (target.GetComponent<LivingEntity>().IsDie == true)
+        {
+            target = null;
+            //Debug.Log("타겟 찾기");
+            FindMonster();
+            animators[0].SetBool("isMove", true);
+        }
+        //공격 범위에 타겟이 없을경우 이동
+        else if (target != null && MonsterInCircle() == false)
         {
             animators[0].SetBool("isMove", true);
             transform.Translate(vec3dir * Time.deltaTime * moveSpeed);
         }
+        //타겟이 공격 범위 안에 있을 경우
+        else if (MonsterInCircle() == true)
+        {
+            animators[0].SetBool("isMove", false);
+
+            //StartCoroutine(nameof(AttackAnim));
+            //공격
+            if (isAttack == true)
+            {
+                //Debug.Log("공격 "+Time.time);
+                StartCoroutine(nameof(AttackAnim));
+                StartCoroutine(nameof(AttackCoroutine));
+
+            }
+        }
         //맵에 몬스터가 없을경우
         else if (FoundTargets.Count == 0)
         {
-            animators[1].SetBool("isAttack", false);
+            animators[0].SetBool("isMove", false);
         }
     }
 
-    private void Skill()
-    {
-        Debug.Log("켈시 스킬 시전");
-        StartCoroutine(nameof(KelsySkill)); //켈시 스킬 시전
-    }
     //몬스터 찾기
     public void FindMonster()
     {
@@ -150,6 +152,7 @@ public class Kelsy : LivingEntity
         {
             if (colliders[i].tag == "Monster")
             {
+                animators[0].SetBool("isMove", false);
                 return true;
             }
 
@@ -160,12 +163,27 @@ public class Kelsy : LivingEntity
     //공격 코루틴
     IEnumerator AttackAnim()
     {
-        animators[1].SetBool("isAttack", true);
-        if (isSkill == false) //스킬 시전이 안돼야 마나 획득
-            mana += 10; //공격시 마나 10획득
-        yield return new WaitForSeconds(animators[1].GetFloat("attackTime")); //공격 쿨타임
-        target.GetComponent<LivingEntity>().OnDamage(power, false); //공격
-        animators[1].SetBool("isAttack", false);
+        animators[0].SetBool("isAttack", true);
+
+        yield return null; //공격 애니메이션 쿨타임
+
+        //8/6/4번째 공격마다 40(+1)% 추가 데미지
+        if (attackCount == 10 - level * 2)
+        {
+            attackCount = 0;
+            GameObject attack = Instantiate(attackPrefab, this.transform);
+            attack.GetComponent<Attack>().SetPowerDir(power*(13+level)/10, target);
+
+        }
+        else
+        {
+            GameObject attack = Instantiate(attackPrefab, this.transform);
+            attack.GetComponent<Attack>().SetPowerDir(power, target);
+            attackCount++;
+        }
+        
+        //mana += 10; //공격시 마나 10획득        
+        animators[0].SetBool("isAttack", false);
     }
 
     //공격 쿨타임 코루틴
@@ -174,21 +192,5 @@ public class Kelsy : LivingEntity
         isAttack = false;
         yield return new WaitForSeconds(1f / attackSpeed);
         isAttack = true;
-    }
-    //켈시 스킬 : 모든 메멀의 공격력이 10초간 10/20/40 증가합니다
-    IEnumerator KelsySkill()
-    {
-        isSkill = true;
-        int powercnt = (int)(Mathf.Pow(2, level - 1)) * 10;
-        GameObject[] foundUnits = GameObject.FindGameObjectsWithTag("Unit");
-        foreach(GameObject foundUnit in foundUnits)
-        {
-            if(foundUnit.GetComponent<LivingEntity>().Tribe == "Mammal")
-            {
-                StartCoroutine(foundUnit.GetComponent<LivingEntity>().IncreasingPowerCoroutine(powercnt,10)); //10초간 powercnt만큼 공격력 증가
-            }
-        }
-        yield return new WaitForSeconds(10);
-        isSkill = false;
     }
 }
