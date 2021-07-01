@@ -105,6 +105,7 @@ public class LivingEntity : MonoBehaviour
     //time초간 스턴 코루틴
     public IEnumerator SternCoroutine(int time)
     {
+        Debug.Log(time + " 초 간 스턴");
         isAttack = false;
         yield return new WaitForSeconds(time); //time초 쿨
         isAttack = true;
