@@ -6,7 +6,7 @@ public class WrightWeapon : Attack
 {
     private void Awake()
     {
-        this.transform.position = new Vector3(this.transform.position.x - 0.5f, this.transform.position.y - 1.1f, this.transform.position.z);
+        this.transform.position = new Vector3(this.transform.position.x, this.transform.position.y - 1.1f, this.transform.position.z);
     }
     void Update()
     {

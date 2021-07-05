@@ -35,6 +35,7 @@ public class LivingEntity : MonoBehaviour
     protected Vector3 vec3dir = Vector3.right; //움직이는 방향
     protected GameObject target = null; //타겟으로 되는 적
     protected bool isAttack; //공격 가능한지
+    protected bool isStern; //스턴 상태
     protected Animator[] animators; //애니메이터
 
     public Material FlashWhite; //피격시 변경할 메테리얼
@@ -65,6 +66,14 @@ public class LivingEntity : MonoBehaviour
         }
         health -= damage;
         //mana += 5; //피격시 마나 5획득
+        if (runningCoroutine != null)
+        {
+            StartCoroutine(nameof(FlashCoroutine));
+        }
+        else
+        {
+            runningCoroutine = StartCoroutine(nameof(FlashCoroutine));
+        }
     }
 
     //체력 count만큼 회복
@@ -106,9 +115,9 @@ public class LivingEntity : MonoBehaviour
     public IEnumerator SternCoroutine(int time)
     {
         Debug.Log(time + " 초 간 스턴");
-        isAttack = false;
+        isStern = true;
         yield return new WaitForSeconds(time); //time초 쿨
-        isAttack = true;
+        isStern = false;
     }
 
     //일정 시간동안 공격력 증가 코루틴
@@ -128,5 +137,15 @@ public class LivingEntity : MonoBehaviour
             HealHP(count);
             yield return new WaitForSeconds(1);
         }
+    }
+    //피격시 메테리얼 변경 메서드
+    protected IEnumerator FlashCoroutine()
+    {
+        //현재 메테리얼 변경
+        renderer.material = FlashWhite;
+        //0.15초간 대기
+        yield return new WaitForSeconds(0.15f);
+        //원래 메테리얼 변경
+        renderer.material = defaultMaterial;
     }
 }

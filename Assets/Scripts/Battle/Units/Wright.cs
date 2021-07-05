@@ -49,7 +49,11 @@ public class Wright : LivingEntity
         MPSlider.transform.SetParent(GameObject.Find("UnitUIManager").transform);
         MPSlider.value = mana;
 
+        defaultMaterial = transform.GetChild(0).GetComponent<SpriteRenderer>().material; //이미지 메테리얼 저장
+        renderer = GetComponentInChildren<SpriteRenderer>();
+
         isAttack = true;
+        isStern = false;
     }
     private void Update()
     {
@@ -69,11 +73,11 @@ public class Wright : LivingEntity
         //타겟 향하는
         if (vec3dir.x < 0)
         {
-            transform.localScale = new Vector3(transform.localScale.x * -1, transform.localScale.y, transform.localScale.z);
+            transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x) * -1, transform.localScale.y, transform.localScale.z);
         }
         else
         {
-            transform.localScale = new Vector3(transform.localScale.x * 1, transform.localScale.y, transform.localScale.z);
+            transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
         }
 
         //타겟이 정해지지 않았거나 죽었을경우 FindMonster
@@ -95,7 +99,7 @@ public class Wright : LivingEntity
             }
             animators[0].SetBool("isMove", false);
             //공격
-            if (isAttack == true)
+            if (isAttack == true && isStern == false)
             {
                 StartCoroutine(nameof(AttackAnim));
                 StartCoroutine(nameof(AttackCoroutine));
@@ -113,7 +117,10 @@ public class Wright : LivingEntity
             animators[0].SetBool("isAttack", false);
         }
     }
-
+    public override void OnDamage(int damage, bool isCritical)
+    {
+        base.OnDamage(damage, isCritical);
+    }
     private void Skill()
     {
         Debug.Log("라이트 스킬 시전");
@@ -162,6 +169,8 @@ public class Wright : LivingEntity
     IEnumerator AttackAnim()
     {
         animators[0].SetBool("isAttack", true);
+        vec3dir = target.transform.position - transform.position;
+        vec3dir.Normalize();
         yield return null; //공격 쿨타임
         GameObject attack = Instantiate(attackPrefab, this.transform);
         attack.GetComponent<Attack>().SetPowerDir(power, target);
