@@ -87,7 +87,7 @@ public class Catutus : LivingEntity
         {
             //animators[0].SetBool("isMove", false);
             //АјАн
-            if (isAttack == true)
+            if (isAttack == true && isDie == false)
             {
                 StartCoroutine(nameof(AttackAnim));
                 StartCoroutine(nameof(AttackCoroutine));

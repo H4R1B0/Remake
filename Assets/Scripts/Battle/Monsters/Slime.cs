@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Mushra : LivingEntity
+public class Slime : LivingEntity
 {
     private List<GameObject> FoundTargets; //찾은 타겟들
     private float shortDis; //타겟들 중에 가장 짧은 거리
 
-    private int baseHP = 10000; //기본 체력
-    private int roundHP = 40; //라운드당 추가되는 체력
-    private int basePower = 20; //기본 공격력
-    private int roundPower = 2; //라운드당 추가되는 공격력
+    private int baseHP = 500; //기본 체력
+    private int roundHP = 30; //라운드당 추가되는 체력
+    private int basePower = 30; //기본 공격력
+    private int roundPower = 4; //라운드당 추가되는 공격력
 
     public Slider HPSliderPrefab; //체력 게이지 프리팹
     private Slider HPSlider; //체력 게이지
@@ -30,7 +30,7 @@ public class Mushra : LivingEntity
         //originCritical = critical;
 
         attackRange = 0.5f; //공격 범위
-        attackSpeed = 0.5f; //공격 속도
+        attackSpeed = 1.5f; //공격 속도
 
         animators = GetComponentsInChildren<Animator>(); //애니메이터들 가져오기
 
@@ -110,7 +110,7 @@ public class Mushra : LivingEntity
     //피격
     public override void OnDamage(int damage, bool isCritical)
     {
-        
+
         base.OnDamage(damage, isCritical);
     }
 
@@ -157,12 +157,9 @@ public class Mushra : LivingEntity
     {
         animators[0].SetBool("isAttack", true);
         yield return new WaitForSeconds(animators[0].GetFloat("attackTime")); //공격 애니메이션 타임
-        //크리티컬
-        int rand = Random.Range(0, 100);
-        //10%확률로 1초 기절 
-        if (rand >= 0 && rand < 10)
-            StartCoroutine(target.GetComponent<LivingEntity>().SternCoroutine(1));
+
         target.GetComponent<LivingEntity>().OnDamage(power, false); //공격
+
         animators[0].SetBool("isAttack", false);
     }
 
@@ -174,7 +171,7 @@ public class Mushra : LivingEntity
         isAttack = true;
     }
 
-    
+
 
     //죽었을때 코루틴
     IEnumerator DestroyCoroutine()

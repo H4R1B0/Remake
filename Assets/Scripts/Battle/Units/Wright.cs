@@ -54,6 +54,7 @@ public class Wright : LivingEntity
 
         isAttack = true;
         isStern = false;
+        //Debug.Log((Vector3)this.GetComponent<BoxCollider2D>().offset);
     }
     private void Update()
     {

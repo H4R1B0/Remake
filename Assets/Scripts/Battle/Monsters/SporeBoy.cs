@@ -8,7 +8,7 @@ public class SporeBoy : LivingEntity
     private List<GameObject> FoundTargets; //찾은 타겟들
     private float shortDis; //타겟들 중에 가장 짧은 거리
 
-    private int baseHP = 10000; //기본 체력
+    private int baseHP = 300; //기본 체력
     private int roundHP = 30; //라운드당 추가되는 체력
     private int basePower = 30; //기본 공격력
     private int roundPower = 2; //라운드당 추가되는 공격력
@@ -87,7 +87,7 @@ public class SporeBoy : LivingEntity
         {
             //animators[0].SetBool("isMove", false);
             //공격
-            if (isAttack == true)
+            if (isAttack == true && isDie == false)
             {
                 StartCoroutine(nameof(AttackAnim));
                 StartCoroutine(nameof(AttackCoroutine));
