@@ -45,6 +45,9 @@ public class Jenis : LivingEntity
         MPSlider.transform.SetParent(GameObject.Find("UnitUIManager").transform);
         MPSlider.value = mana;
 
+        defaultMaterial = transform.GetChild(0).GetComponent<SpriteRenderer>().material; //이미지 메테리얼 저장
+        renderer = GetComponentInChildren<SpriteRenderer>();
+
         isAttack = true;
     }
     private void Update()
@@ -65,11 +68,11 @@ public class Jenis : LivingEntity
         //타겟 향하는
         if (vec3dir.x < 0)
         {
-            transform.localScale = new Vector3(transform.localScale.x * -1, transform.localScale.y, transform.localScale.z);
+            transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x) * -1, transform.localScale.y, transform.localScale.z);
         }
         else
         {
-            transform.localScale = new Vector3(transform.localScale.x * 1, transform.localScale.y, transform.localScale.z);
+            transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
         }
 
         //타겟이 정해지지 않았거나 죽었을경우 FindMonster
@@ -96,10 +99,11 @@ public class Jenis : LivingEntity
                 StartCoroutine(nameof(AttackCoroutine));
             }
         }
-        //타겟쪽으로 이동
-        else if (target != null && FoundTargets.Count != 0)
+        //타겟이 있으나 범위에서 벗어났을경우 재탐색
+        else if (target != null && MonsterInCircle() == false)
         {
             animators[0].SetBool("isMove", true);
+            FindMonster();
             transform.Translate(vec3dir * Time.deltaTime * moveSpeed);
         }
         //맵에 몬스터가 없을경우
@@ -157,9 +161,13 @@ public class Jenis : LivingEntity
     IEnumerator AttackAnim()
     {
         animators[1].SetBool("isAttack", true);
-        mana += 10; //공격시 마나 10획득
+        vec3dir = target.transform.position - transform.position;
+        vec3dir.Normalize();
+                
         yield return new WaitForSeconds(animators[1].GetFloat("attackTime")); //공격 쿨타임
+
         target.GetComponent<LivingEntity>().OnDamage(power, false); //공격
+        mana += 10; //공격시 마나 10획득
         animators[1].SetBool("isAttack", false);
     }
 

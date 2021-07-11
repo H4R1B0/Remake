@@ -106,10 +106,11 @@ public class Wright : LivingEntity
                 StartCoroutine(nameof(AttackCoroutine));
             }
         }
-        //타겟쪽으로 이동
-        else if (target != null && FoundTargets.Count != 0)
+        //타겟이 있으나 범위에서 벗어났을경우 재탐색
+        else if (target != null && MonsterInCircle() == false)
         {
             animators[0].SetBool("isMove", true);
+            FindMonster();
             transform.Translate(vec3dir * Time.deltaTime * moveSpeed);
         }
         //맵에 몬스터가 없을경우
@@ -172,9 +173,13 @@ public class Wright : LivingEntity
         animators[0].SetBool("isAttack", true);
         vec3dir = target.transform.position - transform.position;
         vec3dir.Normalize();
+
         yield return null; //공격 쿨타임
-        GameObject attack = Instantiate(attackPrefab, this.transform);
+
+        GameObject attack = Instantiate(attackPrefab);
+        attack.transform.position = this.transform.position + new Vector3(0, -0.8f, 0);
         attack.GetComponent<Attack>().SetPowerDir(power, target);
+
         if (isSkill == false) //스킬 시전이 안돼야 마나 획득
             mana += 10; //공격시 마나 10획득
         animators[0].SetBool("isAttack", false);
@@ -190,11 +195,11 @@ public class Wright : LivingEntity
     //라이트 스킬 : 3(+1)초간 공격력10당 공격속도 1%증가
     IEnumerator WrightSkill()
     {
-        
+
         float originS = attackSpeed; //원래 공격 속도 저장
         attackSpeed = attackSpeed * (100 + power / 10) / 100; //공격속도 증가
 
-        yield return new WaitForSeconds(level+2); //3(+1)초 쿨
+        yield return new WaitForSeconds(level + 2); //3(+1)초 쿨
 
         attackSpeed = originS; //원래 공격 속도
         isSkill = false;

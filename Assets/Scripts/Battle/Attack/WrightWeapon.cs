@@ -6,10 +6,12 @@ public class WrightWeapon : Attack
 {
     private void Awake()
     {
-        this.transform.position = new Vector3(this.transform.position.x, this.transform.position.y-0.8f, this.transform.position.z);
+        //this.transform.position = new Vector3(this.transform.position.x, this.transform.position.y, this.transform.position.z);
+        //Debug.Log(this.transform.position);
     }
     void Update()
     {
         transform.Translate(vec3dir * Time.deltaTime * moveSpeed);
+        //Debug.Log(vec3dir);
     }
 }

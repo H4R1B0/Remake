@@ -45,6 +45,9 @@ public class Rifi : LivingEntity
         MPSlider.transform.SetParent(GameObject.Find("UnitUIManager").transform);
         MPSlider.value = mana;
 
+        defaultMaterial = transform.GetChild(0).GetComponent<SpriteRenderer>().material; //이미지 메테리얼 저장
+        renderer = GetComponentInChildren<SpriteRenderer>();
+
         isAttack = true;
     }
     private void Update()
@@ -65,11 +68,11 @@ public class Rifi : LivingEntity
         //타겟 향하는
         if (vec3dir.x < 0)
         {
-            transform.localScale = new Vector3(transform.localScale.x * -1, transform.localScale.y, transform.localScale.z);
+            transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x) * -1, transform.localScale.y, transform.localScale.z);
         }
         else
         {
-            transform.localScale = new Vector3(transform.localScale.x * 1, transform.localScale.y, transform.localScale.z);
+            transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
         }
 
         //타겟이 정해지지 않았을 경우
@@ -87,10 +90,11 @@ public class Rifi : LivingEntity
             FindMonster();
             animators[0].SetBool("isMove", true);
         }
-        //공격 범위에 타겟이 없을경우 이동
+        //타겟이 있으나 범위에서 벗어났을경우 재탐색
         else if (target != null && MonsterInCircle() == false)
         {
             animators[0].SetBool("isMove", true);
+            FindMonster();
             transform.Translate(vec3dir * Time.deltaTime * moveSpeed);
         }
         //타겟이 공격 범위 안에 있을 경우
@@ -170,8 +174,13 @@ public class Rifi : LivingEntity
     IEnumerator AttackAnim()
     {
         animators[0].SetBool("isAttack", true);
+        vec3dir = target.transform.position - transform.position;
+        vec3dir.Normalize();
+
         yield return null; //공격 쿨타임
-        GameObject attack = Instantiate(attackPrefab, this.transform);
+
+        GameObject attack = Instantiate(attackPrefab);
+        attack.transform.position = this.transform.position + new Vector3(0, -0.8f, 0);
         attack.GetComponent<Attack>().SetPowerDir(power, target);
         mana += 10; //공격시 마나 10획득        
         animators[0].SetBool("isAttack", false);

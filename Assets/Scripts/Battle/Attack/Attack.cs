@@ -15,8 +15,8 @@ public class Attack : MonoBehaviour
         this.target = target;
         //타겟 위치에 콜라이더 중심점을 더하여 타겟의 중심으로 향하게 함
         vec3dir = target.transform.position + (Vector3)target.GetComponent<BoxCollider2D>().offset - transform.position;
-        //Debug.Log(this.transform.parent.name+" "+ target.transform.position + (Vector3)target.GetComponent<BoxCollider2D>().offset);
         vec3dir.Normalize();
+        
     }
     private void OnCollisionEnter2D(Collision2D collision)
     {

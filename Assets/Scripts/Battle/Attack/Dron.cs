@@ -70,11 +70,11 @@ public class Dron : MonoBehaviour
         //타겟 향하는
         if (vec3dir.x < 0)
         {
-            transform.localScale = new Vector3(transform.localScale.x * -1, transform.localScale.y, transform.localScale.z);
+            transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x) * -1, transform.localScale.y, transform.localScale.z);
         }
         else
         {
-            transform.localScale = new Vector3(transform.localScale.x * 1, transform.localScale.y, transform.localScale.z);
+            transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
         }
 
         //타겟이 정해지지 않았거나 죽었을경우 FindMonster
@@ -99,10 +99,11 @@ public class Dron : MonoBehaviour
                 StartCoroutine(nameof(AttackCoroutine));
             }
         }
-        //타겟쪽으로 이동
-        else if (target != null && FoundTargets.Count != 0)
+        //타겟이 있으나 범위에서 벗어났을경우 재탐색
+        else if (target != null && MonsterInCircle() == false)
         {
             animator.SetBool("isMove", true);
+            FindMonster();
             transform.Translate(vec3dir * Time.deltaTime * moveSpeed);
         }
         //맵에 몬스터가 없을경우
@@ -165,9 +166,14 @@ public class Dron : MonoBehaviour
     IEnumerator AttackAnim()
     {
         animator.SetBool("isAttack", true);
+        vec3dir = target.transform.position - transform.position;
+        vec3dir.Normalize();
+
         yield return new WaitForSeconds(0.1f); //공격 쿨타임
+
         // 원거리        
         GameObject attack = Instantiate(attackPrefab);
+        attack.transform.position = this.transform.position + new Vector3(0, -0.5f, 0);
         attack.GetComponent<Attack>().SetPowerDir(power, target);
         animator.SetBool("isAttack", false);
     }
