@@ -3,23 +3,24 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class LegsyRoom : LivingEntity
+public class CrystalGolem : LivingEntity
 {
     private List<GameObject> FoundTargets; //찾은 타겟들
     private float shortDis; //타겟들 중에 가장 짧은 거리
 
-    private int baseHP = 100; //기본 체력
-    private int roundHP = 30; //라운드당 추가되는 체력
-    private int basePower = 60; //기본 공격력
-    private int roundPower = 5; //라운드당 추가되는 공격력
+    private int baseHP = 400; //기본 체력
+    private int roundHP = 50; //라운드당 추가되는 체력
+    private int basePower = 30; //기본 공격력
+    private int roundPower = 4; //라운드당 추가되는 공격력
 
     public Slider HPSliderPrefab; //체력 게이지 프리팹
     private Slider HPSlider; //체력 게이지
 
-    public GameObject attackPrefab; //공격 프리팹
-    public GameObject Mushra; //머쉬라 프리팹
+    public GameObject crystalgolem; //죽을때 소환할 복제품
 
-    void Start()
+    private bool isAlter; //복제품인지
+    
+    private void Awake()
     {
         isDie = false;
 
@@ -32,8 +33,8 @@ public class LegsyRoom : LivingEntity
         maxHealth = health;
         //originCritical = critical;
 
-        attackRange = 6f; //공격 범위
-        attackSpeed = 1.5f; //공격 속도
+        attackRange = 0.5f; //공격 범위
+        attackSpeed = 1f; //공격 속도
 
         animators = GetComponentsInChildren<Animator>(); //애니메이터들 가져오기
 
@@ -47,6 +48,7 @@ public class LegsyRoom : LivingEntity
         rigid = GetComponent<Rigidbody2D>();
 
         isAttack = true;
+        isAlter = false;
     }
     void Update()
     {
@@ -155,15 +157,27 @@ public class LegsyRoom : LivingEntity
         return false;
     }
 
+    //분신 소환시 공격력, 체력 조정
+    public void SetAlter()
+    {
+        isAlter = true;
+        power = power * 40 / 100;
+        maxHealth = maxHealth * 40 / 100;
+        health = maxHealth;
+    }
+
     //공격 코루틴
     IEnumerator AttackAnim()
     {
         animators[0].SetBool("isAttack", true);
         yield return new WaitForSeconds(animators[0].GetFloat("attackTime")); //공격 애니메이션 타임
 
-        GameObject attack = Instantiate(attackPrefab);
-        attack.transform.position = this.transform.position;
-        attack.GetComponent<Attack>().SetPowerDir(power, target);
+        //모든 적 공격
+        GameObject[] foundUnits = GameObject.FindGameObjectsWithTag("Unit");
+        foreach (GameObject foundUnit in foundUnits)
+        {
+            foundUnit.GetComponent<LivingEntity>().OnDamage(power, false); //공격
+        }
 
         animators[0].SetBool("isAttack", false);
     }
@@ -184,14 +198,6 @@ public class LegsyRoom : LivingEntity
         renderer.material = defaultMaterial;
         //Debug.Log("FlashCoroutine 멈춤");
 
-        //죽을때 머쉬라 3마리 소환
-        GameObject Mushra1 = Instantiate(Mushra);
-        Mushra1.transform.position = this.transform.position;
-        GameObject Mushra2 = Instantiate(Mushra);
-        Mushra2.transform.position = this.transform.position - new Vector3(1, 0, 0);
-        GameObject Mushra3 = Instantiate(Mushra);
-        Mushra3.transform.position = this.transform.position - new Vector3(2, 0, 0);
-
         Destroy(HPSlider.gameObject); //체력바 파괴
         animators[0].SetBool("isDie", isDie); //isDie로 애니메이션 실행
         yield return new WaitForSeconds(animators[0].GetFloat("dieTime")); //죽는 모션
@@ -201,6 +207,24 @@ public class LegsyRoom : LivingEntity
         StartCoroutine(nameof(FadeoutCoroutine)); //죽을때 페이드아웃
         //yield return new WaitForSeconds(animators[0].GetFloat("dieTime")); //죽는 모션 시간
         yield return new WaitForSeconds(1); //1초
+
+        if (isAlter == false)
+        {
+            renderer.material.color = new Vector4(1, 1, 1, 1);
+            GameObject crystalgolem1, crystalgolem2;
+            crystalgolem1 = Instantiate(this.gameObject);
+            crystalgolem1.transform.localScale = new Vector3(transform.localScale.x * 0.6f, transform.localScale.y * 0.6f, transform.localScale.z);
+            crystalgolem1.transform.position = new Vector3(transform.position.x - 0.5f, transform.position.y - 0.5f, transform.position.z);
+            crystalgolem1.GetComponent<CrystalGolem>().SetAlter();
+
+            //crystalgolem1.GetComponent<Rang>().SetAlter(power * (3 + level) * 10 / 100, health * (3 + level) * 10 / 100);
+
+            crystalgolem2 = Instantiate(this.gameObject);
+            crystalgolem2.transform.localScale = new Vector3(transform.localScale.x * 0.6f, transform.localScale.y * 0.6f, transform.localScale.z);
+            crystalgolem2.transform.position = new Vector3(transform.position.x - 1f, transform.position.y - 0.5f, transform.position.z);
+            crystalgolem2.GetComponent<CrystalGolem>().SetAlter();
+            //crystalgolem2.GetComponent<Rang>().SetAlter(power * (3 + level) * 10 / 100, health * (3 + level) * 10 / 100);
+        }
 
         //gameObject.SetActive(false);
         Destroy(this.gameObject);

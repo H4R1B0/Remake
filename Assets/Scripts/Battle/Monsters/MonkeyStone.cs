@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class BigSlime : LivingEntity
+public class MonkeyStone : LivingEntity
 {
     private List<GameObject> FoundTargets; //찾은 타겟들
     private float shortDis; //타겟들 중에 가장 짧은 거리
@@ -16,8 +16,6 @@ public class BigSlime : LivingEntity
     public Slider HPSliderPrefab; //체력 게이지 프리팹
     private Slider HPSlider; //체력 게이지
 
-    public GameObject Slime; //죽을때 소환할 슬라임
-
     void Start()
     {
         isDie = false;
@@ -29,6 +27,7 @@ public class BigSlime : LivingEntity
         power = basePower; //공격력
         health = baseHP; //체력
         maxHealth = health;
+        moveSpeed *= 1.5f; //이동속도 변경 
         //originCritical = critical;
 
         //attackRange = 5f; //공격 범위
@@ -69,7 +68,7 @@ public class BigSlime : LivingEntity
         }
 
         //좌우 이동
-        if (this.transform.position.x < Camera.main.ScreenToWorldPoint(this.transform.position).x+this.GetComponent<BoxCollider2D>().size.x/2) //왼쪽 화면 넘어갈때
+        if (IsDie == false && this.transform.position.x < Camera.main.ScreenToWorldPoint(this.transform.position).x + this.GetComponent<BoxCollider2D>().size.x / 2) //왼쪽 화면 넘어갈때
         {
             transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x) * -1, transform.localScale.y, transform.localScale.z);
 
@@ -78,14 +77,14 @@ public class BigSlime : LivingEntity
 
             //Debug.Log(vec3dir);
         }
-        else if (this.transform.position.x > -Camera.main.ScreenToWorldPoint(this.transform.position).x - this.GetComponent<BoxCollider2D>().size.x / 2) //오른쪽 화면 넘어갈때
+        else if (IsDie == false && this.transform.position.x > -Camera.main.ScreenToWorldPoint(this.transform.position).x - this.GetComponent<BoxCollider2D>().size.x / 2) //오른쪽 화면 넘어갈때
         {
             transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
 
             vec3dir = Vector3.left;
             transform.Translate(vec3dir * Time.deltaTime * moveSpeed);
         }
-        else
+        else if (IsDie == false)
         {
             transform.Translate(vec3dir * Time.deltaTime * moveSpeed);
         }
@@ -101,7 +100,7 @@ public class BigSlime : LivingEntity
     {
         if (collision.gameObject.tag == "Unit")
         {
-            collision.gameObject.GetComponent<LivingEntity>().OnDamage(power, false);
+            collision.gameObject.GetComponent<LivingEntity>().OnDamage(power * 5, false);
         }
     }
 
@@ -112,14 +111,6 @@ public class BigSlime : LivingEntity
         StopCoroutine(nameof(FlashCoroutine));
         renderer.material = defaultMaterial;
         //Debug.Log("FlashCoroutine 멈춤");
-
-        //죽을때 슬라임 8마리 소환
-        GameObject[] slimes = new GameObject[8];
-        for(int i = 0; i < 8; i++)
-        {
-            slimes[i] = Instantiate(Slime);
-            slimes[i].transform.position = this.transform.position - new Vector3(0.3f*i,0,0);
-        }
 
         Destroy(HPSlider.gameObject); //체력바 파괴
         animators[0].SetBool("isDie", isDie); //isDie로 애니메이션 실행

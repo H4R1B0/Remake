@@ -3,21 +3,22 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class LegsyRoom : LivingEntity
+public class PurpleStone : LivingEntity
 {
     private List<GameObject> FoundTargets; //찾은 타겟들
     private float shortDis; //타겟들 중에 가장 짧은 거리
 
-    private int baseHP = 100; //기본 체력
-    private int roundHP = 30; //라운드당 추가되는 체력
-    private int basePower = 60; //기본 공격력
-    private int roundPower = 5; //라운드당 추가되는 공격력
+    private int baseHP = 400; //기본 체력
+    private int roundHP = 50; //라운드당 추가되는 체력
+    private int basePower = 30; //기본 공격력
+    private int roundPower = 4; //라운드당 추가되는 공격력
+
+    private float longDis; //타겟들 중에 가장 긴 거리
 
     public Slider HPSliderPrefab; //체력 게이지 프리팹
     private Slider HPSlider; //체력 게이지
 
     public GameObject attackPrefab; //공격 프리팹
-    public GameObject Mushra; //머쉬라 프리팹
 
     void Start()
     {
@@ -32,8 +33,8 @@ public class LegsyRoom : LivingEntity
         maxHealth = health;
         //originCritical = critical;
 
-        attackRange = 6f; //공격 범위
-        attackSpeed = 1.5f; //공격 속도
+        attackRange = 3f; //공격 범위
+        attackSpeed = 0.5f; //공격 속도
 
         animators = GetComponentsInChildren<Animator>(); //애니메이터들 가져오기
 
@@ -53,7 +54,6 @@ public class LegsyRoom : LivingEntity
         //체력 게이지값, 위치 변경
         HPSlider.value = health;
         HPSlider.maxValue = maxHealth;
-        //HP
         //HP
         if (HPSlider != null)
         {
@@ -97,10 +97,11 @@ public class LegsyRoom : LivingEntity
                 StartCoroutine(nameof(AttackCoroutine));
             }
         }
-        //타겟쪽으로 이동
-        else if (target != null && FoundTargets.Count != 0)
+        //타겟이 있으나 범위에서 벗어났을경우 재탐색
+        else if (target != null && UnitInCircle() == false)
         {
             animators[0].SetBool("isAttack", false);
+            FindUnit();
             transform.Translate(vec3dir * Time.deltaTime * moveSpeed);
         }
         //맵에 유닛이 없을경우
@@ -113,7 +114,6 @@ public class LegsyRoom : LivingEntity
     //피격
     public override void OnDamage(int damage, bool isCritical)
     {
-
         base.OnDamage(damage, isCritical);
     }
 
@@ -122,22 +122,23 @@ public class LegsyRoom : LivingEntity
         FoundTargets = new List<GameObject>(GameObject.FindGameObjectsWithTag("Unit"));
         if (FoundTargets.Count != 0)
         {
-            shortDis = Vector3.Distance(transform.position, FoundTargets[0].transform.position); // 첫번째를 기준으로 잡아주기 
+            longDis = Vector3.Distance(transform.position, FoundTargets[0].transform.position); // 첫번째를 기준으로 잡아주기 
 
             target = FoundTargets[0]; // 첫번째를 먼저 
             foreach (GameObject found in FoundTargets)
             {
                 float Distance = Vector3.Distance(gameObject.transform.position, found.transform.position);
 
-                if (Distance < shortDis) // 위에서 잡은 기준으로 거리 재기
+                if (Distance > longDis) // 위에서 잡은 기준으로 거리 재기
                 {
                     target = found;
-                    shortDis = Distance;
+                    longDis = Distance;
                 }
             }
             vec3dir = (target.transform.position - new Vector3(0, 1f, 0)) - transform.position;
             //vec3dir = target.transform.position - transform.position;
             vec3dir.Normalize();
+            //Debug.Log(vec3dir);
         }
 
     }
@@ -159,11 +160,13 @@ public class LegsyRoom : LivingEntity
     IEnumerator AttackAnim()
     {
         animators[0].SetBool("isAttack", true);
+
         yield return new WaitForSeconds(animators[0].GetFloat("attackTime")); //공격 애니메이션 타임
 
-        GameObject attack = Instantiate(attackPrefab);
-        attack.transform.position = this.transform.position;
-        attack.GetComponent<Attack>().SetPowerDir(power, target);
+        StartCoroutine(nameof(PurpleStoneAttack));
+        //StartCoroutine(attack.GetComponent<DanceFireWeapon>().showmove());
+        //attack.GetComponent<DanceFireWeapon>().Move();
+        //Debug.Log(target.transform.position);
 
         animators[0].SetBool("isAttack", false);
     }
@@ -183,14 +186,6 @@ public class LegsyRoom : LivingEntity
         StopCoroutine(nameof(FlashCoroutine));
         renderer.material = defaultMaterial;
         //Debug.Log("FlashCoroutine 멈춤");
-
-        //죽을때 머쉬라 3마리 소환
-        GameObject Mushra1 = Instantiate(Mushra);
-        Mushra1.transform.position = this.transform.position;
-        GameObject Mushra2 = Instantiate(Mushra);
-        Mushra2.transform.position = this.transform.position - new Vector3(1, 0, 0);
-        GameObject Mushra3 = Instantiate(Mushra);
-        Mushra3.transform.position = this.transform.position - new Vector3(2, 0, 0);
 
         Destroy(HPSlider.gameObject); //체력바 파괴
         animators[0].SetBool("isDie", isDie); //isDie로 애니메이션 실행
@@ -212,6 +207,33 @@ public class LegsyRoom : LivingEntity
         for (float i = 1f; i > 0; i -= 0.1f)
         {
             renderer.material.color = new Vector4(1, 1, 1, i);
+            yield return new WaitForSeconds(0.1f);
+        }
+    }
+
+    //부채꼴로 10개 발사
+    IEnumerator PurpleStoneAttack()
+    {
+        //공격하는 적이 왼쪽이면 -215, 오른쪽이면 -45
+        float deg = -225;
+        if (vec3dir.x >= 0)
+        {
+            deg = -45;
+        }
+
+        //10개 발사
+        GameObject[] attacks = new GameObject[10];
+        for (int i = 0; i < 10; i++)
+        {
+            if (deg + 9 * i == 0 || deg + 9 * i == -180)
+                deg += 9;
+            attacks[i] = Instantiate(attackPrefab);
+            attacks[i].transform.position = this.transform.position + new Vector3(0, -0.35f, 0);
+            float x = (deg + 9 * i) * Mathf.Deg2Rad;
+            float y = (deg + 9 * i) * Mathf.Deg2Rad;
+            Vector3 dir = new Vector3(Mathf.Cos(x),Mathf.Sin(y),0);
+            attacks[i].GetComponent<PurpleStoneWeapon>().SetPowerDir(power, dir);
+            //Debug.Log(deg + 9 * i);
             yield return new WaitForSeconds(0.1f);
         }
     }

@@ -18,6 +18,8 @@ public class Rang : LivingEntity
 
     private bool isAlter; //분신인지
 
+    public GameObject rang; //분신 랑
+
     //public bool isWeapon = true; //무기가 있는지
     //public bool isWeaponRotate = true; //무기가 회전하는지
     //[ShowIf("isWeapon")] //무기 있을때만 표시
@@ -173,12 +175,12 @@ public class Rang : LivingEntity
     }
 
     //파괴 함수
-    public override void OnDestroy()
+    public void OnDestroy()
     {
         //base.OnDestroy(); //아무것도 없음
         Destroy(HPSlider.gameObject);
         Destroy(MPSlider.gameObject);
-        Destroy(this.gameObject);
+        //Destroy(this.gameObject);
     }
 
     //분신 소환시 공격력, 체력 조정
@@ -189,7 +191,7 @@ public class Rang : LivingEntity
 
         health = h;
         originHealth = health;
-        maxHealth = health;
+        maxHealth = originHealth;
 
         isSkill = true;
         isAlter = true;
@@ -230,22 +232,30 @@ public class Rang : LivingEntity
     IEnumerator RangSkill()
     {
         GameObject rang1, rang2;
-
-        rang1 = Instantiate(this.gameObject);
+        rang1 = Instantiate(rang);
         rang1.transform.localScale = new Vector3(transform.localScale.x * 0.6f, transform.localScale.y * 0.6f, transform.localScale.z);
         rang1.transform.position = new Vector3(transform.position.x - 0.5f, transform.position.y - 0.5f, transform.position.z);
-        rang1.GetComponent<Rang>().SetAlter(power * (3 + level) * 10 / 100, health * (3 + level) * 10 / 100);
+        rang1.GetComponent<Rang>().SetAlter(power * (3 + level) * 10 / 100, maxHealth * (3 + level) * 10 / 100);
 
-        rang2 = Instantiate(this.gameObject);
+        rang2 = Instantiate(rang);
         rang2.transform.localScale = new Vector3(transform.localScale.x * 0.6f, transform.localScale.y * 0.6f, transform.localScale.z);
         rang2.transform.position = new Vector3(transform.position.x - 1f, transform.position.y - 0.5f, transform.position.z);
-        rang2.GetComponent<Rang>().SetAlter(power * (3 + level) * 10 / 100, health * (3 + level) * 10 / 100);
+        rang2.GetComponent<Rang>().SetAlter(power * (3 + level) * 10 / 100, maxHealth * (3 + level) * 10 / 100);
 
         yield return new WaitForSeconds(8);
 
         isSkill = false;
 
-        rang1.GetComponent<LivingEntity>().OnDestroy();
-        rang2.GetComponent<LivingEntity>().OnDestroy();
+        if (rang1 != null)
+        {
+            //Debug.Log("rang1 파괴");
+            Destroy(rang1);
+        }
+        if (rang2 != null)
+        {
+            //Debug.Log("rang2 파괴");
+            Destroy(rang2);
+        }
+
     }
 }

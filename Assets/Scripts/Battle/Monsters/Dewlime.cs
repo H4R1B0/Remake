@@ -96,10 +96,11 @@ public class Dewlime : LivingEntity
                 StartCoroutine(nameof(AttackCoroutine));
             }
         }
-        //타겟쪽으로 이동
-        else if (target != null && FoundTargets.Count != 0)
+        //타겟이 있으나 범위에서 벗어났을경우 재탐색
+        else if (target != null && UnitInCircle() == false)
         {
             animators[0].SetBool("isAttack", false);
+            FindUnit();
             transform.Translate(vec3dir * Time.deltaTime * moveSpeed);
         }
         //맵에 유닛이 없을경우

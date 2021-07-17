@@ -94,12 +94,6 @@ public class LivingEntity : MonoBehaviour
         rigid.AddForce(new Vector2(reaction, 1) * 10, ForceMode2D.Impulse); //넉백 정도
     }
 
-    //죽는 함수
-    public virtual void OnDestroy()
-    {
-        
-    }
-
     //출혈 코루틴 : time초간 매 초 damage 피해
     public IEnumerator BleedingCoroutine(int time, int damage)
     {

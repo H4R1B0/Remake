@@ -28,4 +28,14 @@ public class Attack : MonoBehaviour
             Destroy(this.gameObject);
         }
     }
+
+    //ÂüÁ¶ - https://answers.unity.com/questions/1515853/move-from-a-to-b-using-parabola-with-or-without-it.html
+    protected void Parabolic(Vector3 start, Vector3 end, float time)
+    {
+        float heigh = 3;
+        float target_X = start.x + (end.x - start.x) * time;
+        //float maxHeigh = (a.y + b.y) / 2 + heigh;
+        float target_Y = start.y + (end.y - start.y) * time + heigh * (1 - (Mathf.Abs(0.5f - time) / 0.5f) * (Mathf.Abs(0.5f - time) / 0.5f));
+        this.transform.position = new Vector3(target_X, target_Y);
+    }
 }
