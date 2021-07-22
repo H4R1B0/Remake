@@ -22,6 +22,8 @@ public class BigSlime : LivingEntity
     {
         isDie = false;
 
+        moveSpeed *= 1.5f; //이동속도 빠르게
+
         defaultMaterial = transform.GetChild(0).GetComponent<SpriteRenderer>().material; //이미지 메테리얼 저장
         renderer = GetComponentInChildren<SpriteRenderer>();
 
@@ -66,6 +68,7 @@ public class BigSlime : LivingEntity
         {
             isDie = true;
             StartCoroutine(nameof(DestroyCoroutine));
+            moveSpeed = 0;
         }
 
         //좌우 이동

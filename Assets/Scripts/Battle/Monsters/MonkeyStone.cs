@@ -65,10 +65,11 @@ public class MonkeyStone : LivingEntity
         {
             isDie = true;
             StartCoroutine(nameof(DestroyCoroutine));
+            moveSpeed = 0;
         }
 
         //좌우 이동
-        if (IsDie == false && this.transform.position.x < Camera.main.ScreenToWorldPoint(this.transform.position).x + this.GetComponent<BoxCollider2D>().size.x / 2) //왼쪽 화면 넘어갈때
+        if (this.transform.position.x < Camera.main.ScreenToWorldPoint(this.transform.position).x + this.GetComponent<BoxCollider2D>().size.x / 2) //왼쪽 화면 넘어갈때
         {
             transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x) * -1, transform.localScale.y, transform.localScale.z);
 
@@ -77,14 +78,14 @@ public class MonkeyStone : LivingEntity
 
             //Debug.Log(vec3dir);
         }
-        else if (IsDie == false && this.transform.position.x > -Camera.main.ScreenToWorldPoint(this.transform.position).x - this.GetComponent<BoxCollider2D>().size.x / 2) //오른쪽 화면 넘어갈때
+        else if (this.transform.position.x > -Camera.main.ScreenToWorldPoint(this.transform.position).x - this.GetComponent<BoxCollider2D>().size.x / 2) //오른쪽 화면 넘어갈때
         {
             transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
 
             vec3dir = Vector3.left;
             transform.Translate(vec3dir * Time.deltaTime * moveSpeed);
         }
-        else if (IsDie == false)
+        else
         {
             transform.Translate(vec3dir * Time.deltaTime * moveSpeed);
         }

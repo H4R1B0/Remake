@@ -69,6 +69,7 @@ public class CrystalGolem : LivingEntity
         {
             isDie = true;
             StartCoroutine(nameof(DestroyCoroutine));
+            moveSpeed = 0;
         }
 
         //타겟 향하는
@@ -208,22 +209,20 @@ public class CrystalGolem : LivingEntity
         //yield return new WaitForSeconds(animators[0].GetFloat("dieTime")); //죽는 모션 시간
         yield return new WaitForSeconds(1); //1초
 
+        //죽을때 본체 40% 성능의 복제품 3마리 소환
         if (isAlter == false)
         {
+            //본체 죽을때 페이드아웃할때 알파값 복구
             renderer.material.color = new Vector4(1, 1, 1, 1);
-            GameObject crystalgolem1, crystalgolem2;
-            crystalgolem1 = Instantiate(this.gameObject);
-            crystalgolem1.transform.localScale = new Vector3(transform.localScale.x * 0.6f, transform.localScale.y * 0.6f, transform.localScale.z);
-            crystalgolem1.transform.position = new Vector3(transform.position.x - 0.5f, transform.position.y - 0.5f, transform.position.z);
-            crystalgolem1.GetComponent<CrystalGolem>().SetAlter();
 
-            //crystalgolem1.GetComponent<Rang>().SetAlter(power * (3 + level) * 10 / 100, health * (3 + level) * 10 / 100);
-
-            crystalgolem2 = Instantiate(this.gameObject);
-            crystalgolem2.transform.localScale = new Vector3(transform.localScale.x * 0.6f, transform.localScale.y * 0.6f, transform.localScale.z);
-            crystalgolem2.transform.position = new Vector3(transform.position.x - 1f, transform.position.y - 0.5f, transform.position.z);
-            crystalgolem2.GetComponent<CrystalGolem>().SetAlter();
-            //crystalgolem2.GetComponent<Rang>().SetAlter(power * (3 + level) * 10 / 100, health * (3 + level) * 10 / 100);
+            GameObject[] crystalgolems = new GameObject[3];
+            for (int i = 0; i < crystalgolems.Length; i++)
+            {
+                crystalgolems[i] = Instantiate(this.gameObject);
+                crystalgolems[i].transform.localScale = new Vector3(transform.localScale.x * 0.6f, transform.localScale.y * 0.6f, transform.localScale.z);
+                crystalgolems[i].transform.position = new Vector3(transform.position.x - 0.5f*(i+1), transform.position.y - 0.5f, transform.position.z);
+                crystalgolems[i].GetComponent<CrystalGolem>().SetAlter();
+            }
         }
 
         //gameObject.SetActive(false);

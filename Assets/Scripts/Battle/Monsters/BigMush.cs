@@ -64,6 +64,7 @@ public class BigMush : LivingEntity
         {
             isDie = true;
             StartCoroutine(nameof(DestroyCoroutine));
+            moveSpeed = 0;
         }
 
         //타겟 향하는

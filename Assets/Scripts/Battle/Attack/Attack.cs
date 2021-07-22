@@ -18,6 +18,10 @@ public class Attack : MonoBehaviour
         vec3dir.Normalize();
         
     }
+    public void SetPower(int p)
+    {
+        power = p;
+    }
     private void OnCollisionEnter2D(Collision2D collision)
     {
         //Debug.Log(collision.gameObject.name);
