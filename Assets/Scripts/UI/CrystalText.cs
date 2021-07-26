@@ -6,13 +6,14 @@ using TMPro;
 
 public class CrystalText : MonoBehaviour
 {
-    private GameObject Player;
+    private Player player;
     private TextMeshProUGUI crystalText;
 
     // Start is called before the first frame update
     void Start()
     {
-        Player = GameObject.FindGameObjectWithTag("Player");
+        //Player = GameObject.FindGameObjectWithTag("Player");
+        player = Player.instance; //Player 인스턴스 불러오기
         crystalText = GetComponent<TextMeshProUGUI>();
     }
 
@@ -20,7 +21,7 @@ public class CrystalText : MonoBehaviour
     void Update()
     {
         //코인 수 세 자리마다 , 표시
-        crystalText.text = GetThousandCommaText(Player.GetComponent<Player>().Crystal);
+        crystalText.text = GetThousandCommaText(player.Crystal);
     }
     public string GetThousandCommaText(int data)
     {

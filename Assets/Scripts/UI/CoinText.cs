@@ -1,18 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
 
 public class CoinText : MonoBehaviour
 {
-    private GameObject Player;
+    private Player player;
     private TextMeshProUGUI coinText;
 
     // Start is called before the first frame update
     void Start()
     {
-        Player = GameObject.FindGameObjectWithTag("Player");
+        player = Player.instance; //Player 인스턴스 불러오기
         coinText = GetComponent<TextMeshProUGUI>();
     }
 
@@ -20,7 +19,7 @@ public class CoinText : MonoBehaviour
     void Update()
     {
         //코인 수 세 자리마다 , 표시
-        coinText.text = GetThousandCommaText(Player.GetComponent<Player>().Coin);
+        coinText.text = GetThousandCommaText(player.Coin);
     }
     public string GetThousandCommaText(int data)
     {

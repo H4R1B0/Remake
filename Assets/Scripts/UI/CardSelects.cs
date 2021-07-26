@@ -22,6 +22,8 @@ public class CardSelects : MonoBehaviour
 
     public void RefreshUnitCard()
     {
+        
+
         //Debug.Log(player.UnitCards.Count);
         Transform grid = this.transform; //CardSelects grid 가져오기
         for (int i = 0; i < selects.Count; i++)
