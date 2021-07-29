@@ -123,6 +123,12 @@ public class Spinps : LivingEntity
             animators[0].SetBool("isMove", false);
         }
     }
+    public void OnDestroy()
+    {
+        Destroy(HPSlider.gameObject);
+        Destroy(MPSlider.gameObject);
+        Destroy(this.gameObject);
+    }
 
     //몬스터 찾기
     public void FindMonster()

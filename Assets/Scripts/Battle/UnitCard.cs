@@ -18,11 +18,10 @@ public class UnitCard : MonoBehaviour
     private void Awake()
     {
         UnitBoard = GameObject.Find("UnitBoard").GetComponent<Tilemap>();
-        player = Player.instance;
     }
     void Start()
     {
-        
+        player = Player.instance;
     }
 
     // Update is called once per frame
@@ -51,12 +50,14 @@ public class UnitCard : MonoBehaviour
             UnitBoard.SetColor(v3Int, Color.green);
             Debug.Log("소환" + v3Int);
             GetComponent<Button>().interactable = false;
+            player.CallUnitCount++; //유닛 소환 수 증가
+            Debug.Log(player.CallUnitCount);
         }
         else
         {
             Debug.Log("소환 불가");
         }
 
-        GameObject.Find("CallUnitCountText").GetComponent<CallUnitCountText>().RenewText(); //유닛 소환 텍스트 갱신
+        //GameObject.Find("CallUnitCountText").GetComponent<CallUnitCountText>().RenewText(); //유닛 소환 텍스트 갱신
     }
 }

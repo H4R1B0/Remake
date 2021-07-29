@@ -114,6 +114,13 @@ public class Baroque : LivingEntity
         }
     }
 
+    public void OnDestroy()
+    {
+        Destroy(HPSlider.gameObject);
+        Destroy(MPSlider.gameObject);
+        Destroy(this.gameObject);
+    }
+
     private void Skill()
     {
         Debug.Log("바로크 스킬 시전");

@@ -116,6 +116,12 @@ public class Kelsy : LivingEntity
             animators[1].SetBool("isAttack", false);
         }
     }
+    public void OnDestroy()
+    {
+        Destroy(HPSlider.gameObject);
+        Destroy(MPSlider.gameObject);
+        Destroy(this.gameObject);
+    }
 
     private void Skill()
     {

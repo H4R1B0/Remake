@@ -123,6 +123,14 @@ public class Beomho : LivingEntity
             animators[1].SetBool("isAttack", false);
         }
     }
+
+    public void OnDestroy()
+    {
+        Destroy(HPSlider.gameObject);
+        Destroy(MPSlider.gameObject);
+        Destroy(this.gameObject);
+    }
+
     //몬스터 찾기
     public void FindMonster()
     {

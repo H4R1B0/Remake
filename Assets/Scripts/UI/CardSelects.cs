@@ -9,7 +9,8 @@ public class CardSelects : MonoBehaviour
 
     // Start is called before the first frame update
     void Start()
-    {        
+    {
+        //Debug.Log(this.transform.position);
         player = Player.instance; //Player 인스턴스 불러오기
         RefreshUnitCard();
     }

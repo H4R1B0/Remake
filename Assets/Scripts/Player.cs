@@ -10,6 +10,8 @@ public class Player : MonoBehaviour
 
     private int coin = 1000000; //코인
     private int crystal = 10000; //크리스탈
+
+    private int callUnitCount = 0; //현재 소환한 유닛
     private int callUnitCountMax = 2; //유닛 소환 최대수
     private int callUnitCountAddPrice = 40; //유닛 소환 최대수 증가 비용
 
@@ -34,6 +36,18 @@ public class Player : MonoBehaviour
         set
         {
             crystal = value;
+        }
+    }
+
+    public int CallUnitCount
+    {
+        get
+        {
+            return callUnitCount;
+        }
+        set
+        {
+            callUnitCount = value;
         }
     }
 
@@ -96,6 +110,6 @@ public class Player : MonoBehaviour
             
         }
 
-        GameObject.Find("CallUnitCountText").GetComponent<CallUnitCountText>().RenewText(); //유닛 소환 텍스트 갱신
+        //GameObject.Find("CallUnitCountText").GetComponent<CallUnitCountText>().RenewText(); //유닛 소환 텍스트 갱신
     }
 }

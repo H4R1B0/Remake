@@ -118,6 +118,12 @@ public class Dicafrio : LivingEntity
             animators[1].SetBool("isAttack", false);
         }
     }
+    public void OnDestroy()
+    {
+        Destroy(HPSlider.gameObject);
+        Destroy(MPSlider.gameObject);
+        Destroy(this.gameObject);
+    }
     public override void OnDamage(int damage, bool isCritical)
     {
         base.OnDamage(damage * (100 - DecreasingDamage) / 100, isCritical);

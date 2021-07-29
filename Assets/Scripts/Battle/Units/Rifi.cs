@@ -124,6 +124,12 @@ public class Rifi : LivingEntity
             animators[0].SetBool("isMove", false);
         }
     }
+    public void OnDestroy()
+    {
+        Destroy(HPSlider.gameObject);
+        Destroy(MPSlider.gameObject);
+        Destroy(this.gameObject);
+    }
 
     private void Skill()
     {

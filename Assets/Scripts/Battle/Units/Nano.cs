@@ -113,6 +113,12 @@ public class Nano : LivingEntity
             animators[0].SetBool("isAttack", false);
         }
     }
+    public void OnDestroy()
+    {
+        Destroy(HPSlider.gameObject);
+        Destroy(MPSlider.gameObject);
+        Destroy(this.gameObject);
+    }
 
     private void Skill()
     {

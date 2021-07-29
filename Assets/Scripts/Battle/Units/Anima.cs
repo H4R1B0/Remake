@@ -50,6 +50,7 @@ public class Anima : LivingEntity
         renderer = GetComponentInChildren<SpriteRenderer>();
 
         isAttack = true;
+        Debug.Log(transform.position);
     }
     private void Update()
     {
@@ -159,13 +160,21 @@ public class Anima : LivingEntity
         return false;
     }
 
+    public void OnDestroy()
+    {        
+        Destroy(HPSlider.gameObject);
+        Destroy(MPSlider.gameObject);
+        Destroy(this.gameObject);
+        //GameObject.Find("CallUnitCountText").GetComponent<CallUnitCountText>().RenewText(); //유닛 소환 텍스트 갱신
+    }
+
     //공격 코루틴
     IEnumerator AttackAnim()
     {
         animators[1].SetBool("isAttack", true);
         vec3dir = target.transform.position - transform.position;
         vec3dir.Normalize();
-        
+
         yield return new WaitForSeconds(animators[1].GetFloat("attackTime")); //공격 쿨타임
 
         target.GetComponent<LivingEntity>().OnDamage(power, false); //공격

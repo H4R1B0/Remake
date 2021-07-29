@@ -15,10 +15,8 @@ public class CallUnitCountText : MonoBehaviour
         player = Player.instance; //Player 인스턴스 불러오기
         callUnitCountText = GetComponent<TextMeshProUGUI>();
     }
-
-    public void RenewText()
+    private void FixedUpdate()
     {
-        int unitcnt = GameObject.FindGameObjectsWithTag("Unit").Length;
-        callUnitCountText.text = unitcnt+ " / " + player.CallUnitCountMax;
+        callUnitCountText.text = player.CallUnitCount + " / " + player.CallUnitCountMax;
     }
 }

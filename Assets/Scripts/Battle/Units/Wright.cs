@@ -119,6 +119,12 @@ public class Wright : LivingEntity
             animators[0].SetBool("isAttack", false);
         }
     }
+    public void OnDestroy()
+    {
+        Destroy(HPSlider.gameObject);
+        Destroy(MPSlider.gameObject);
+        Destroy(this.gameObject);
+    }
     public override void OnDamage(int damage, bool isCritical)
     {
         base.OnDamage(damage, isCritical);
