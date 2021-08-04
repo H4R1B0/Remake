@@ -13,33 +13,36 @@ public class CardSelects : MonoBehaviour
         //Debug.Log(this.transform.position);
         player = Player.instance; //Player 인스턴스 불러오기
         RefreshUnitCard();
+        player.Crystal += 10;
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
     public void RefreshUnitCard()
     {
-        
-
-        //Debug.Log(player.UnitCards.Count);
-        Transform grid = this.transform; //CardSelects grid 가져오기
-        for (int i = 0; i < selects.Count; i++)
+        //플레이어의 크리스탈이 10개 이상있을때 사용 가능
+        if (player.Crystal >= 10)
         {
-            //int rand = Random.Range(0, unitCards.transform.childCount);
-            //Debug.Log(rand);
-            int idx = Random.Range(0, player.UnitCards.Count);
-            GameObject unitcard = Instantiate(player.UnitCards[idx].gameObject, selects[i].transform.position, Quaternion.identity);
-            unitcard.transform.SetParent(grid);
-            unitcard.transform.localScale = new Vector3(1, 1, 1);
-            //unit.transform.localScale = new Vector3(1, 1, 1);
-            Destroy(selects[i].gameObject);
-            selects.RemoveAt(i);
-            selects.Insert(i, unitcard);
+            player.Crystal -= 10; //리프레시하면 크리스탈 감소
+                                  //Debug.Log(player.UnitCards.Count);
+            Transform grid = this.transform; //CardSelects grid 가져오기
+            for (int i = 0; i < selects.Count; i++)
+            {
+                //int rand = Random.Range(0, unitCards.transform.childCount);
+                //Debug.Log(rand);
+                int idx = Random.Range(0, player.UnitCards.Count);
+                GameObject unitcard = Instantiate(player.UnitCards[idx].gameObject, selects[i].transform.position, Quaternion.identity);
+                unitcard.transform.SetParent(grid);
+                unitcard.transform.localScale = new Vector3(1, 1, 1);
+                //unit.transform.localScale = new Vector3(1, 1, 1);
+                Destroy(selects[i].gameObject);
+                selects.RemoveAt(i);
+                selects.Insert(i, unitcard);
+            }
         }
-
     }
 }

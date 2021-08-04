@@ -14,6 +14,9 @@ public class Crusher : LivingEntity
     private Slider MPSlider; //마나 게이지
     private int level = 1; //유닛 레벨
 
+    public GameObject CrusherEffectPrefab; //스킬 사용시 이펙트 프리팹
+    private GameObject crusherEffect; //스킬 사용시 이펙트 프리팹
+
     //public bool isWeapon = true; //무기가 있는지
     //public bool isWeaponRotate = true; //무기가 회전하는지
     //[ShowIf("isWeapon")] //무기 있을때만 표시
@@ -115,9 +118,9 @@ public class Crusher : LivingEntity
                 //Debug.Log("공격 "+Time.time);
                 StartCoroutine(nameof(AttackAnim));
                 StartCoroutine(nameof(AttackCoroutine));
-                
+
             }
-        }        
+        }
         //맵에 몬스터가 없을경우
         else if (FoundTargets.Count == 0)
         {
@@ -196,6 +199,9 @@ public class Crusher : LivingEntity
     //크러셔 스킬 : 적에게 300/600/1200%의 피해를 입힙니다. 해당적은 5초간 20%의 추가피해를 입습니다.
     IEnumerator CrusherSkill()
     {
+        crusherEffect = Instantiate(CrusherEffectPrefab);
+        crusherEffect.transform.position = this.transform.position;
+
         int damage = (int)(Mathf.Pow(2, level - 1)) * 3 * power;
         target.GetComponent<LivingEntity>().OnDamage(damage, false); //공격
         StartCoroutine(target.GetComponent<LivingEntity>().BleedingCoroutine(5, power * 20 / 100));

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class Player : MonoBehaviour
 {
@@ -15,13 +16,13 @@ public class Player : MonoBehaviour
     private int callUnitCountMax = 2; //유닛 소환 최대수
     private int callUnitCountAddPrice = 40; //유닛 소환 최대수 증가 비용
 
-    public int Coin 
+    public int Coin
     {
         get
         {
-            return coin; 
+            return coin;
         }
-        set 
+        set
         {
             coin = value;
         }
@@ -72,27 +73,28 @@ public class Player : MonoBehaviour
     }
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
     //유닛 소환 최대수 증가
     public void CallUnitCountAdd()
     {
         callUnitCountMax++; //소환 최대수 1증가
-        crystal -= callUnitCountAddPrice; //소환 최대수 증가시 크리스탈 감소
+        //crystal -= callUnitCountAddPrice; //소환 최대수 증가시 크리스탈 감소
+        DOTween.To(() => crystal, x => crystal = x, crystal -= callUnitCountAddPrice, 1);
 
         //유닛 소환 최대수 비용 증가
-        if(callUnitCountAddPrice == 40)
+        if (callUnitCountAddPrice == 40)
         {
             callUnitCountAddPrice = 80; //40*2
         }
-        else if(callUnitCountAddPrice == 80)
+        else if (callUnitCountAddPrice == 80)
         {
             callUnitCountAddPrice = 200; //80*2.5
         }
@@ -107,7 +109,6 @@ public class Player : MonoBehaviour
         else
         {
             GameObject.Find("UnitAddButton").GetComponent<Button>().interactable = false; //소환 최대 증가 버튼 비활성화
-            
         }
 
         //GameObject.Find("CallUnitCountText").GetComponent<CallUnitCountText>().RenewText(); //유닛 소환 텍스트 갱신

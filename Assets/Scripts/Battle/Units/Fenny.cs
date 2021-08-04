@@ -12,7 +12,10 @@ public class Fenny : LivingEntity
     public Slider MPSliderPrefab; //마나 게이지 프리팹
     private Slider HPSlider; //체력 게이지
     private Slider MPSlider; //마나 게이지
-    private int level=1; //유닛 레벨
+    private int level = 1; //유닛 레벨
+
+    public GameObject FireBallPrefab; //스킬 사용시 파이어볼
+    private GameObject fireBall; //스킬 사용시 파이어볼
 
     //public bool isWeapon = true; //무기가 있는지
     //public bool isWeaponRotate = true; //무기가 회전하는지
@@ -111,7 +114,7 @@ public class Fenny : LivingEntity
             transform.Translate(vec3dir * Time.deltaTime * moveSpeed);
         }
         //맵에 몬스터가 없을경우
-        else if(FoundTargets.Count == 0)
+        else if (FoundTargets.Count == 0)
         {
             animators[1].SetBool("isAttack", false);
         }
@@ -135,8 +138,11 @@ public class Fenny : LivingEntity
             int mnstr = level <= cnt ? level : cnt; //레벨이나 적의 수 중에 작은 값 설정
             for (int i = 0; i < mnstr; i++)
             {
+                fireBall = Instantiate(FireBallPrefab);
+                fireBall.transform.position = this.transform.position - new Vector3(0, 0.8f, 0);
+                fireBall.GetComponent<Attack>().SetPowerDir(power * 5, FoundMonsters[i]);
                 //기본 공격력의 500% 데미지 크리티컬 false로 공격
-                FoundMonsters[i].GetComponent<LivingEntity>().OnDamage(power*5, false); //공격
+                //FoundMonsters[i].GetComponent<LivingEntity>().OnDamage(power*5, false); //공격
             }
         }
 
@@ -186,11 +192,11 @@ public class Fenny : LivingEntity
     {
         animators[1].SetBool("isAttack", true);
         vec3dir = target.transform.position - transform.position;
-        vec3dir.Normalize();        
+        vec3dir.Normalize();
 
         yield return new WaitForSeconds(animators[1].GetFloat("attackTime")); //공격 쿨타임
-    
-        target.GetComponent<LivingEntity>().OnDamage(power,false); //공격
+
+        target.GetComponent<LivingEntity>().OnDamage(power, false); //공격
         mana += 10; //공격시 마나 10획득
         animators[1].SetBool("isAttack", false);
     }

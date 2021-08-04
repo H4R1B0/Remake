@@ -19,6 +19,8 @@ public class LivingEntity : MonoBehaviour
     protected int CriticalDamageRate; //치명타 피해율
     protected int originCriticalDamageRate; //원래 치명타 피해율
     protected Rigidbody2D rigid; //물리
+    public GameObject DamageText; //데미지 텍스트
+    public GameObject HealEffect; //힐 이펙트
 
     protected string tribe; //종족
     public string Tribe
@@ -56,15 +58,18 @@ public class LivingEntity : MonoBehaviour
     public virtual void OnDamage(int damage, bool isCritical)
     {
 
-        //GameObject DGText = Instantiate(DamageText, Camera.main.WorldToScreenPoint(transform.Find("Damage").position), Quaternion.identity);
-        //DGText.GetComponent<DamageText>().damage = damage;
+        
         if (isCritical == true)
         {
             //데미지 표시
             //DGText.transform.localScale = new Vector3(1.3f, 1.3f, 1);
             //DGText.GetComponent<Text>().color = Color.red;
         }
-        health -= damage;
+        health -= damage; 
+        //GameObject DGText = Instantiate(DamageText, Camera.main.WorldToScreenPoint(transform.Find("Damage").position), Quaternion.identity);
+        GameObject DGText = Instantiate(DamageText, Camera.main.WorldToScreenPoint(this.transform.position+new Vector3(0,1,0)), Quaternion.identity);
+        DGText.GetComponent<DamageText>().Damage = damage;
+
         //mana += 5; //피격시 마나 5획득
         if (runningCoroutine != null)
         {
@@ -79,6 +84,7 @@ public class LivingEntity : MonoBehaviour
     //체력 count만큼 회복
     public void HealHP(int count)
     {
+        Instantiate(HealEffect, this.transform.position + new Vector3(0, 1, 0), Quaternion.identity);
         health = maxHealth > health + count ? health + count : maxHealth;
     }
 
