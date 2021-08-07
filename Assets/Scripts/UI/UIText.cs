@@ -4,15 +4,15 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class DamageText : MonoBehaviour
+public class UIText : MonoBehaviour
 {
-    private TextMeshProUGUI damageText; //표시할 텍스트
-    private int damage; //표시할 데미지
-    public int Damage
+    private TextMeshProUGUI uiText; //표시할 텍스트
+    private int number; //표시할 숫자
+    public int Number
     {
         set
         {
-            damage = value;
+            number = value;
         }
     }
 
@@ -21,13 +21,15 @@ public class DamageText : MonoBehaviour
     private float alphaSpeed = 2; //투명해지는 속도
     private float destroyTime = 1; //1초 뒤 파괴
 
-    void Start()
+    private void Awake()
     {
         transform.SetParent(GameObject.Find("BattleUI").transform); //부모 UI
-
-        damageText = GetComponent<TextMeshProUGUI>();
-        alpha = damageText.color;
-        damageText.text = damage.ToString();
+        uiText = GetComponent<TextMeshProUGUI>();        
+    }
+    private void Start()
+    {
+        alpha = uiText.color;
+        uiText.text = number.ToString();
 
         Invoke("DestroyObject", destroyTime);
     }
@@ -37,7 +39,7 @@ public class DamageText : MonoBehaviour
     {
         transform.Translate(Vector3.up * Time.deltaTime * moveSpeed);// 텍스트 위치
         alpha.a = Mathf.Lerp(alpha.a, 0, Time.deltaTime * alphaSpeed); // 텍스트 알파값
-        damageText.color = alpha;
+        uiText.color = alpha;
     }
 
     private void DestroyObject()
