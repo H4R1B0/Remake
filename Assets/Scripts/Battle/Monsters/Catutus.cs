@@ -8,7 +8,7 @@ public class Catutus : LivingEntity
     private List<GameObject> FoundTargets; //찾은 타겟들
     private float shortDis; //타겟들 중에 가장 짧은 거리
 
-    private int baseHP = 10000; //기본 체력
+    private int baseHP = 400; //기본 체력
     private int roundHP = 40; //라운드당 추가되는 체력
     private int basePower = 20; //기본 공격력
     private int roundPower = 2; //라운드당 추가되는 공격력
@@ -24,8 +24,8 @@ public class Catutus : LivingEntity
         renderer = GetComponentInChildren<SpriteRenderer>();
 
         //생성시 원래 공격력과 체력 저장
-        power = basePower; //공격력
-        health = baseHP; //체력
+        power = basePower + roundPower * (GameManager.instance.Round - 1); //공격력
+        health = baseHP + roundHP * (GameManager.instance.Round - 1); //체력
         maxHealth = health;
         //originCritical = critical;
 
@@ -161,7 +161,7 @@ public class Catutus : LivingEntity
         //기본공격시 25%확률로 맹독 적용
         int rand = Random.Range(0, 100);
         if (rand >= 0 && rand < 25)
-            StartCoroutine(target.GetComponent<LivingEntity>().BleedingCoroutine(3, 10));
+            StartCoroutine(target.GetComponent<LivingEntity>().BleedingCoroutine(3, 10,"poison"));
         target.GetComponent<LivingEntity>().OnDamage(power, false); //공격
         animators[0].SetBool("isAttack", false);
     }

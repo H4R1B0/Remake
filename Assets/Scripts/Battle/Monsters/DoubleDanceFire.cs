@@ -28,8 +28,8 @@ public class DoubleDanceFire : LivingEntity
         renderer = GetComponentInChildren<SpriteRenderer>();
 
         //생성시 원래 공격력과 체력 저장
-        power = basePower; //공격력
-        health = baseHP; //체력
+        power = basePower + roundPower * (GameManager.instance.Round - 1); //공격력
+        health = baseHP + roundHP * (GameManager.instance.Round - 1); //체력
         maxHealth = health;
         //originCritical = critical;
 
