@@ -97,7 +97,7 @@ public class Kelsy : LivingEntity
             }
             animators[0].SetBool("isMove", false);
             //공격
-            if (isAttack == true)
+            if (isAttack == true && isStern == false)
             {
                 StartCoroutine(nameof(AttackAnim));
                 StartCoroutine(nameof(AttackCoroutine));
@@ -195,6 +195,9 @@ public class Kelsy : LivingEntity
         {
             if(foundUnit.GetComponent<LivingEntity>().Tribe == "Mammal")
             {
+                //스테이터스 향상
+                Instantiate(StatusUpEffect, foundUnit.transform.position + new Vector3(0, 1, 0), Quaternion.identity);
+
                 StartCoroutine(foundUnit.GetComponent<LivingEntity>().IncreasingPowerCoroutine(powercnt,10)); //10초간 powercnt만큼 공격력 증가
             }
         }

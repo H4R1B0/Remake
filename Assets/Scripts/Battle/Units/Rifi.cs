@@ -110,7 +110,7 @@ public class Rifi : LivingEntity
             }
             //StartCoroutine(nameof(AttackAnim));
             //공격
-            if (isAttack == true)
+            if (isAttack == true && isStern == false)
             {
                 //Debug.Log("공격 "+Time.time);
                 StartCoroutine(nameof(AttackAnim));
@@ -205,7 +205,7 @@ public class Rifi : LivingEntity
         GameObject[] foundMonsters = GameObject.FindGameObjectsWithTag("Monster");
         foreach (GameObject foundMonster in foundMonsters)
         {
-            StartCoroutine(foundMonster.GetComponent<LivingEntity>().BleedingCoroutine(5, level * 10));
+            StartCoroutine(foundMonster.GetComponent<LivingEntity>().BleedingCoroutine(5, level * 10,"poison"));
         }
         yield return null;
     }

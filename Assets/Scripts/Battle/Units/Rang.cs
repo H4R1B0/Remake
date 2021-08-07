@@ -110,7 +110,7 @@ public class Rang : LivingEntity
             }
             animators[0].SetBool("isMove", false);
             //АјАн
-            if (isAttack == true)
+            if (isAttack == true && isStern == false)
             {
                 StartCoroutine(nameof(AttackAnim));
                 StartCoroutine(nameof(AttackCoroutine));

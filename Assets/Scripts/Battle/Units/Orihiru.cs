@@ -16,6 +16,9 @@ public class Orihiru : LivingEntity
 
     private bool isSkill; //스킬 사용 가능 여부
 
+    public GameObject OrihiruEffectPrefab; //스킬 사용시 이펙트 프리팹
+    private GameObject orihiruEffect; //스킬 사용시 이펙트 프리팹
+
     //public bool isWeapon = true; //무기가 있는지
     //public bool isWeaponRotate = true; //무기가 회전하는지
     //[ShowIf("isWeapon")] //무기 있을때만 표시
@@ -101,7 +104,7 @@ public class Orihiru : LivingEntity
             }
             animators[0].SetBool("isMove", false);
             //공격
-            if (isAttack == true)
+            if (isAttack == true && isStern == false)
             {
                 StartCoroutine(nameof(AttackAnim));
                 StartCoroutine(nameof(AttackCoroutine));
@@ -205,6 +208,12 @@ public class Orihiru : LivingEntity
     //오리히루 스킬 : 5초간 크리티컬확률이 2배가 되고 공격력이 10(+10) 증가
     IEnumerator OrihiruSkill()
     {
+        //스테이터스 향상
+        Instantiate(StatusUpEffect, this.transform.position + new Vector3(0, 1, 0), Quaternion.identity);
+
+        orihiruEffect = Instantiate(OrihiruEffectPrefab);
+        orihiruEffect.transform.position = this.transform.position;
+
         int originP = power;
         int originC = criticalRate;
         power += level * 10;

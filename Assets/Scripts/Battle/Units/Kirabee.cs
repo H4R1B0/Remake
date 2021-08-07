@@ -98,7 +98,7 @@ public class Kirabee : LivingEntity
             }
             animators[0].SetBool("isMove", false);
             //공격
-            if (isAttack == true)
+            if (isAttack == true && isStern == false)
             {
                 StartCoroutine(nameof(AttackAnim));
                 StartCoroutine(nameof(AttackCoroutine));
@@ -189,6 +189,9 @@ public class Kirabee : LivingEntity
     //키라비 스킬 : 7초간 공격력 30(+10)% 증가, 공격속도 30(+10)%증가
     IEnumerator KirabeeSkill()
     {
+        //스테이터스 향상
+        Instantiate(StatusUpEffect, this.transform.position + new Vector3(0, 1, 0), Quaternion.identity);
+
         int originP = power; //원래 공격력 저장
         float originS = attackSpeed; //원래 공격 속도 저장
         float oringAnimC = animators[1].GetFloat("attackTime"); //원래 공격 애니메이션 쿨

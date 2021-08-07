@@ -104,7 +104,7 @@ public class Beomho : LivingEntity
             }
             animators[0].SetBool("isMove", false);
             //공격
-            if (isAttack == true)
+            if (isAttack == true && isStern == false)
             {
                 StartCoroutine(nameof(AttackAnim));
                 StartCoroutine(nameof(AttackCoroutine));
@@ -212,6 +212,9 @@ public class Beomho : LivingEntity
     //범호 스킬 : 크리티컬 공격인 경우 20% 확률로 10초간 공격력 20/40/80 증가
     IEnumerator BeomhoSkill()
     {
+        //스테이터스 향상
+        Instantiate(StatusUpEffect, this.transform.position + new Vector3(0, 1, 0), Quaternion.identity);
+
         //20% 확률로 10초간 공격력 증가
         int origin = power;        
         power = originPower + (int)(Mathf.Pow(2, level - 1)) * 20;

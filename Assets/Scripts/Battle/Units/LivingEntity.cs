@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class LivingEntity : MonoBehaviour
 {
@@ -19,8 +20,11 @@ public class LivingEntity : MonoBehaviour
     protected int CriticalDamageRate; //치명타 피해율
     protected int originCriticalDamageRate; //원래 치명타 피해율
     protected Rigidbody2D rigid; //물리
-    public GameObject DamageText; //데미지 텍스트
+    public GameObject UIText; //데미지, 힐 텍스트
     public GameObject HealEffect; //힐 이펙트
+    public GameObject PoisonEffect; //맹독 이펙트
+    public GameObject StatusUpEffect; //스테이터스 향상 이펙트
+    public GameObject SternEffect; //스턴 이펙트
 
     protected string tribe; //종족
     public string Tribe
@@ -58,17 +62,17 @@ public class LivingEntity : MonoBehaviour
     public virtual void OnDamage(int damage, bool isCritical)
     {
 
-        
+
         if (isCritical == true)
         {
             //데미지 표시
             //DGText.transform.localScale = new Vector3(1.3f, 1.3f, 1);
             //DGText.GetComponent<Text>().color = Color.red;
         }
-        health -= damage; 
-        //GameObject DGText = Instantiate(DamageText, Camera.main.WorldToScreenPoint(transform.Find("Damage").position), Quaternion.identity);
-        GameObject DGText = Instantiate(DamageText, Camera.main.WorldToScreenPoint(this.transform.position+new Vector3(0,1,0)), Quaternion.identity);
-        DGText.GetComponent<DamageText>().Damage = damage;
+        health -= damage;
+
+        GameObject DamageText = Instantiate(UIText, Camera.main.WorldToScreenPoint(this.transform.position + new Vector3(0, 1, 0)), Quaternion.identity);
+        DamageText.GetComponent<UIText>().Number = damage;
 
         //mana += 5; //피격시 마나 5획득
         if (runningCoroutine != null)
@@ -85,6 +89,11 @@ public class LivingEntity : MonoBehaviour
     public void HealHP(int count)
     {
         Instantiate(HealEffect, this.transform.position + new Vector3(0, 1, 0), Quaternion.identity);
+
+        GameObject HealText = Instantiate(UIText, Camera.main.WorldToScreenPoint(this.transform.position + new Vector3(0, 0.8f, 0)), Quaternion.identity);
+        HealText.GetComponent<UIText>().Number = count;
+        HealText.GetComponent<TextMeshProUGUI>().color = Color.green;
+
         health = maxHealth > health + count ? health + count : maxHealth;
     }
 
@@ -101,8 +110,17 @@ public class LivingEntity : MonoBehaviour
     }
 
     //출혈 코루틴 : time초간 매 초 damage 피해
-    public IEnumerator BleedingCoroutine(int time, int damage)
+    public IEnumerator BleedingCoroutine(int time, int damage, string attribute = "")
     {
+        //맹독 이펙트
+        if (attribute == "poison")
+        {
+            GameObject poisonEffect = Instantiate(PoisonEffect, this.transform.position + new Vector3(0, 1, 0), Quaternion.identity);
+            poisonEffect.GetComponent<ParticleSystem>().Stop(); //재생중에는 시간 변경 못함
+            var main = poisonEffect.GetComponent<ParticleSystem>().main;
+            main.duration = time;
+            poisonEffect.GetComponent<ParticleSystem>().Play();
+        }
         for (int i = 0; i < time; i++)
         {
             OnDamage(damage, false);
@@ -116,8 +134,17 @@ public class LivingEntity : MonoBehaviour
     {
         Debug.Log(time + " 초 간 스턴");
         isStern = true;
+
+        //스턴
+        GameObject stern = Instantiate(SternEffect, this.transform.position + new Vector3(0, 0.15f, 0), Quaternion.identity);
+        stern.GetComponent<Stern>().DestroySec = time;
+        animators[0].speed = 0; //멈춤
+
         yield return new WaitForSeconds(time); //time초 쿨
+
+        animators[0].speed = 1; //다시 재생
         isStern = false;
+
     }
 
     //일정 시간동안 공격력 증가 코루틴
@@ -132,7 +159,7 @@ public class LivingEntity : MonoBehaviour
     //몇초간 count만큼 체력 회복하는 코루틴
     public IEnumerator IncreasingHPCoroutine(int time, int count) //시간, 회복하는 체력량
     {
-        for(int i = 0; i < time; i++)
+        for (int i = 0; i < time; i++)
         {
             HealHP(count);
             yield return new WaitForSeconds(1);

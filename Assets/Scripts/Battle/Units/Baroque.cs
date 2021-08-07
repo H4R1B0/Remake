@@ -13,7 +13,7 @@ public class Baroque : LivingEntity
     public Slider MPSliderPrefab; //마나 게이지 프리팹
     private Slider HPSlider; //체력 게이지
     private Slider MPSlider; //마나 게이지
-    private int level = 1; //유닛 레벨
+    private int level = 1; //유닛 레벨    
 
     //public bool isWeapon = true; //무기가 있는지
     //public bool isWeaponRotate = true; //무기가 회전하는지
@@ -94,7 +94,7 @@ public class Baroque : LivingEntity
             }
             animators[0].SetBool("isMove", false);
             //공격
-            if (isAttack == true)
+            if (isAttack == true && isStern == false)
             {
                 StartCoroutine(nameof(AttackAnim));
                 StartCoroutine(nameof(AttackCoroutine));
@@ -204,6 +204,9 @@ public class Baroque : LivingEntity
     //바로크 스킬 : 체력을 200/400/800 회복하고 공격력이 10/20/40증가합니다 -> 10초간
     IEnumerator BaroqueSkill()
     {
+        //스테이터스 향상
+        Instantiate(StatusUpEffect, this.transform.position + new Vector3(0, 1, 0), Quaternion.identity);
+
         //체력 회복
         health = maxHealth > health + (int)(Mathf.Pow(2, level - 1)) * 200 ? health + (int)(Mathf.Pow(2, level - 1)) * 200 : maxHealth;
 

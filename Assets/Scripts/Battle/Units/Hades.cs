@@ -101,7 +101,7 @@ public class Hades : LivingEntity
             }
             animators[0].SetBool("isMove", false);
             //공격
-            if (isAttack == true)
+            if (isAttack == true && isStern == false)
             {
                 StartCoroutine(nameof(AttackAnim));
                 StartCoroutine(nameof(AttackCoroutine));
@@ -197,6 +197,9 @@ public class Hades : LivingEntity
     //하데스 스킬 : 기습, 적처치 관여시 전투가 종료되기 전까지 공격력이 10(+10) 증가합니다
     IEnumerator HadesSkill()
     {
+        //스테이터스 향상
+        Instantiate(StatusUpEffect, this.transform.position + new Vector3(0, 1, 0), Quaternion.identity);
+
         isSkill = true;
         power += level * 10;
         while (FoundTargets.Count != 0)

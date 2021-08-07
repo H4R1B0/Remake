@@ -20,6 +20,9 @@ public class Nano : LivingEntity
     //public float attackAnimTime = 0; //공격 애니메이션 쿨타임
     public GameObject attackPrefab; //공격 프리팹
 
+    public GameObject NanoEffectPrefab; //스킬 사용시 이펙트 프리팹
+    private GameObject nanoEffect; //스킬 사용시 이펙트 프리팹
+
     private void Start()
     {
         //생성시 원래 공격력과 체력 저장
@@ -192,8 +195,16 @@ public class Nano : LivingEntity
     //나노 스킬: 3(+1)초간 매 초마다 주변아군의 체력을 100씩 회복
     IEnumerator NanoSkill()
     {
+        //나노이펙트
+        nanoEffect = Instantiate(NanoEffectPrefab);
+        nanoEffect.transform.position = this.transform.position;        
+        nanoEffect.GetComponent<ParticleSystem>().Stop(); //재생중에는 시간 변경 못함
+        var main = nanoEffect.GetComponent<ParticleSystem>().main;
+        main.duration = level + 2;
+        nanoEffect.GetComponent<ParticleSystem>().Play();
+
         GameObject[] foundUnits = GameObject.FindGameObjectsWithTag("Unit");
-        foreach(GameObject foundunit in foundUnits)
+        foreach (GameObject foundunit in foundUnits)
         {
             StartCoroutine(foundunit.GetComponent<LivingEntity>().IncreasingHPCoroutine(level + 2, 100));
         }

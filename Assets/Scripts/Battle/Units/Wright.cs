@@ -22,6 +22,9 @@ public class Wright : LivingEntity
     //public float attackAnimTime = 0; //공격 애니메이션 쿨타임
     public GameObject attackPrefab; //공격 프리팹
 
+    public GameObject WrightEffectPrefab; //스킬 사용시 이펙트 프리팹
+    private GameObject wrightEffect; //스킬 사용시 이펙트 프리팹
+
     private void Start()
     {
         tribe = "Mammal";
@@ -201,6 +204,11 @@ public class Wright : LivingEntity
     //라이트 스킬 : 3(+1)초간 공격력10당 공격속도 1%증가
     IEnumerator WrightSkill()
     {
+        //스테이터스 향상
+        Instantiate(StatusUpEffect, this.transform.position + new Vector3(0, 1, 0), Quaternion.identity);
+
+        wrightEffect = Instantiate(WrightEffectPrefab);
+        wrightEffect.transform.position = this.transform.position;
 
         float originS = attackSpeed; //원래 공격 속도 저장
         attackSpeed = attackSpeed * (100 + power / 10) / 100; //공격속도 증가

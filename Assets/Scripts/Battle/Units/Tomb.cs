@@ -109,7 +109,7 @@ public class Tomb : LivingEntity
 
             //StartCoroutine(nameof(AttackAnim));
             //공격
-            if (isAttack == true)
+            if (isAttack == true && isStern == false)
             {
                 //Debug.Log("공격 "+Time.time);
                 StartCoroutine(nameof(AttackAnim));

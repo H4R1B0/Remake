@@ -20,6 +20,7 @@ public class Squil : LivingEntity
     //public float attackAnimTime = 0; //공격 애니메이션 쿨타임
     //public GameObject attackPrefab; //공격 프리팹
     public GameObject DronPrefab; //드론 프리팹
+    public GameObject DroneCreateEffect; //드론 생성 이펙트
 
     private void Start()
     {
@@ -94,7 +95,7 @@ public class Squil : LivingEntity
             }
             animators[0].SetBool("isMove", false);
             //공격
-            if (isAttack == true)
+            if (isAttack == true && isStern == false)
             {
                 StartCoroutine(nameof(AttackAnim));
                 StartCoroutine(nameof(AttackCoroutine));
@@ -184,6 +185,7 @@ public class Squil : LivingEntity
     //스퀼 스킬 : 10초간 10(+10)의 공격력, 300(+100)의 체력을 지닌 드론을 소환(사정거리 3/ 공격속도 보통)
     IEnumerator SquilSkill()
     {
+        Instantiate(DroneCreateEffect, this.transform.position + new Vector3(0, 1, 0), Quaternion.identity);
         GameObject dron = Instantiate(DronPrefab);
         dron.transform.position = this.transform.position + new Vector3(0.5f,0.5f,0);
         dron.GetComponent<Dron>().SetDron(10 * level, 100 * (level + 2));        
