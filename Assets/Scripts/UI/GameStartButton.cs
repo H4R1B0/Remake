@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Tilemaps;
+using UnityEngine.SceneManagement;
 using TMPro;
 
 
@@ -18,11 +19,38 @@ public class GameStartButton : MonoBehaviour
     public Tilemap UnitBoard; //유닛 보드
     public Tilemap MonsterBoard; //몬스터 보드
 
+    private bool isStart = false; //게임 시작 여부
+
+    public GameObject StarPoint; //유닛이 이겼을경우 생성되는 스타포인트
+
     void Start()
     {
         gamemanager = GameManager.instance;
         //this.GetComponent<Button>().onClick.AddListener(gamemanager.CreateMonster);
 
+    }
+    private void Update()
+    {
+        //게임시작하고 살아있는 몬스터가 없는경우
+        if(isStart==true && GameObject.FindGameObjectsWithTag("Monster").Length == 0)
+        {
+            Debug.Log("유닛 승");
+            
+            isStart = false;
+            gamemanager.IsStart = isStart;
+
+            StartCoroutine(nameof(GameEndPass));
+
+            this.GetComponent<Button>().interactable = true; //게임시작 버튼 활성화
+        }
+        //게임시작하고 살아있는 유닛이 없는경우
+        else if (isStart == true && GameObject.FindGameObjectsWithTag("Unit").Length == 0)
+        {
+            Debug.Log("유닛 패");
+            isStart = false;
+            gamemanager.IsStart = isStart;
+            this.GetComponent<Button>().interactable = true; //게임시작 버튼 활성화
+        }
     }
 
     public void GameStart()
@@ -48,6 +76,7 @@ public class GameStartButton : MonoBehaviour
             {
                 UnitBoard = GameObject.Find("UnitBoard").GetComponent<Tilemap>();
             }
+
             int count = 0; //몬스터 스폰 수
             List<GameObject> monsterlist = new List<GameObject>(); //스폰할 몬스터 등급들 전체
             if (gamemanager.Round >= 1 && gamemanager.Round <= 3)
@@ -136,8 +165,9 @@ public class GameStartButton : MonoBehaviour
                 monsterlist.AddRange(monsterContainer.MonsterPrefabs[4].Monster);
                 monsterlist.AddRange(monsterContainer.MonsterPrefabs[5].Monster);
             }
-            Debug.Log(count + "마리 소환");
+            Debug.Log("몬스터 " + count + "마리 소환");
 
+            //몬스터보드에 랜덤으로 소환
             for (int i = 0; i < count; i++)
             {
                 Vector3Int v3Int;
@@ -153,10 +183,13 @@ public class GameStartButton : MonoBehaviour
                 MonsterBoard.SetTileFlags(v3Int, TileFlags.None);
                 MonsterBoard.SetColor(v3Int, Color.red);
             }
-            UnitBoard.RefreshAllTiles();
+            //유닛보드와 몬스터보드 색 초기화
+            UnitBoard.RefreshAllTiles(); 
             MonsterBoard.RefreshAllTiles();
 
-            this.GetComponent<Button>().interactable = false;
+            isStart = true; //게임 시작
+            gamemanager.IsStart = isStart;
+            this.GetComponent<Button>().interactable = false; //게임시작 버튼 비활성화
         }
     }
 
@@ -169,5 +202,24 @@ public class GameStartButton : MonoBehaviour
             yield return new WaitForSeconds(0.1f);
         }
         Destroy(setUnitText);
+    }
+
+    //유닛이 이겼을때
+    IEnumerator GameEndPass()
+    {
+        GameObject[] foundUnits = GameObject.FindGameObjectsWithTag("Unit");
+        foreach (GameObject foundUnit in foundUnits)
+        {
+            GameObject starPoint = Instantiate(StarPoint, GameObject.Find("BattleUI").transform);
+            starPoint.GetComponent<StarPoint>().Point = foundUnit.GetComponent<LivingEntity>().Level;
+            starPoint.transform.position = Camera.main.WorldToScreenPoint(foundUnit.transform.position+new Vector3(0,-0.5f,0));
+            yield return new WaitForSeconds(0.3f);
+        }
+        yield return new WaitForSeconds(0);
+        gamemanager.Round++;
+    }
+    IEnumerator GameEndFail()
+    {
+        yield return new WaitForSeconds(0);
     }
 }

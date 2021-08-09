@@ -31,28 +31,33 @@ public class UnitCard : MonoBehaviour
     }
     public void CallUnit()
     {
-        int currentCount = GameObject.FindGameObjectsWithTag("Unit").Length; //소환된 유닛 수
-
-        //소환 가능한 최대 유닛수 보다 작아야 소환 가능
-        if (currentCount < player.CallUnitCountMax)
+        //게임 시작 전에만 소환
+        if(GameManager.instance.IsStart == false)
         {
-            Vector3Int v3Int;
-            do
-            {
-                int randX = Random.Range(0, 4);
-                int randY = Random.Range(0, 4);
-                v3Int = new Vector3Int(randX, randY, 0);
-            } while (UnitBoard.GetColor(v3Int) == Color.green);
+            int currentCount = GameObject.FindGameObjectsWithTag("Unit").Length; //소환된 유닛 수
 
-            //Instantiate(unit, board.CellToWorld(v3Int), Quaternion.identity);
-            Instantiate(unit, UnitBoard.CellToWorld(v3Int) + new Vector3(0.9f, 1.4f, 0), Quaternion.identity);
-            UnitBoard.SetTileFlags(v3Int, TileFlags.None);
-            UnitBoard.SetColor(v3Int, Color.green);
-            Debug.Log("소환" + v3Int);
-            GetComponent<Button>().interactable = false;
-            player.CallUnitCount++; //유닛 소환 수 증가
-            Debug.Log(player.CallUnitCount);
+            //소환 가능한 최대 유닛수 보다 작아야 소환 가능
+            if (currentCount < player.CallUnitCountMax)
+            {
+                Vector3Int v3Int;
+                do
+                {
+                    int randX = Random.Range(0, 4);
+                    int randY = Random.Range(0, 4);
+                    v3Int = new Vector3Int(randX, randY, 0);
+                } while (UnitBoard.GetColor(v3Int) == Color.green);
+
+                //Instantiate(unit, board.CellToWorld(v3Int), Quaternion.identity);
+                Instantiate(unit, UnitBoard.CellToWorld(v3Int) + new Vector3(0.9f, 1.4f, 0), Quaternion.identity);
+                UnitBoard.SetTileFlags(v3Int, TileFlags.None);
+                UnitBoard.SetColor(v3Int, Color.green);
+                Debug.Log("소환" + v3Int);
+                GetComponent<Button>().interactable = false;
+                player.CallUnitCount++; //유닛 소환 수 증가
+                Debug.Log(player.CallUnitCount);
+            }
         }
+        //게임 시작하면 소환 못함
         else
         {
             Debug.Log("소환 불가");

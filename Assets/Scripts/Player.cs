@@ -10,12 +10,6 @@ public class Player : MonoBehaviour
     public List<GameObject> UnitCards; //소환할 유닛카드들
 
     private int coin = 1000000; //코인
-    private int crystal = 10000; //크리스탈
-
-    private int callUnitCount = 0; //현재 소환한 유닛
-    private int callUnitCountMax = 2; //유닛 소환 최대수
-    private int callUnitCountAddPrice = 40; //유닛 소환 최대수 증가 비용
-
     public int Coin
     {
         get
@@ -28,6 +22,7 @@ public class Player : MonoBehaviour
         }
     }
 
+    private int crystal = 10000; //크리스탈
     public int Crystal
     {
         get
@@ -40,6 +35,7 @@ public class Player : MonoBehaviour
         }
     }
 
+    private int callUnitCount = 0; //현재 소환한 유닛
     public int CallUnitCount
     {
         get
@@ -52,11 +48,27 @@ public class Player : MonoBehaviour
         }
     }
 
+    private int callUnitCountMax = 2; //유닛 소환 최대수
     public int CallUnitCountMax
     {
         get
         {
             return callUnitCountMax;
+        }
+    }
+
+    private int callUnitCountAddPrice = 40; //유닛 소환 최대수 증가 비용
+
+    private int starPoint=0;
+    public int StarPoint
+    {
+        get
+        {
+            return starPoint;
+        }
+        set
+        {
+            starPoint = value;
         }
     }
 
@@ -86,8 +98,8 @@ public class Player : MonoBehaviour
     public void CallUnitCountAdd()
     {
         callUnitCountMax++; //소환 최대수 1증가
-        //crystal -= callUnitCountAddPrice; //소환 최대수 증가시 크리스탈 감소
-        DOTween.To(() => crystal, x => crystal = x, crystal -= callUnitCountAddPrice, 1);
+        crystal -= callUnitCountAddPrice; //소환 최대수 증가시 크리스탈 감소
+        //DOTween.To(() => crystal, x => crystal = x, crystal -= callUnitCountAddPrice, 1);
 
         //유닛 소환 최대수 비용 증가
         if (callUnitCountAddPrice == 40)

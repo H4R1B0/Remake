@@ -12,12 +12,28 @@ public class GameManager : MonoBehaviour
     public static GameManager instance; //게임매니저 인스턴스
 
     private int round = 1;
-
     public int Round
     {
         get
         {
             return round;
+        }
+        set
+        {
+            round = value;
+        }
+    }
+
+    private bool isStart = false;
+    public bool IsStart
+    {
+        get
+        {
+            return isStart;
+        }
+        set
+        {
+            isStart = value;
         }
     }
 
@@ -38,13 +54,8 @@ public class GameManager : MonoBehaviour
 
     }
 
-    // Update is called once per frame
     void Update()
     {
-        //배틀씬에서 사용
-        if (SceneManager.GetActiveScene().name == "Battle")
-        {
 
-        }
     }
 }
