@@ -7,6 +7,14 @@ using TMPro;
 
 public class LivingEntity : MonoBehaviour
 {
+    protected int level = 0; //유닛 레벨
+    public int Level
+    {
+        get
+        {
+            return level;
+        }
+    }
     protected int power = 30; //공격력
     protected int originPower; //원래 공격력
     protected int health = 50; //체력

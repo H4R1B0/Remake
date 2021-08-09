@@ -12,7 +12,6 @@ public class Crusher : LivingEntity
     public Slider MPSliderPrefab; //마나 게이지 프리팹
     private Slider HPSlider; //체력 게이지
     private Slider MPSlider; //마나 게이지
-    private int level = 1; //유닛 레벨
 
     public GameObject CrusherEffectPrefab; //스킬 사용시 이펙트 프리팹
     private GameObject crusherEffect; //스킬 사용시 이펙트 프리팹
@@ -25,6 +24,8 @@ public class Crusher : LivingEntity
 
     private void Start()
     {
+        level = 1; //유닛 레벨
+
         //생성시 원래 공격력과 체력 저장
         originPower = 80; //원래 공격력
         power = originPower; //공격력

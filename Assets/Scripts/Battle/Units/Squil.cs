@@ -12,7 +12,6 @@ public class Squil : LivingEntity
     public Slider MPSliderPrefab; //마나 게이지 프리팹
     private Slider HPSlider; //체력 게이지
     private Slider MPSlider; //마나 게이지
-    private int level = 1; //유닛 레벨
 
     //public bool isWeapon = true; //무기가 있는지
     //public bool isWeaponRotate = true; //무기가 회전하는지
@@ -24,6 +23,8 @@ public class Squil : LivingEntity
 
     private void Start()
     {
+        level = 1; //유닛 레벨
+
         //생성시 원래 공격력과 체력 저장
         originPower = 30; //원래 공격력
         power = originPower; //공격력

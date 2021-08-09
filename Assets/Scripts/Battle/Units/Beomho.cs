@@ -13,7 +13,6 @@ public class Beomho : LivingEntity
     public Slider MPSliderPrefab; //마나 게이지 프리팹
     private Slider HPSlider; //체력 게이지
     private Slider MPSlider; //마나 게이지
-    private int level = 1; //유닛 레벨
 
 
     private bool isSkill; //스킬 사용 가능 여부
@@ -26,6 +25,8 @@ public class Beomho : LivingEntity
 
     private void Start()
     {
+        level = 1; //유닛 레벨
+
         //생성시 원래 공격력과 체력 저장
         originPower = 50; //원래 공격력
         power = originPower; //공격력
