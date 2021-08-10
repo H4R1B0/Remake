@@ -23,6 +23,8 @@ public class GameStartButton : MonoBehaviour
 
     public GameObject StarPoint; //유닛이 이겼을경우 생성되는 스타포인트
 
+    private Dictionary<GameObject, Vector3Int> unitPlace; //게임 시작시 유닛들 배치 기억
+
     void Start()
     {
         gamemanager = GameManager.instance;
@@ -40,8 +42,6 @@ public class GameStartButton : MonoBehaviour
             gamemanager.IsStart = isStart;
 
             StartCoroutine(nameof(GameEndPass));
-
-            this.GetComponent<Button>().interactable = true; //게임시작 버튼 활성화
         }
         //게임시작하고 살아있는 유닛이 없는경우
         else if (isStart == true && GameObject.FindGameObjectsWithTag("Unit").Length == 0)
@@ -50,6 +50,18 @@ public class GameStartButton : MonoBehaviour
             isStart = false;
             gamemanager.IsStart = isStart;
             this.GetComponent<Button>().interactable = true; //게임시작 버튼 활성화
+        }
+    }
+
+    //유닛들을 기억했던 좌표로 이동
+    private void MovePlace()
+    {
+        foreach (var pair in unitPlace)
+        {
+            //Debug.Log(pair.Value);
+            pair.Key.transform.position = UnitBoard.CellToWorld(pair.Value) + new Vector3(0.9f, 1.4f, 0);
+            UnitBoard.SetTileFlags(pair.Value, TileFlags.None);
+            UnitBoard.SetColor(pair.Value, Color.green);
         }
     }
 
@@ -75,6 +87,14 @@ public class GameStartButton : MonoBehaviour
             if (UnitBoard == null)
             {
                 UnitBoard = GameObject.Find("UnitBoard").GetComponent<Tilemap>();
+            }
+
+            //게임시작 직전 유닛들 위치 저장
+            unitPlace = new Dictionary<GameObject, Vector3Int>();
+            List<GameObject> FoundUnits = new List<GameObject>(GameObject.FindGameObjectsWithTag("Unit")); //찾은 모든 유닛들
+            for (int i = 0; i < FoundUnits.Count; i++)
+            {
+                unitPlace.Add(FoundUnits[i], UnitBoard.WorldToCell(FoundUnits[i].transform.position - new Vector3(0.9f, 0.7f, 0)));
             }
 
             int count = 0; //몬스터 스폰 수
@@ -214,9 +234,10 @@ public class GameStartButton : MonoBehaviour
             starPoint.GetComponent<StarPoint>().Point = foundUnit.GetComponent<LivingEntity>().Level;
             starPoint.transform.position = Camera.main.WorldToScreenPoint(foundUnit.transform.position+new Vector3(0,-0.5f,0));
             yield return new WaitForSeconds(0.3f);
-        }
-        yield return new WaitForSeconds(0);
-        gamemanager.Round++;
+        }        
+        gamemanager.Round++; //라운드 증가
+        MovePlace();
+        this.GetComponent<Button>().interactable = true; //게임시작 버튼 활성화
     }
     IEnumerator GameEndFail()
     {

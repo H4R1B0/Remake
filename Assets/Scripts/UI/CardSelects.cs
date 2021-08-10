@@ -24,8 +24,9 @@ public class CardSelects : MonoBehaviour
 
     public void RefreshUnitCard()
     {
+        //게임 시작 전이어야 리프레시 가능
         //플레이어의 크리스탈이 10개 이상있을때 사용 가능
-        if (player.Crystal >= 10)
+        if (GameManager.instance.IsStart == false && player.Crystal >= 10)
         {
             player.Crystal -= 10; //리프레시하면 크리스탈 감소
                                   //Debug.Log(player.UnitCards.Count);

@@ -97,30 +97,34 @@ public class Player : MonoBehaviour
     //유닛 소환 최대수 증가
     public void CallUnitCountAdd()
     {
-        callUnitCountMax++; //소환 최대수 1증가
-        crystal -= callUnitCountAddPrice; //소환 최대수 증가시 크리스탈 감소
-        //DOTween.To(() => crystal, x => crystal = x, crystal -= callUnitCountAddPrice, 1);
+        //게임 시작 전에만 유닛 최대 수 증가 가능
+        if (GameManager.instance.IsStart == false)
+        {
+            callUnitCountMax++; //소환 최대수 1증가
+            crystal -= callUnitCountAddPrice; //소환 최대수 증가시 크리스탈 감소
+                                              //DOTween.To(() => crystal, x => crystal = x, crystal -= callUnitCountAddPrice, 1);
 
-        //유닛 소환 최대수 비용 증가
-        if (callUnitCountAddPrice == 40)
-        {
-            callUnitCountAddPrice = 80; //40*2
-        }
-        else if (callUnitCountAddPrice == 80)
-        {
-            callUnitCountAddPrice = 200; //80*2.5
-        }
-        else if (callUnitCountAddPrice == 200)
-        {
-            callUnitCountAddPrice = 500;
-        }
-        else if (callUnitCountAddPrice == 500)
-        {
-            callUnitCountAddPrice = 1500;
-        }
-        else
-        {
-            GameObject.Find("UnitAddButton").GetComponent<Button>().interactable = false; //소환 최대 증가 버튼 비활성화
+            //유닛 소환 최대수 비용 증가
+            if (callUnitCountAddPrice == 40)
+            {
+                callUnitCountAddPrice = 80; //40*2
+            }
+            else if (callUnitCountAddPrice == 80)
+            {
+                callUnitCountAddPrice = 200; //80*2.5
+            }
+            else if (callUnitCountAddPrice == 200)
+            {
+                callUnitCountAddPrice = 500;
+            }
+            else if (callUnitCountAddPrice == 500)
+            {
+                callUnitCountAddPrice = 1500;
+            }
+            else
+            {
+                GameObject.Find("UnitAddButton").GetComponent<Button>().interactable = false; //소환 최대 증가 버튼 비활성화
+            }
         }
 
         //GameObject.Find("CallUnitCountText").GetComponent<CallUnitCountText>().RenewText(); //유닛 소환 텍스트 갱신

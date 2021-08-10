@@ -34,6 +34,8 @@ public class SettingButton : MonoBehaviour
     public void GoLobby()
     {
         Time.timeScale = 1;
+        Player.instance.CallUnitCount = 0;
+        GameManager.instance.IsStart = false;
         SceneManager.LoadScene("Lobby");
     }
 }
