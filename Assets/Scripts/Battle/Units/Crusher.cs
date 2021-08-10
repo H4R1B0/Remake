@@ -79,52 +79,59 @@ public class Crusher : LivingEntity
             transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
         }
 
-        //타겟이 정해지지 않았을 경우
-        if (target == null)
+        //게임 시작
+        if (GameManager.instance.IsStart == true)
         {
-            //Debug.Log("타겟 찾기");
-            FindMonster();
-            animators[0].SetBool("isMove", false);
-        }
-        //타겟이 죽었을경우
-        else if (target.GetComponent<LivingEntity>().IsDie == true)
-        {
-            target = null;
-            //Debug.Log("타겟 찾기");
-            FindMonster();
-            animators[0].SetBool("isMove", true);
-        }
-        //타겟이 있으나 범위에서 벗어났을경우 재탐색
-        else if (target != null && MonsterInCircle() == false)
-        {
-            animators[0].SetBool("isMove", true);
-            FindMonster();
-            transform.Translate(vec3dir * Time.deltaTime * moveSpeed);
-        }
-        //타겟이 공격 범위 안에 있을 경우
-        else if (MonsterInCircle() == true)
-        {
-            animators[0].SetBool("isMove", false);
-
-            //마나 100일 경우 스킬 시전
-            if (mana >= 100)
+            //타겟이 정해지지 않았을 경우
+            if (target == null)
             {
-                Skill();
-                mana = 0;
+                //Debug.Log("타겟 찾기");
+                FindMonster();
+                animators[0].SetBool("isMove", false);
             }
-            //StartCoroutine(nameof(AttackAnim));
-            //공격
-            if (isAttack == true && isStern == false)
+            //타겟이 죽었을경우
+            else if (target.GetComponent<LivingEntity>().IsDie == true)
             {
-                //Debug.Log("공격 "+Time.time);
-                StartCoroutine(nameof(AttackAnim));
-                StartCoroutine(nameof(AttackCoroutine));
+                target = null;
+                //Debug.Log("타겟 찾기");
+                FindMonster();
+                animators[0].SetBool("isMove", true);
+            }
+            //타겟이 있으나 범위에서 벗어났을경우 재탐색
+            else if (target != null && MonsterInCircle() == false)
+            {
+                animators[0].SetBool("isMove", true);
+                FindMonster();
+                transform.Translate(vec3dir * Time.deltaTime * moveSpeed);
+            }
+            //타겟이 공격 범위 안에 있을 경우
+            else if (MonsterInCircle() == true)
+            {
+                animators[0].SetBool("isMove", false);
 
+                //마나 100일 경우 스킬 시전
+                if (mana >= 100)
+                {
+                    Skill();
+                    mana = 0;
+                }
+                //StartCoroutine(nameof(AttackAnim));
+                //공격
+                if (isAttack == true && isStern == false)
+                {
+                    //Debug.Log("공격 "+Time.time);
+                    StartCoroutine(nameof(AttackAnim));
+                    StartCoroutine(nameof(AttackCoroutine));
+
+                }
             }
         }
-        //맵에 몬스터가 없을경우
-        else if (FoundTargets.Count == 0)
+        //게임 시작 전 이거나 게임 종료 
+        else
         {
+            health = maxHealth; //최대 체력으로 회복
+            mana = 0; //마나 초기화
+
             animators[0].SetBool("isMove", false);
         }
     }

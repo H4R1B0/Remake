@@ -85,41 +85,48 @@ public class Wright : LivingEntity
             transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
         }
 
-        //타겟이 정해지지 않았거나 죽었을경우 FindMonster
-        if (target == null || target.GetComponent<LivingEntity>().IsDie == true)
+        //게임 시작
+        if (GameManager.instance.IsStart == true)
         {
-            animators[0].SetBool("isAttack", false);
-            //Debug.Log("타겟 찾기");
-            FindMonster();
-        }
-        //타겟이 공격 범위 안에 있을 경우
-        else if (MonsterInCircle() == true)
-        {
-            //마나 100일 경우 스킬 시전
-            if (mana >= 100)
+            //타겟이 정해지지 않았거나 죽었을경우 FindMonster
+            if (target == null || target.GetComponent<LivingEntity>().IsDie == true)
             {
-                isSkill = true;
-                Skill();
-                mana = 0;
+                animators[0].SetBool("isAttack", false);
+                //Debug.Log("타겟 찾기");
+                FindMonster();
             }
-            animators[0].SetBool("isMove", false);
-            //공격
-            if (isAttack == true && isStern == false)
+            //타겟이 공격 범위 안에 있을 경우
+            else if (MonsterInCircle() == true)
             {
-                StartCoroutine(nameof(AttackAnim));
-                StartCoroutine(nameof(AttackCoroutine));
+                //마나 100일 경우 스킬 시전
+                if (mana >= 100)
+                {
+                    isSkill = true;
+                    Skill();
+                    mana = 0;
+                }
+                animators[0].SetBool("isMove", false);
+                //공격
+                if (isAttack == true && isStern == false)
+                {
+                    StartCoroutine(nameof(AttackAnim));
+                    StartCoroutine(nameof(AttackCoroutine));
+                }
+            }
+            //타겟이 있으나 범위에서 벗어났을경우 재탐색
+            else if (target != null && MonsterInCircle() == false)
+            {
+                animators[0].SetBool("isMove", true);
+                FindMonster();
+                transform.Translate(vec3dir * Time.deltaTime * moveSpeed);
             }
         }
-        //타겟이 있으나 범위에서 벗어났을경우 재탐색
-        else if (target != null && MonsterInCircle() == false)
+        //게임 시작 전 이거나 게임 종료 
+        else
         {
-            animators[0].SetBool("isMove", true);
-            FindMonster();
-            transform.Translate(vec3dir * Time.deltaTime * moveSpeed);
-        }
-        //맵에 몬스터가 없을경우
-        else if (FoundTargets.Count == 0)
-        {
+            health = maxHealth; //최대 체력으로 회복
+            mana = 0; //마나 초기화
+
             animators[0].SetBool("isAttack", false);
         }
     }

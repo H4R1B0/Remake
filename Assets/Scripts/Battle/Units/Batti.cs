@@ -76,41 +76,47 @@ public class Batti : LivingEntity
         {
             transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
         }
+        //게임 시작
+        if (GameManager.instance.IsStart == true)
+        {
+            //타겟이 정해지지 않았거나 죽었을경우 FindMonster
+            if (target == null || target.GetComponent<LivingEntity>().IsDie == true)
+            {
+                animators[1].SetBool("isAttack", false);
+                //Debug.Log("타겟 찾기");
+                FindMonster();
+            }
+            //타겟이 공격 범위 안에 있을 경우
+            else if (MonsterInCircle() == true)
+            {
+                //마나 100일 경우 스킬 시전
+                if (mana >= 100)
+                {
+                    Skill();
+                    mana = 0;
+                }
+                animators[0].SetBool("isMove", false);
+                //공격
+                if (isAttack == true && isStern == false)
+                {
+                    StartCoroutine(nameof(AttackAnim));
+                    StartCoroutine(nameof(AttackCoroutine));
+                }
+            }
+            //타겟이 있으나 범위에서 벗어났을경우 재탐색
+            else if (target != null && MonsterInCircle() == false)
+            {
+                animators[0].SetBool("isMove", true);
+                FindMonster();
+                transform.Translate(vec3dir * Time.deltaTime * moveSpeed);
+            }
+        }
+        //게임 시작 전 이거나 게임 종료 
+        else
+        {
+            health = maxHealth; //최대 체력으로 회복
+            mana = 0; //마나 초기화
 
-        //타겟이 정해지지 않았거나 죽었을경우 FindMonster
-        if (target == null || target.GetComponent<LivingEntity>().IsDie == true)
-        {
-            animators[1].SetBool("isAttack", false);
-            //Debug.Log("타겟 찾기");
-            FindMonster();
-        }
-        //타겟이 공격 범위 안에 있을 경우
-        else if (MonsterInCircle() == true)
-        {
-            //마나 100일 경우 스킬 시전
-            if (mana >= 100)
-            {
-                Skill();
-                mana = 0;
-            }
-            animators[0].SetBool("isMove", false);
-            //공격
-            if (isAttack == true && isStern == false)
-            {
-                StartCoroutine(nameof(AttackAnim));
-                StartCoroutine(nameof(AttackCoroutine));
-            }
-        }
-        //타겟이 있으나 범위에서 벗어났을경우 재탐색
-        else if (target != null && MonsterInCircle() == false)
-        {
-            animators[0].SetBool("isMove", true);
-            FindMonster();
-            transform.Translate(vec3dir * Time.deltaTime * moveSpeed);
-        }
-        //맵에 몬스터가 없을경우
-        else if (FoundTargets.Count == 0)
-        {
             animators[1].SetBool("isAttack", false);
         }
     }
@@ -171,7 +177,7 @@ public class Batti : LivingEntity
         animators[1].SetBool("isAttack", true);
         vec3dir = target.transform.position - transform.position;
         vec3dir.Normalize();
-        
+
         yield return new WaitForSeconds(animators[1].GetFloat("attackTime")); //공격 쿨타임
 
         target.GetComponent<LivingEntity>().OnDamage(power, false); //공격
@@ -192,7 +198,7 @@ public class Batti : LivingEntity
         target.GetComponent<LivingEntity>().OnDamage((int)(Mathf.Pow(2, level - 1)) * 5 * power, false); //공격
 
         //max체력과 2^level*100 회복후의 작은 값으로 회복
-        health = maxHealth > health + (int)(Mathf.Pow(2, level-1)) * 200 ? health + (int)(Mathf.Pow(2, level-1)) * 200 : maxHealth;
+        health = maxHealth > health + (int)(Mathf.Pow(2, level - 1)) * 200 ? health + (int)(Mathf.Pow(2, level - 1)) * 200 : maxHealth;
         yield return null;
     }
 }
