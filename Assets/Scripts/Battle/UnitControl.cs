@@ -61,7 +61,7 @@ public class UnitControl : MonoBehaviour
                 }
             }
 
-            //유닛 삭제시 패널 붉게
+            //유닛이 삭제패널위에 있을때 붉게
             if (RectTransformUtility.RectangleContainsScreenPoint((RectTransform)UnitDeletePanel.transform, Input.mousePosition))
             {
                 UnitDeletePanel.GetComponent<Image>().color = new Color(255 / 255, 98 / 255f, 98 / 255f);
@@ -138,10 +138,11 @@ public class UnitControl : MonoBehaviour
                 if (RectTransformUtility.RectangleContainsScreenPoint((RectTransform)UnitDeletePanel.transform, Input.mousePosition))
                 {
                     Debug.Log("유닛 삭제");
-                    UnitBoard.RefreshTile(UnitBoard.WorldToCell(selectedObject.transform.position + adjustVector));
-                    Destroy(selectedObject.gameObject);
+                    UnitBoard.RefreshTile(UnitBoard.WorldToCell(selectedObject.transform.position + adjustVector)); //타일 색 원래대로
+                    player.Crystal += selectedObject.GetComponent<LivingEntity>().UnitPrice; //유닛 판매 비용 돌려주기
+                    Destroy(selectedObject.gameObject); //선택된 유닛 삭제
                     
-                    player.CallUnitCount--;
+                    player.CallUnitCount--; //플레이어 유닛수 감소
                 }
                 //Debug.Log(player.CallUnitCount);
                 UnitDeletePanel.SetActive(false);

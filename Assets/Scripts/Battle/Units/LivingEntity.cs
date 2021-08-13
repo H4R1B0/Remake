@@ -33,7 +33,7 @@ public class LivingEntity : MonoBehaviour
     public GameObject PoisonEffect; //맹독 이펙트
     public GameObject StatusUpEffect; //스테이터스 향상 이펙트
     public GameObject SternEffect; //스턴 이펙트
-
+    
     protected string tribe; //종족
     public string Tribe
     {
@@ -66,6 +66,18 @@ public class LivingEntity : MonoBehaviour
         }
     }
 
+    protected int unitPirce = 0; //유닛 생성 비용이자 파는 비용
+    public int UnitPrice
+    {
+        get
+        {
+            return unitPirce;
+        }
+        set
+        {
+            unitPirce = value;
+        }
+    }
     //OnDamage 메서드
     public virtual void OnDamage(int damage, bool isCritical)
     {

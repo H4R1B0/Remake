@@ -72,6 +72,19 @@ public class Player : MonoBehaviour
         }
     }
 
+    private int starPointLevel = 1; //스타포인트 지급 레벨 (최대 5)
+    public int StarPointLevel
+    {
+        get
+        {
+            return starPointLevel;
+        }
+        set
+        {
+            starPointLevel = value;
+        }
+    }
+
     private void Awake()
     {
         if (instance != null)
