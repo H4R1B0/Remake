@@ -11,6 +11,7 @@ using TMPro;
 public class GameStartButton : MonoBehaviour
 {
     private GameManager gamemanager; //게임매니저
+    private Player player; //플레이어
     private MonsterContainer monsterContainer = null; //몬스터컨테이너 인스턴스
 
     public GameObject SetUnitText; //유닛 소환 안하고 게임시작 눌렀을때 뜨는 텍스트
@@ -18,6 +19,8 @@ public class GameStartButton : MonoBehaviour
     //게임 시작 버튼 함수
     public Tilemap UnitBoard; //유닛 보드
     public Tilemap MonsterBoard; //몬스터 보드
+
+    public GameObject RoundText; //현재 라운드 텍스트
 
     private bool isStart = false; //게임 시작 여부
 
@@ -28,16 +31,19 @@ public class GameStartButton : MonoBehaviour
     void Start()
     {
         gamemanager = GameManager.instance;
+        player = Player.instance;
         //this.GetComponent<Button>().onClick.AddListener(gamemanager.CreateMonster);
 
     }
     private void Update()
     {
+        RoundText.GetComponent<TextMeshProUGUI>().text = "라운드 " + gamemanager.Round;
+
         //게임시작하고 살아있는 몬스터가 없는경우
-        if(isStart==true && GameObject.FindGameObjectsWithTag("Monster").Length == 0)
+        if (isStart == true && GameObject.FindGameObjectsWithTag("Monster").Length == 0)
         {
             Debug.Log("유닛 승");
-            
+
             isStart = false;
             gamemanager.IsStart = isStart;
 
@@ -204,7 +210,7 @@ public class GameStartButton : MonoBehaviour
                 MonsterBoard.SetColor(v3Int, Color.red);
             }
             //유닛보드와 몬스터보드 색 초기화
-            UnitBoard.RefreshAllTiles(); 
+            UnitBoard.RefreshAllTiles();
             MonsterBoard.RefreshAllTiles();
 
             isStart = true; //게임 시작
@@ -232,10 +238,12 @@ public class GameStartButton : MonoBehaviour
         {
             GameObject starPoint = Instantiate(StarPoint, GameObject.Find("BattleUI").transform);
             starPoint.GetComponent<StarPoint>().Point = foundUnit.GetComponent<LivingEntity>().Level;
-            starPoint.transform.position = Camera.main.WorldToScreenPoint(foundUnit.transform.position+new Vector3(0,-0.5f,0));
+            starPoint.transform.position = Camera.main.WorldToScreenPoint(foundUnit.transform.position + new Vector3(0, -0.5f, 0));
             yield return new WaitForSeconds(0.3f);
-        }        
+        }
+        player.Crystal += gamemanager.Round * 10; //해당 라운드마다 플레이어에게 수정 지급
         gamemanager.Round++; //라운드 증가
+        
         MovePlace();
         this.GetComponent<Button>().interactable = true; //게임시작 버튼 활성화
     }
