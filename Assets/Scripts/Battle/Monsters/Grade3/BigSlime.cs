@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class AncientGuradian : LivingEntity
+public class BigSlime : LivingEntity
 {
     private List<GameObject> FoundTargets; //찾은 타겟들
     private float shortDis; //타겟들 중에 가장 짧은 거리
@@ -16,9 +16,13 @@ public class AncientGuradian : LivingEntity
     public Slider HPSliderPrefab; //체력 게이지 프리팹
     private Slider HPSlider; //체력 게이지
 
+    public GameObject Slime; //죽을때 소환할 슬라임
+
     void Start()
     {
         isDie = false;
+
+        moveSpeed *= 1.5f; //이동속도 빠르게
 
         defaultMaterial = transform.GetChild(0).GetComponent<SpriteRenderer>().material; //이미지 메테리얼 저장
         renderer = GetComponentInChildren<SpriteRenderer>();
@@ -29,8 +33,9 @@ public class AncientGuradian : LivingEntity
         maxHealth = health;
         //originCritical = critical;
 
-        attackRange = 0.5f; //공격 범위
-        attackSpeed = 1f; //공격 속도
+        //attackRange = 5f; //공격 범위
+        //attackSpeed = 0.5f; //공격 속도
+        vec3dir = Vector3.left; //기본적으로 왼쪽으로
 
         animators = GetComponentsInChildren<Animator>(); //애니메이터들 가져오기
 
@@ -43,14 +48,13 @@ public class AncientGuradian : LivingEntity
 
         rigid = GetComponent<Rigidbody2D>();
 
-        isAttack = true;
+        //isAttack = true;
     }
     void Update()
     {
         //체력 게이지값, 위치 변경
         HPSlider.value = health;
         HPSlider.maxValue = maxHealth;
-        //HP
         //HP
         if (HPSlider != null)
         {
@@ -59,125 +63,50 @@ public class AncientGuradian : LivingEntity
             HPSlider.transform.position = Camera.main.WorldToScreenPoint(transform.Find("HPPosition").position);
         }
 
-
-        if (isDie == false && health <= 0)
-        {
-            isDie = true;
-            StartCoroutine(nameof(DestroyCoroutine));
-            moveSpeed = 0;
-        }
-
-        //타겟 향하는
-        if (vec3dir.x >= 0)
+        //좌우 이동
+        if (this.transform.position.x < Camera.main.ScreenToWorldPoint(this.transform.position).x+this.GetComponent<BoxCollider2D>().size.x/2) //왼쪽 화면 넘어갈때
         {
             transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x) * -1, transform.localScale.y, transform.localScale.z);
+
+            vec3dir = Vector3.right;
+            transform.Translate(vec3dir * Time.deltaTime * moveSpeed);
+
+            //Debug.Log(vec3dir);
+        }
+        else if (this.transform.position.x > -Camera.main.ScreenToWorldPoint(this.transform.position).x - this.GetComponent<BoxCollider2D>().size.x / 2) //오른쪽 화면 넘어갈때
+        {
+            transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+
+            vec3dir = Vector3.left;
+            transform.Translate(vec3dir * Time.deltaTime * moveSpeed);
         }
         else
         {
-            transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
-        }
-
-        //타겟이 정해지지 않았거나 죽었을경우 FindUnit
-        if (target == null || target.GetComponent<LivingEntity>().IsDie == true)
-        {
-            animators[0].SetBool("isAttack", false);
-            //Debug.Log("타겟 찾기");
-            FindUnit();
-        }
-        //타겟이 공격 범위 안에 있을 경우
-        else if (UnitInCircle() == true)
-        {
-            //animators[0].SetBool("isMove", false);
-            //공격
-            if (isAttack == true && isDie == false)
-            {
-                StartCoroutine(nameof(AttackAnim));
-                StartCoroutine(nameof(AttackCoroutine));
-            }
-        }
-        //타겟쪽으로 이동
-        else if (target != null && FoundTargets.Count != 0)
-        {
-            animators[0].SetBool("isAttack", false);
             transform.Translate(vec3dir * Time.deltaTime * moveSpeed);
-        }
-        //맵에 유닛이 없을경우
-        else if (FoundTargets.Count == 0)
-        {
-            animators[0].SetBool("isAttack", false);
         }
     }
 
     //피격
     public override void OnDamage(int damage, bool isCritical)
     {
-
         base.OnDamage(damage, isCritical);
-    }
 
-    public void FindUnit()
-    {
-        FoundTargets = new List<GameObject>(GameObject.FindGameObjectsWithTag("Unit"));
-        if (FoundTargets.Count != 0)
+        //체력이 0보다 작을경우 파괴
+        if (health <= 0)
         {
-            shortDis = Vector3.Distance(transform.position, FoundTargets[0].transform.position); // 첫번째를 기준으로 잡아주기 
-
-            target = FoundTargets[0]; // 첫번째를 먼저 
-            foreach (GameObject found in FoundTargets)
-            {
-                float Distance = Vector3.Distance(gameObject.transform.position, found.transform.position);
-
-                if (Distance < shortDis) // 위에서 잡은 기준으로 거리 재기
-                {
-                    target = found;
-                    shortDis = Distance;
-                }
-            }
-            vec3dir = (target.transform.position - new Vector3(0, 1f, 0)) - transform.position;
-            //vec3dir = target.transform.position - transform.position;
-            vec3dir.Normalize();
+            isDie = true;
+            StartCoroutine(nameof(DestroyCoroutine));
+            moveSpeed = 0;
         }
-
     }
-    public bool UnitInCircle()
+
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(new Vector2(transform.position.x, transform.position.y), attackRange);
-        for (int i = 0; i < colliders.Length; i++)
+        if (collision.gameObject.tag == "Unit")
         {
-            if (colliders[i].tag == "Unit")
-            {
-                return true;
-            }
-
+            collision.gameObject.GetComponent<LivingEntity>().OnDamage(power, false);
         }
-        return false;
     }
-
-    //공격 코루틴
-    IEnumerator AttackAnim()
-    {
-        animators[0].SetBool("isAttack", true);
-        yield return new WaitForSeconds(animators[0].GetFloat("attackTime")); //공격 애니메이션 타임
-
-        //모든 적 공격
-        GameObject[] foundUnits = GameObject.FindGameObjectsWithTag("Unit");
-        foreach (GameObject foundUnit in foundUnits)
-        {
-            foundUnit.GetComponent<LivingEntity>().OnDamage(power, false); //공격
-        }
-
-        animators[0].SetBool("isAttack", false);
-    }
-
-    //공격 쿨타임 코루틴
-    IEnumerator AttackCoroutine()
-    {
-        isAttack = false;
-        yield return new WaitForSeconds(1f / attackSpeed);
-        isAttack = true;
-    }
-
-
 
     //죽었을때 코루틴
     IEnumerator DestroyCoroutine()
@@ -187,11 +116,12 @@ public class AncientGuradian : LivingEntity
         renderer.material = defaultMaterial;
         //Debug.Log("FlashCoroutine 멈춤");
 
-        //사망시 모든 적 2초간 기절
-        GameObject[] foundUnits = GameObject.FindGameObjectsWithTag("Unit");
-        foreach (GameObject foundUnit in foundUnits)
+        //죽을때 슬라임 8마리 소환
+        GameObject[] slimes = new GameObject[8];
+        for(int i = 0; i < 8; i++)
         {
-            StartCoroutine(target.GetComponent<LivingEntity>().SternCoroutine(2));
+            slimes[i] = Instantiate(Slime);
+            slimes[i].transform.position = this.transform.position - new Vector3(0.3f*i,0,0);
         }
 
         Destroy(HPSlider.gameObject); //체력바 파괴

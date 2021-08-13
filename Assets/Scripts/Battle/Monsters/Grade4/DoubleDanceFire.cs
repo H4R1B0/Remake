@@ -3,20 +3,21 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class SporeLord : LivingEntity
+public class DoubleDanceFire : LivingEntity
 {
     private List<GameObject> FoundTargets; //찾은 타겟들
     private float shortDis; //타겟들 중에 가장 짧은 거리
 
-    private int baseHP = 1200; //기본 체력
+    private int baseHP = 400; //기본 체력
     private int roundHP = 50; //라운드당 추가되는 체력
     private int basePower = 30; //기본 공격력
     private int roundPower = 4; //라운드당 추가되는 공격력
 
+    private float longDis; //타겟들 중에 가장 긴 거리
+
     public Slider HPSliderPrefab; //체력 게이지 프리팹
     private Slider HPSlider; //체력 게이지
 
-    public GameObject SporeBoy; //죽을때 소환할 포자돌이
     public GameObject attackPrefab; //공격 프리팹
 
     void Start()
@@ -33,7 +34,7 @@ public class SporeLord : LivingEntity
         //originCritical = critical;
 
         attackRange = 3f; //공격 범위
-        attackSpeed = 0.5f; //공격 속도
+        attackSpeed = 0.7f; //공격 속도
 
         animators = GetComponentsInChildren<Animator>(); //애니메이터들 가져오기
 
@@ -59,14 +60,6 @@ public class SporeLord : LivingEntity
             HPSlider.transform.Find("HPCount").GetComponent<Text>().text = HPSlider.value.ToString();
             HPSlider.transform.Find("AttackCount").GetComponent<Text>().text = "공격력 : " + power.ToString();
             HPSlider.transform.position = Camera.main.WorldToScreenPoint(transform.Find("HPPosition").position);
-        }
-
-
-        if (isDie == false && health <= 0)
-        {
-            isDie = true;
-            StartCoroutine(nameof(DestroyCoroutine));
-            moveSpeed = 0;
         }
 
         //타겟 향하는
@@ -97,10 +90,11 @@ public class SporeLord : LivingEntity
                 StartCoroutine(nameof(AttackCoroutine));
             }
         }
-        //타겟쪽으로 이동
-        else if (target != null && FoundTargets.Count != 0)
+        //타겟이 있으나 범위에서 벗어났을경우 재탐색
+        else if (target != null && UnitInCircle() == false)
         {
             animators[0].SetBool("isAttack", false);
+            FindUnit();
             transform.Translate(vec3dir * Time.deltaTime * moveSpeed);
         }
         //맵에 유닛이 없을경우
@@ -114,6 +108,14 @@ public class SporeLord : LivingEntity
     public override void OnDamage(int damage, bool isCritical)
     {
         base.OnDamage(damage, isCritical);
+
+        //체력이 0보다 작을경우 파괴
+        if (health <= 0)
+        {
+            isDie = true;
+            StartCoroutine(nameof(DestroyCoroutine));
+            moveSpeed = 0;
+        }
     }
 
     public void FindUnit()
@@ -121,17 +123,17 @@ public class SporeLord : LivingEntity
         FoundTargets = new List<GameObject>(GameObject.FindGameObjectsWithTag("Unit"));
         if (FoundTargets.Count != 0)
         {
-            shortDis = Vector3.Distance(transform.position, FoundTargets[0].transform.position); // 첫번째를 기준으로 잡아주기 
+            longDis = Vector3.Distance(transform.position, FoundTargets[0].transform.position); // 첫번째를 기준으로 잡아주기 
 
             target = FoundTargets[0]; // 첫번째를 먼저 
             foreach (GameObject found in FoundTargets)
             {
                 float Distance = Vector3.Distance(gameObject.transform.position, found.transform.position);
 
-                if (Distance < shortDis) // 위에서 잡은 기준으로 거리 재기
+                if (Distance > longDis) // 위에서 잡은 기준으로 거리 재기
                 {
                     target = found;
-                    shortDis = Distance;
+                    longDis = Distance;
                 }
             }
             vec3dir = (target.transform.position - new Vector3(0, 1f, 0)) - transform.position;
@@ -160,9 +162,13 @@ public class SporeLord : LivingEntity
         animators[0].SetBool("isAttack", true);
 
         yield return new WaitForSeconds(animators[0].GetFloat("attackTime")); //공격 애니메이션 타임
-
-        GameObject attack = Instantiate(attackPrefab, this.transform);
+                
+        //Debug.Log("유닛 " + rand + "번째");
+        GameObject attack = Instantiate(attackPrefab);
+        attack.transform.position = this.transform.position;
         attack.GetComponent<Attack>().SetPowerDir(power, target);
+        //StartCoroutine(attack.GetComponent<DanceFireWeapon>().showmove());
+        //attack.GetComponent<DanceFireWeapon>().Move();
         //Debug.Log(target.transform.position);
 
         animators[0].SetBool("isAttack", false);
@@ -183,12 +189,6 @@ public class SporeLord : LivingEntity
         StopCoroutine(nameof(FlashCoroutine));
         renderer.material = defaultMaterial;
         //Debug.Log("FlashCoroutine 멈춤");
-
-        //죽을때 포자돌이 2마리 소환
-        GameObject sporeby1 = Instantiate(SporeBoy);
-        sporeby1.transform.position = this.transform.position;
-        GameObject sporeby2 = Instantiate(SporeBoy);
-        sporeby2.transform.position = this.transform.position-new Vector3(1,0,0);
 
         Destroy(HPSlider.gameObject); //체력바 파괴
         animators[0].SetBool("isDie", isDie); //isDie로 애니메이션 실행

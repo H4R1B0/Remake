@@ -3,27 +3,22 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class RockSoldier : LivingEntity
+public class Catutus : LivingEntity
 {
     private List<GameObject> FoundTargets; //찾은 타겟들
     private float shortDis; //타겟들 중에 가장 짧은 거리
 
     private int baseHP = 400; //기본 체력
-    private int roundHP = 50; //라운드당 추가되는 체력
-    private int basePower = 30; //기본 공격력
-    private int roundPower = 4; //라운드당 추가되는 공격력
+    private int roundHP = 40; //라운드당 추가되는 체력
+    private int basePower = 20; //기본 공격력
+    private int roundPower = 2; //라운드당 추가되는 공격력
 
     public Slider HPSliderPrefab; //체력 게이지 프리팹
     private Slider HPSlider; //체력 게이지
 
-    public GameObject attackPrefab; //공격 프리팹
-
-    private void Awake()
+    void Start()
     {
         isDie = false;
-
-        vec3dir = Vector3.up;
-        moveSpeed *= 1.5f; //이동속도 빠르게
 
         defaultMaterial = transform.GetChild(0).GetComponent<SpriteRenderer>().material; //이미지 메테리얼 저장
         renderer = GetComponentInChildren<SpriteRenderer>();
@@ -34,8 +29,8 @@ public class RockSoldier : LivingEntity
         maxHealth = health;
         //originCritical = critical;
 
-        attackRange = 10f; //공격 범위
-        attackSpeed = 1.2f; //공격 속도
+        attackRange = 3f; //공격 범위
+        attackSpeed = 0.6f; //공격 속도
 
         animators = GetComponentsInChildren<Animator>(); //애니메이터들 가져오기
 
@@ -50,7 +45,6 @@ public class RockSoldier : LivingEntity
 
         isAttack = true;
     }
-
     void Update()
     {
         //체력 게이지값, 위치 변경
@@ -64,51 +58,59 @@ public class RockSoldier : LivingEntity
             HPSlider.transform.position = Camera.main.WorldToScreenPoint(transform.Find("HPPosition").position);
         }
 
-
-        if (isDie == false && health <= 0)
+        //타겟 향하는
+        if (vec3dir.x >= 0)
         {
-            isDie = true;
-            StartCoroutine(nameof(DestroyCoroutine));
-            moveSpeed = 0;
+            transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x) * -1, transform.localScale.y, transform.localScale.z);
         }
-
-        //상하 이동
-        if (this.transform.position.y + this.GetComponent<BoxCollider2D>().offset.y+this.GetComponent<BoxCollider2D>().size.y/2 > -Camera.main.ScreenToWorldPoint(this.transform.position ).y) //위쪽 화면 넘어갈때
-        {
-            //transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x) * -1, transform.localScale.y, transform.localScale.z);
-
-            vec3dir = Vector3.down;
-            transform.Translate(vec3dir * Time.deltaTime * moveSpeed);
-
-            //Debug.Log(vec3dir);
-        }
-        else if (this.transform.position.y + this.GetComponent<BoxCollider2D>().offset.y - this.GetComponent<BoxCollider2D>().size.y / 2 < Camera.main.ScreenToWorldPoint(this.transform.position).y) //아래쪽 화면 넘어갈때
-        {
-            //transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x) * -1, transform.localScale.y, transform.localScale.z);
-
-            vec3dir = Vector3.up;
-            transform.Translate(vec3dir * Time.deltaTime * moveSpeed);
-
-            //Debug.Log(vec3dir);
-        }
-
         else
         {
-            transform.Translate(vec3dir * Time.deltaTime * moveSpeed);
+            transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
         }
 
-        if (isAttack == true && isDie == false)
+        //타겟이 정해지지 않았거나 죽었을경우 FindUnit
+        if (target == null || target.GetComponent<LivingEntity>().IsDie == true)
         {
-            StartCoroutine(nameof(AttackAnim));
-            StartCoroutine(nameof(AttackCoroutine));
+            animators[0].SetBool("isAttack", false);
+            //Debug.Log("타겟 찾기");
+            FindUnit();
+        }
+        //타겟이 공격 범위 안에 있을 경우
+        else if (UnitInCircle() == true)
+        {
+            //animators[0].SetBool("isMove", false);
+            //공격
+            if (isAttack == true && isDie == false)
+            {
+                StartCoroutine(nameof(AttackAnim));
+                StartCoroutine(nameof(AttackCoroutine));
+            }
+        }
+        //타겟쪽으로 이동
+        else if (target != null && FoundTargets.Count != 0)
+        {
+            animators[0].SetBool("isAttack", false);
+            transform.Translate(vec3dir * Time.deltaTime * moveSpeed);
+        }
+        //맵에 유닛이 없을경우
+        else if (FoundTargets.Count == 0)
+        {
+            animators[0].SetBool("isAttack", false);
         }
     }
 
     //피격
     public override void OnDamage(int damage, bool isCritical)
     {
-
         base.OnDamage(damage, isCritical);
+
+        //체력이 0보다 작을경우 파괴
+        if (health <= 0)
+        {
+            isDie = true;
+            StartCoroutine(nameof(DestroyCoroutine));
+            moveSpeed = 0;
+        }
     }
 
     public void FindUnit()
@@ -153,16 +155,14 @@ public class RockSoldier : LivingEntity
     IEnumerator AttackAnim()
     {
         animators[0].SetBool("isAttack", true);
+
         yield return new WaitForSeconds(animators[0].GetFloat("attackTime")); //공격 애니메이션 타임
-
-        //Debug.Log(start + "\n" + end);
-        for(int i = 0; i < 5; i++)
-        {
-            GameObject attack = Instantiate(attackPrefab);
-            attack.transform.position = this.transform.position;
-            attack.GetComponent<Attack>().SetPower(power);
-        }        
-
+        
+        //기본공격시 25%확률로 맹독 적용
+        int rand = Random.Range(0, 100);
+        if (rand >= 0 && rand < 25)
+            StartCoroutine(target.GetComponent<LivingEntity>().BleedingCoroutine(3, 10,"poison"));
+        target.GetComponent<LivingEntity>().OnDamage(power, false); //공격
         animators[0].SetBool("isAttack", false);
     }
 
@@ -191,7 +191,6 @@ public class RockSoldier : LivingEntity
         StartCoroutine(nameof(FadeoutCoroutine)); //죽을때 페이드아웃
         //yield return new WaitForSeconds(animators[0].GetFloat("dieTime")); //죽는 모션 시간
         yield return new WaitForSeconds(1); //1초
-
 
         //gameObject.SetActive(false);
         Destroy(this.gameObject);

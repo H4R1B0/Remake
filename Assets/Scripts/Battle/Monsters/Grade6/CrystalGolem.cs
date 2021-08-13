@@ -3,20 +3,24 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Mushra : LivingEntity
+public class CrystalGolem : LivingEntity
 {
     private List<GameObject> FoundTargets; //찾은 타겟들
     private float shortDis; //타겟들 중에 가장 짧은 거리
 
     private int baseHP = 400; //기본 체력
-    private int roundHP = 40; //라운드당 추가되는 체력
-    private int basePower = 20; //기본 공격력
-    private int roundPower = 2; //라운드당 추가되는 공격력
+    private int roundHP = 50; //라운드당 추가되는 체력
+    private int basePower = 30; //기본 공격력
+    private int roundPower = 4; //라운드당 추가되는 공격력
 
     public Slider HPSliderPrefab; //체력 게이지 프리팹
     private Slider HPSlider; //체력 게이지
 
-    void Start()
+    public GameObject crystalgolem; //죽을때 소환할 복제품
+
+    private bool isAlter; //복제품인지
+    
+    private void Awake()
     {
         isDie = false;
 
@@ -30,7 +34,7 @@ public class Mushra : LivingEntity
         //originCritical = critical;
 
         attackRange = 0.5f; //공격 범위
-        attackSpeed = 0.5f; //공격 속도
+        attackSpeed = 1f; //공격 속도
 
         animators = GetComponentsInChildren<Animator>(); //애니메이터들 가져오기
 
@@ -44,6 +48,7 @@ public class Mushra : LivingEntity
         rigid = GetComponent<Rigidbody2D>();
 
         isAttack = true;
+        isAlter = false;
     }
     void Update()
     {
@@ -57,14 +62,6 @@ public class Mushra : LivingEntity
             HPSlider.transform.Find("HPCount").GetComponent<Text>().text = HPSlider.value.ToString();
             HPSlider.transform.Find("AttackCount").GetComponent<Text>().text = "공격력 : " + power.ToString();
             HPSlider.transform.position = Camera.main.WorldToScreenPoint(transform.Find("HPPosition").position);
-        }
-
-
-        if (isDie == false && health <= 0)
-        {
-            isDie = true;
-            StartCoroutine(nameof(DestroyCoroutine));
-            moveSpeed = 0;
         }
 
         //타겟 향하는
@@ -111,8 +108,15 @@ public class Mushra : LivingEntity
     //피격
     public override void OnDamage(int damage, bool isCritical)
     {
-        
         base.OnDamage(damage, isCritical);
+
+        //체력이 0보다 작을경우 파괴
+        if (health <= 0)
+        {
+            isDie = true;
+            StartCoroutine(nameof(DestroyCoroutine));
+            moveSpeed = 0;
+        }
     }
 
     public void FindUnit()
@@ -153,17 +157,28 @@ public class Mushra : LivingEntity
         return false;
     }
 
+    //분신 소환시 공격력, 체력 조정
+    public void SetAlter()
+    {
+        isAlter = true;
+        power = power * 40 / 100;
+        maxHealth = maxHealth * 40 / 100;
+        health = maxHealth;
+    }
+
     //공격 코루틴
     IEnumerator AttackAnim()
     {
         animators[0].SetBool("isAttack", true);
         yield return new WaitForSeconds(animators[0].GetFloat("attackTime")); //공격 애니메이션 타임
-        //크리티컬
-        int rand = Random.Range(0, 100);
-        //10%확률로 1초 기절 
-        if (rand >= 0 && rand < 10)
-            StartCoroutine(target.GetComponent<LivingEntity>().SternCoroutine(1));
-        target.GetComponent<LivingEntity>().OnDamage(power, false); //공격
+
+        //모든 적 공격
+        GameObject[] foundUnits = GameObject.FindGameObjectsWithTag("Unit");
+        foreach (GameObject foundUnit in foundUnits)
+        {
+            foundUnit.GetComponent<LivingEntity>().OnDamage(power, false); //공격
+        }
+
         animators[0].SetBool("isAttack", false);
     }
 
@@ -174,8 +189,6 @@ public class Mushra : LivingEntity
         yield return new WaitForSeconds(1f / attackSpeed);
         isAttack = true;
     }
-
-    
 
     //죽었을때 코루틴
     IEnumerator DestroyCoroutine()
@@ -194,6 +207,22 @@ public class Mushra : LivingEntity
         StartCoroutine(nameof(FadeoutCoroutine)); //죽을때 페이드아웃
         //yield return new WaitForSeconds(animators[0].GetFloat("dieTime")); //죽는 모션 시간
         yield return new WaitForSeconds(1); //1초
+
+        //죽을때 본체 40% 성능의 복제품 3마리 소환
+        if (isAlter == false)
+        {
+            //본체 죽을때 페이드아웃할때 알파값 복구
+            renderer.material.color = new Vector4(1, 1, 1, 1);
+
+            GameObject[] crystalgolems = new GameObject[3];
+            for (int i = 0; i < crystalgolems.Length; i++)
+            {
+                crystalgolems[i] = Instantiate(this.gameObject);
+                crystalgolems[i].transform.localScale = new Vector3(transform.localScale.x * 0.6f, transform.localScale.y * 0.6f, transform.localScale.z);
+                crystalgolems[i].transform.position = new Vector3(transform.position.x - 0.5f*(i+1), transform.position.y - 0.5f, transform.position.z);
+                crystalgolems[i].GetComponent<CrystalGolem>().SetAlter();
+            }
+        }
 
         //gameObject.SetActive(false);
         Destroy(this.gameObject);

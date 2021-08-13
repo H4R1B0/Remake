@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PurpleStone : LivingEntity
+public class RockSoldier : LivingEntity
 {
     private List<GameObject> FoundTargets; //찾은 타겟들
     private float shortDis; //타겟들 중에 가장 짧은 거리
@@ -13,16 +13,17 @@ public class PurpleStone : LivingEntity
     private int basePower = 30; //기본 공격력
     private int roundPower = 4; //라운드당 추가되는 공격력
 
-    private float longDis; //타겟들 중에 가장 긴 거리
-
     public Slider HPSliderPrefab; //체력 게이지 프리팹
     private Slider HPSlider; //체력 게이지
 
     public GameObject attackPrefab; //공격 프리팹
 
-    void Start()
+    private void Awake()
     {
         isDie = false;
+
+        vec3dir = Vector3.up;
+        moveSpeed *= 1.5f; //이동속도 빠르게
 
         defaultMaterial = transform.GetChild(0).GetComponent<SpriteRenderer>().material; //이미지 메테리얼 저장
         renderer = GetComponentInChildren<SpriteRenderer>();
@@ -33,8 +34,8 @@ public class PurpleStone : LivingEntity
         maxHealth = health;
         //originCritical = critical;
 
-        attackRange = 3f; //공격 범위
-        attackSpeed = 0.5f; //공격 속도
+        attackRange = 10f; //공격 범위
+        attackSpeed = 1.2f; //공격 속도
 
         animators = GetComponentsInChildren<Animator>(); //애니메이터들 가져오기
 
@@ -49,6 +50,7 @@ public class PurpleStone : LivingEntity
 
         isAttack = true;
     }
+
     void Update()
     {
         //체력 게이지값, 위치 변경
@@ -62,53 +64,35 @@ public class PurpleStone : LivingEntity
             HPSlider.transform.position = Camera.main.WorldToScreenPoint(transform.Find("HPPosition").position);
         }
 
-
-        if (isDie == false && health <= 0)
+        //상하 이동
+        if (this.transform.position.y + this.GetComponent<BoxCollider2D>().offset.y+this.GetComponent<BoxCollider2D>().size.y/2 > -Camera.main.ScreenToWorldPoint(this.transform.position ).y) //위쪽 화면 넘어갈때
         {
-            isDie = true;
-            StartCoroutine(nameof(DestroyCoroutine));
-            moveSpeed = 0;
+            //transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x) * -1, transform.localScale.y, transform.localScale.z);
+
+            vec3dir = Vector3.down;
+            transform.Translate(vec3dir * Time.deltaTime * moveSpeed);
+
+            //Debug.Log(vec3dir);
+        }
+        else if (this.transform.position.y + this.GetComponent<BoxCollider2D>().offset.y - this.GetComponent<BoxCollider2D>().size.y / 2 < Camera.main.ScreenToWorldPoint(this.transform.position).y) //아래쪽 화면 넘어갈때
+        {
+            //transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x) * -1, transform.localScale.y, transform.localScale.z);
+
+            vec3dir = Vector3.up;
+            transform.Translate(vec3dir * Time.deltaTime * moveSpeed);
+
+            //Debug.Log(vec3dir);
         }
 
-        //타겟 향하는
-        if (vec3dir.x >= 0)
-        {
-            transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x) * -1, transform.localScale.y, transform.localScale.z);
-        }
         else
         {
-            transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
-        }
-
-        //타겟이 정해지지 않았거나 죽었을경우 FindUnit
-        if (target == null || target.GetComponent<LivingEntity>().IsDie == true)
-        {
-            animators[0].SetBool("isAttack", false);
-            //Debug.Log("타겟 찾기");
-            FindUnit();
-        }
-        //타겟이 공격 범위 안에 있을 경우
-        else if (UnitInCircle() == true)
-        {
-            //animators[0].SetBool("isMove", false);
-            //공격
-            if (isAttack == true && isDie == false)
-            {
-                StartCoroutine(nameof(AttackAnim));
-                StartCoroutine(nameof(AttackCoroutine));
-            }
-        }
-        //타겟이 있으나 범위에서 벗어났을경우 재탐색
-        else if (target != null && UnitInCircle() == false)
-        {
-            animators[0].SetBool("isAttack", false);
-            FindUnit();
             transform.Translate(vec3dir * Time.deltaTime * moveSpeed);
         }
-        //맵에 유닛이 없을경우
-        else if (FoundTargets.Count == 0)
+
+        if (isAttack == true && isDie == false)
         {
-            animators[0].SetBool("isAttack", false);
+            StartCoroutine(nameof(AttackAnim));
+            StartCoroutine(nameof(AttackCoroutine));
         }
     }
 
@@ -116,6 +100,14 @@ public class PurpleStone : LivingEntity
     public override void OnDamage(int damage, bool isCritical)
     {
         base.OnDamage(damage, isCritical);
+
+        //체력이 0보다 작을경우 파괴
+        if (health <= 0)
+        {
+            isDie = true;
+            StartCoroutine(nameof(DestroyCoroutine));
+            moveSpeed = 0;
+        }
     }
 
     public void FindUnit()
@@ -123,23 +115,22 @@ public class PurpleStone : LivingEntity
         FoundTargets = new List<GameObject>(GameObject.FindGameObjectsWithTag("Unit"));
         if (FoundTargets.Count != 0)
         {
-            longDis = Vector3.Distance(transform.position, FoundTargets[0].transform.position); // 첫번째를 기준으로 잡아주기 
+            shortDis = Vector3.Distance(transform.position, FoundTargets[0].transform.position); // 첫번째를 기준으로 잡아주기 
 
             target = FoundTargets[0]; // 첫번째를 먼저 
             foreach (GameObject found in FoundTargets)
             {
                 float Distance = Vector3.Distance(gameObject.transform.position, found.transform.position);
 
-                if (Distance > longDis) // 위에서 잡은 기준으로 거리 재기
+                if (Distance < shortDis) // 위에서 잡은 기준으로 거리 재기
                 {
                     target = found;
-                    longDis = Distance;
+                    shortDis = Distance;
                 }
             }
             vec3dir = (target.transform.position - new Vector3(0, 1f, 0)) - transform.position;
             //vec3dir = target.transform.position - transform.position;
             vec3dir.Normalize();
-            //Debug.Log(vec3dir);
         }
 
     }
@@ -161,13 +152,15 @@ public class PurpleStone : LivingEntity
     IEnumerator AttackAnim()
     {
         animators[0].SetBool("isAttack", true);
-
         yield return new WaitForSeconds(animators[0].GetFloat("attackTime")); //공격 애니메이션 타임
 
-        StartCoroutine(nameof(PurpleStoneAttack));
-        //StartCoroutine(attack.GetComponent<DanceFireWeapon>().showmove());
-        //attack.GetComponent<DanceFireWeapon>().Move();
-        //Debug.Log(target.transform.position);
+        //Debug.Log(start + "\n" + end);
+        for(int i = 0; i < 5; i++)
+        {
+            GameObject attack = Instantiate(attackPrefab);
+            attack.transform.position = this.transform.position;
+            attack.GetComponent<Attack>().SetPower(power);
+        }        
 
         animators[0].SetBool("isAttack", false);
     }
@@ -198,6 +191,7 @@ public class PurpleStone : LivingEntity
         //yield return new WaitForSeconds(animators[0].GetFloat("dieTime")); //죽는 모션 시간
         yield return new WaitForSeconds(1); //1초
 
+
         //gameObject.SetActive(false);
         Destroy(this.gameObject);
     }
@@ -208,33 +202,6 @@ public class PurpleStone : LivingEntity
         for (float i = 1f; i > 0; i -= 0.1f)
         {
             renderer.material.color = new Vector4(1, 1, 1, i);
-            yield return new WaitForSeconds(0.1f);
-        }
-    }
-
-    //부채꼴로 10개 발사
-    IEnumerator PurpleStoneAttack()
-    {
-        //공격하는 적이 왼쪽이면 -215, 오른쪽이면 -45
-        float deg = -225;
-        if (vec3dir.x >= 0)
-        {
-            deg = -45;
-        }
-
-        //10개 발사
-        GameObject[] attacks = new GameObject[10];
-        for (int i = 0; i < 10; i++)
-        {
-            if (deg + 9 * i == 0 || deg + 9 * i == -180)
-                deg += 9;
-            attacks[i] = Instantiate(attackPrefab);
-            attacks[i].transform.position = this.transform.position + new Vector3(0, -0.35f, 0);
-            float x = (deg + 9 * i) * Mathf.Deg2Rad;
-            float y = (deg + 9 * i) * Mathf.Deg2Rad;
-            Vector3 dir = new Vector3(Mathf.Cos(x),Mathf.Sin(y),0);
-            attacks[i].GetComponent<PurpleStoneWeapon>().SetPowerDir(power, dir);
-            //Debug.Log(deg + 9 * i);
             yield return new WaitForSeconds(0.1f);
         }
     }

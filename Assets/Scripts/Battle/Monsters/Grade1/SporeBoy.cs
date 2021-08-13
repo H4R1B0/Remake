@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class MonkeyStone : LivingEntity
+public class SporeBoy : LivingEntity
 {
     private List<GameObject> FoundTargets; //찾은 타겟들
     private float shortDis; //타겟들 중에 가장 짧은 거리
 
-    private int baseHP = 400; //기본 체력
-    private int roundHP = 50; //라운드당 추가되는 체력
+    private int baseHP = 300; //기본 체력
+    private int roundHP = 30; //라운드당 추가되는 체력
     private int basePower = 30; //기본 공격력
-    private int roundPower = 4; //라운드당 추가되는 공격력
+    private int roundPower = 2; //라운드당 추가되는 공격력
 
     public Slider HPSliderPrefab; //체력 게이지 프리팹
     private Slider HPSlider; //체력 게이지
@@ -27,12 +27,10 @@ public class MonkeyStone : LivingEntity
         power = basePower + roundPower * (GameManager.instance.Round - 1); //공격력
         health = baseHP + roundHP * (GameManager.instance.Round - 1); //체력
         maxHealth = health;
-        moveSpeed *= 1.5f; //이동속도 변경 
         //originCritical = critical;
 
-        //attackRange = 5f; //공격 범위
-        //attackSpeed = 0.5f; //공격 속도
-        vec3dir = Vector3.left; //기본적으로 왼쪽으로
+        attackRange = 0.5f; //공격 범위
+        attackSpeed = 0.4f; //공격 속도
 
         animators = GetComponentsInChildren<Animator>(); //애니메이터들 가져오기
 
@@ -45,7 +43,7 @@ public class MonkeyStone : LivingEntity
 
         rigid = GetComponent<Rigidbody2D>();
 
-        //isAttack = true;
+        isAttack = true;
     }
     void Update()
     {
@@ -60,34 +58,44 @@ public class MonkeyStone : LivingEntity
             HPSlider.transform.position = Camera.main.WorldToScreenPoint(transform.Find("HPPosition").position);
         }
 
-
-        if (isDie == false && health <= 0)
-        {
-            isDie = true;
-            StartCoroutine(nameof(DestroyCoroutine));
-            moveSpeed = 0;
-        }
-
-        //좌우 이동
-        if (this.transform.position.x < Camera.main.ScreenToWorldPoint(this.transform.position).x + this.GetComponent<BoxCollider2D>().size.x / 2) //왼쪽 화면 넘어갈때
+        //타겟 향하는
+        if (vec3dir.x >= 0)
         {
             transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x) * -1, transform.localScale.y, transform.localScale.z);
-
-            vec3dir = Vector3.right;
-            transform.Translate(vec3dir * Time.deltaTime * moveSpeed);
-
-            //Debug.Log(vec3dir);
-        }
-        else if (this.transform.position.x > -Camera.main.ScreenToWorldPoint(this.transform.position).x - this.GetComponent<BoxCollider2D>().size.x / 2) //오른쪽 화면 넘어갈때
-        {
-            transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
-
-            vec3dir = Vector3.left;
-            transform.Translate(vec3dir * Time.deltaTime * moveSpeed);
         }
         else
         {
+            transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+        }
+
+        //타겟이 정해지지 않았거나 죽었을경우 FindUnit
+        if (target == null || target.GetComponent<LivingEntity>().IsDie == true)
+        {
+            animators[0].SetBool("isAttack", false);
+            //Debug.Log("타겟 찾기");
+            FindUnit();
+        }
+        //타겟이 공격 범위 안에 있을 경우
+        else if (UnitInCircle() == true)
+        {
+            //animators[0].SetBool("isMove", false);
+            //공격
+            if (isAttack == true && isDie == false)
+            {
+                StartCoroutine(nameof(AttackAnim));
+                StartCoroutine(nameof(AttackCoroutine));
+            }
+        }
+        //타겟쪽으로 이동
+        else if (target != null && FoundTargets.Count != 0)
+        {
+            animators[0].SetBool("isAttack", false);
             transform.Translate(vec3dir * Time.deltaTime * moveSpeed);
+        }
+        //맵에 유닛이 없을경우
+        else if (FoundTargets.Count == 0)
+        {
+            animators[0].SetBool("isAttack", false);
         }
     }
 
@@ -95,14 +103,71 @@ public class MonkeyStone : LivingEntity
     public override void OnDamage(int damage, bool isCritical)
     {
         base.OnDamage(damage, isCritical);
+
+        //체력이 0보다 작을경우 파괴
+        if (health <= 0)
+        {
+            isDie = true;
+            StartCoroutine(nameof(DestroyCoroutine));
+            moveSpeed = 0;
+        }
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    public void FindUnit()
     {
-        if (collision.gameObject.tag == "Unit")
+        FoundTargets = new List<GameObject>(GameObject.FindGameObjectsWithTag("Unit"));
+        if (FoundTargets.Count != 0)
         {
-            collision.gameObject.GetComponent<LivingEntity>().OnDamage(power * 5, false);
+            shortDis = Vector3.Distance(transform.position, FoundTargets[0].transform.position); // 첫번째를 기준으로 잡아주기 
+
+            target = FoundTargets[0]; // 첫번째를 먼저 
+            foreach (GameObject found in FoundTargets)
+            {
+                float Distance = Vector3.Distance(gameObject.transform.position, found.transform.position);
+
+                if (Distance < shortDis) // 위에서 잡은 기준으로 거리 재기
+                {
+                    target = found;
+                    shortDis = Distance;
+                }
+            }
+            vec3dir = (target.transform.position - new Vector3(0, 1f, 0)) - transform.position;
+            //vec3dir = target.transform.position - transform.position;
+            vec3dir.Normalize();
         }
+
+    }
+    public bool UnitInCircle()
+    {
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(new Vector2(transform.position.x, transform.position.y), attackRange);
+        for (int i = 0; i < colliders.Length; i++)
+        {
+            if (colliders[i].tag == "Unit")
+            {
+                return true;
+            }
+
+        }
+        return false;
+    }
+
+    //공격 코루틴
+    IEnumerator AttackAnim()
+    {
+        animators[0].SetBool("isAttack", true);
+
+        yield return new WaitForSeconds(animators[0].GetFloat("attackTime")); //공격 애니메이션 타임
+
+        target.GetComponent<LivingEntity>().OnDamage(power, false); //공격
+        animators[0].SetBool("isAttack", false);
+    }
+
+    //공격 쿨타임 코루틴
+    IEnumerator AttackCoroutine()
+    {
+        isAttack = false;
+        yield return new WaitForSeconds(1f / attackSpeed);
+        isAttack = true;
     }
 
     //죽었을때 코루틴
@@ -112,6 +177,13 @@ public class MonkeyStone : LivingEntity
         StopCoroutine(nameof(FlashCoroutine));
         renderer.material = defaultMaterial;
         //Debug.Log("FlashCoroutine 멈춤");
+
+        //죽을때 모든 유닛들에게 피해 입힘
+        GameObject[] foundUnits = GameObject.FindGameObjectsWithTag("Unit");
+        foreach(GameObject foundUnit in foundUnits)
+        {
+            foundUnit.GetComponent<LivingEntity>().OnDamage(power, false);
+        }
 
         Destroy(HPSlider.gameObject); //체력바 파괴
         animators[0].SetBool("isDie", isDie); //isDie로 애니메이션 실행

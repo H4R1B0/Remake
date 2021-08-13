@@ -61,14 +61,6 @@ public class Dewlime : LivingEntity
             HPSlider.transform.position = Camera.main.WorldToScreenPoint(transform.Find("HPPosition").position);
         }
 
-
-        if (isDie == false && health <= 0)
-        {
-            isDie = true;
-            StartCoroutine(nameof(DestroyCoroutine));
-            moveSpeed = 0;
-        }
-
         //타겟 향하는
         if (vec3dir.x >= 0)
         {
@@ -115,6 +107,14 @@ public class Dewlime : LivingEntity
     public override void OnDamage(int damage, bool isCritical)
     {
         base.OnDamage(damage, isCritical);
+
+        //체력이 0보다 작을경우 파괴
+        if (health <= 0)
+        {
+            isDie = true;
+            StartCoroutine(nameof(DestroyCoroutine));
+            moveSpeed = 0;
+        }
     }
 
     public void FindUnit()

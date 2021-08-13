@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Observer : LivingEntity
+public class AncientGuradian : LivingEntity
 {
     private List<GameObject> FoundTargets; //찾은 타겟들
     private float shortDis; //타겟들 중에 가장 짧은 거리
@@ -15,8 +15,6 @@ public class Observer : LivingEntity
 
     public Slider HPSliderPrefab; //체력 게이지 프리팹
     private Slider HPSlider; //체력 게이지
-
-    public GameObject attackPrefab; //공격 프리팹
 
     void Start()
     {
@@ -31,8 +29,8 @@ public class Observer : LivingEntity
         maxHealth = health;
         //originCritical = critical;
 
-        attackRange = 3; //공격 범위
-        attackSpeed = 0.8f; //공격 속도
+        attackRange = 0.5f; //공격 범위
+        attackSpeed = 1f; //공격 속도
 
         animators = GetComponentsInChildren<Animator>(); //애니메이터들 가져오기
 
@@ -59,14 +57,6 @@ public class Observer : LivingEntity
             HPSlider.transform.Find("HPCount").GetComponent<Text>().text = HPSlider.value.ToString();
             HPSlider.transform.Find("AttackCount").GetComponent<Text>().text = "공격력 : " + power.ToString();
             HPSlider.transform.position = Camera.main.WorldToScreenPoint(transform.Find("HPPosition").position);
-        }
-
-
-        if (isDie == false && health <= 0)
-        {
-            isDie = true;
-            StartCoroutine(nameof(DestroyCoroutine));
-            moveSpeed = 0;
         }
 
         //타겟 향하는
@@ -115,6 +105,14 @@ public class Observer : LivingEntity
     {
 
         base.OnDamage(damage, isCritical);
+
+        //체력이 0보다 작을경우 파괴
+        if (health <= 0)
+        {
+            isDie = true;
+            StartCoroutine(nameof(DestroyCoroutine));
+            moveSpeed = 0;
+        }
     }
 
     public void FindUnit()
@@ -159,13 +157,15 @@ public class Observer : LivingEntity
     IEnumerator AttackAnim()
     {
         animators[0].SetBool("isAttack", true);
-
         yield return new WaitForSeconds(animators[0].GetFloat("attackTime")); //공격 애니메이션 타임
 
-        GameObject attack = Instantiate(attackPrefab);
-        attack.transform.position = this.transform.position+new Vector3(0,-0.5f,0);
-        attack.GetComponent<Attack>().SetPowerDir(power, target);
-        power += 5; //공격할때마다 5씩 증가
+        //모든 적 공격
+        GameObject[] foundUnits = GameObject.FindGameObjectsWithTag("Unit");
+        foreach (GameObject foundUnit in foundUnits)
+        {
+            foundUnit.GetComponent<LivingEntity>().OnDamage(power, false); //공격
+        }
+
         animators[0].SetBool("isAttack", false);
     }
 
@@ -186,6 +186,13 @@ public class Observer : LivingEntity
         StopCoroutine(nameof(FlashCoroutine));
         renderer.material = defaultMaterial;
         //Debug.Log("FlashCoroutine 멈춤");
+
+        //사망시 모든 적 2초간 기절
+        GameObject[] foundUnits = GameObject.FindGameObjectsWithTag("Unit");
+        foreach (GameObject foundUnit in foundUnits)
+        {
+            StartCoroutine(target.GetComponent<LivingEntity>().SternCoroutine(2));
+        }
 
         Destroy(HPSlider.gameObject); //체력바 파괴
         animators[0].SetBool("isDie", isDie); //isDie로 애니메이션 실행

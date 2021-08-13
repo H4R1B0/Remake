@@ -3,20 +3,21 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CubeSlime : LivingEntity
+public class LegsyRoom : LivingEntity
 {
     private List<GameObject> FoundTargets; //찾은 타겟들
     private float shortDis; //타겟들 중에 가장 짧은 거리
 
-    private int baseHP = 1000; //기본 체력
-    private int roundHP = 100; //라운드당 추가되는 체력
-    private int basePower = 50; //기본 공격력
+    private int baseHP = 100; //기본 체력
+    private int roundHP = 30; //라운드당 추가되는 체력
+    private int basePower = 60; //기본 공격력
     private int roundPower = 5; //라운드당 추가되는 공격력
 
     public Slider HPSliderPrefab; //체력 게이지 프리팹
     private Slider HPSlider; //체력 게이지
 
-    public GameObject Slime; //죽을때 소환할 슬라임
+    public GameObject attackPrefab; //공격 프리팹
+    public GameObject Mushra; //머쉬라 프리팹
 
     void Start()
     {
@@ -31,8 +32,8 @@ public class CubeSlime : LivingEntity
         maxHealth = health;
         //originCritical = critical;
 
-        attackRange = 0.5f; //공격 범위
-        attackSpeed = 0.8f; //공격 속도
+        attackRange = 6f; //공격 범위
+        attackSpeed = 1.5f; //공격 속도
 
         animators = GetComponentsInChildren<Animator>(); //애니메이터들 가져오기
 
@@ -59,14 +60,6 @@ public class CubeSlime : LivingEntity
             HPSlider.transform.Find("HPCount").GetComponent<Text>().text = HPSlider.value.ToString();
             HPSlider.transform.Find("AttackCount").GetComponent<Text>().text = "공격력 : " + power.ToString();
             HPSlider.transform.position = Camera.main.WorldToScreenPoint(transform.Find("HPPosition").position);
-        }
-
-
-        if (isDie == false && health <= 0)
-        {
-            isDie = true;
-            StartCoroutine(nameof(DestroyCoroutine));
-            moveSpeed = 0;
         }
 
         //타겟 향하는
@@ -113,8 +106,15 @@ public class CubeSlime : LivingEntity
     //피격
     public override void OnDamage(int damage, bool isCritical)
     {
-
         base.OnDamage(damage, isCritical);
+
+        //체력이 0보다 작을경우 파괴
+        if (health <= 0)
+        {
+            isDie = true;
+            StartCoroutine(nameof(DestroyCoroutine));
+            moveSpeed = 0;
+        }
     }
 
     public void FindUnit()
@@ -161,7 +161,9 @@ public class CubeSlime : LivingEntity
         animators[0].SetBool("isAttack", true);
         yield return new WaitForSeconds(animators[0].GetFloat("attackTime")); //공격 애니메이션 타임
 
-        target.GetComponent<LivingEntity>().OnDamage(power, false); //공격
+        GameObject attack = Instantiate(attackPrefab);
+        attack.transform.position = this.transform.position;
+        attack.GetComponent<Attack>().SetPowerDir(power, target);
 
         animators[0].SetBool("isAttack", false);
     }
@@ -174,8 +176,6 @@ public class CubeSlime : LivingEntity
         isAttack = true;
     }
 
-
-
     //죽었을때 코루틴
     IEnumerator DestroyCoroutine()
     {
@@ -184,11 +184,13 @@ public class CubeSlime : LivingEntity
         renderer.material = defaultMaterial;
         //Debug.Log("FlashCoroutine 멈춤");
 
-        //죽을때 슬라임 2마리 소환
-        GameObject slime1 = Instantiate(Slime);
-        slime1.transform.position = this.transform.position;
-        GameObject slime2 = Instantiate(Slime);
-        slime2.transform.position = this.transform.position - new Vector3(1, 0, 0);
+        //죽을때 머쉬라 3마리 소환
+        GameObject Mushra1 = Instantiate(Mushra);
+        Mushra1.transform.position = this.transform.position;
+        GameObject Mushra2 = Instantiate(Mushra);
+        Mushra2.transform.position = this.transform.position - new Vector3(1, 0, 0);
+        GameObject Mushra3 = Instantiate(Mushra);
+        Mushra3.transform.position = this.transform.position - new Vector3(2, 0, 0);
 
         Destroy(HPSlider.gameObject); //체력바 파괴
         animators[0].SetBool("isDie", isDie); //isDie로 애니메이션 실행
