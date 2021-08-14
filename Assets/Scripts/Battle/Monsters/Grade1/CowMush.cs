@@ -90,8 +90,9 @@ public class CowMush : LivingEntity
             }
         }
         //타겟쪽으로 이동
-        else if (target != null && FoundTargets.Count != 0)
+        else if (target != null && UnitInCircle() == false)
         {
+            FindUnit();
             animators[0].SetBool("isAttack", false);
             transform.Translate(vec3dir * Time.deltaTime * moveSpeed);
         }
