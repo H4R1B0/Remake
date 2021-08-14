@@ -7,7 +7,6 @@ using UnityEngine.Tilemaps;
 using UnityEngine.SceneManagement;
 using TMPro;
 
-
 public class GameStartButton : MonoBehaviour
 {
     private GameManager gamemanager; //게임매니저
@@ -28,10 +27,17 @@ public class GameStartButton : MonoBehaviour
 
     private Dictionary<GameObject, Vector3Int> unitPlace; //게임 시작시 유닛들 배치 기억
 
+    private GameObject disabledObjects; //비활성화된 오브젝트 관리
+
+    public GameObject WinLosePanel; //승패 보여줄 패널
+
     void Start()
     {
-        gamemanager = GameManager.instance;
-        player = Player.instance;
+        gamemanager = GameManager.instance; //게임 매니저
+        player = Player.instance; //플레이어
+        disabledObjects = GameObject.Find("DisabledObjects"); //비활성화 오브젝트 관리
+        WinLosePanel.SetActive(false);
+
         //this.GetComponent<Button>().onClick.AddListener(gamemanager.CreateMonster);
 
     }
@@ -53,9 +59,11 @@ public class GameStartButton : MonoBehaviour
         else if (isStart == true && GameObject.FindGameObjectsWithTag("Unit").Length == 0)
         {
             Debug.Log("유닛 패");
+
             isStart = false;
             gamemanager.IsStart = isStart;
-            this.GetComponent<Button>().interactable = true; //게임시작 버튼 활성화
+
+            StartCoroutine(nameof(GameEndFail));
         }
     }
 
@@ -233,6 +241,7 @@ public class GameStartButton : MonoBehaviour
     //유닛이 이겼을때
     IEnumerator GameEndPass()
     {
+        //살아있는 유닛만큼 스타포인트 지급
         GameObject[] foundUnits = GameObject.FindGameObjectsWithTag("Unit");
         foreach (GameObject foundUnit in foundUnits)
         {
@@ -241,14 +250,76 @@ public class GameStartButton : MonoBehaviour
             starPoint.transform.position = Camera.main.WorldToScreenPoint(foundUnit.transform.position + new Vector3(0, -0.5f, 0));
             yield return new WaitForSeconds(0.3f);
         }
+
+        int disableCount = disabledObjects.transform.childCount; //비활성화된 오브젝트 개수 얻기
+        for (int i = disableCount; i > 0; i--)
+        {
+            Transform disabledChild = disabledObjects.transform.GetChild(0); //첫번째 자식
+            disabledChild.gameObject.SetActive(true); //활성화
+            if (disabledChild.gameObject.CompareTag("Unit"))
+            {
+                Debug.Log("유닛 부활");
+                disabledChild.transform.SetParent(null); //최상위 오브젝트로 변경
+            }
+            else if (disabledChild.gameObject.CompareTag("HPSlider") || disabledChild.gameObject.CompareTag("MPSlider"))
+            {
+                disabledChild.transform.SetParent(GameObject.Find("UnitUIManager").transform); //UI는 UI관리자 밑에
+            }
+        }
+
+        //승패 패널 활성화
+        WinLosePanel.SetActive(true);
+        WinLosePanel.transform.GetChild(0).GetComponent<TextMeshProUGUI>().color = new Color(0 / 255f, 156 / 255f, 255 / 255f);
+        WinLosePanel.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = "승리";
+        yield return new WaitForSeconds(0.5f);
+        WinLosePanel.SetActive(false);
+
         player.Crystal += gamemanager.Round * 10; //해당 라운드마다 플레이어에게 수정 지급
         gamemanager.Round++; //라운드 증가
         
         MovePlace();
+
+        yield return new WaitForSeconds(1);
+
         this.GetComponent<Button>().interactable = true; //게임시작 버튼 활성화
     }
     IEnumerator GameEndFail()
     {
-        yield return new WaitForSeconds(0);
+        //모든 몬스터 파괴
+        GameObject[] foundMonsters = GameObject.FindGameObjectsWithTag("Monster");
+        foreach (GameObject foundMonster in foundMonsters)
+        {
+            Destroy(foundMonster.gameObject);
+            yield return null;
+        }
+
+        int disableCount = disabledObjects.transform.childCount; //비활성화된 오브젝트 개수 얻기
+        for (int i = disableCount; i > 0; i--)
+        {
+            Transform disabledChild = disabledObjects.transform.GetChild(0); //첫번째 자식
+            disabledChild.gameObject.SetActive(true); //활성화
+            if (disabledChild.gameObject.CompareTag("Unit"))
+            {
+                Debug.Log("유닛 부활");
+                disabledChild.transform.SetParent(null); //최상위 오브젝트로 변경
+            }
+            else if (disabledChild.gameObject.CompareTag("HPSlider") || disabledChild.gameObject.CompareTag("MPSlider"))
+            {
+                disabledChild.transform.SetParent(GameObject.Find("UnitUIManager").transform); //UI는 UI관리자 밑에
+            }
+        }
+
+        //승패 패널 활성화
+        WinLosePanel.SetActive(true);
+        WinLosePanel.transform.GetChild(0).GetComponent<TextMeshProUGUI>().color = new Color(255 / 255f, 0 / 255f, 0 / 255f);
+        WinLosePanel.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = "패배";
+        yield return new WaitForSeconds(0.5f);
+        WinLosePanel.SetActive(false);
+
+        MovePlace();
+
+        yield return new WaitForSeconds(1);
+
+        this.GetComponent<Button>().interactable = true; //게임시작 버튼 활성화
     }
 }
