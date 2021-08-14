@@ -81,21 +81,13 @@ public class LivingEntity : MonoBehaviour
     //OnDamage 메서드
     public virtual void OnDamage(int damage, bool isCritical)
     {
-
-
-        if (isCritical == true)
-        {
-            //데미지 표시
-            //DGText.transform.localScale = new Vector3(1.3f, 1.3f, 1);
-            //DGText.GetComponent<Text>().color = Color.red;
-        }
         health -= damage;
 
         GameObject DamageText = Instantiate(UIText, Camera.main.WorldToScreenPoint(this.transform.position + new Vector3(0, 1, 0)), Quaternion.identity);
         DamageText.GetComponent<UIText>().Number = damage;
 
         //mana += 5; //피격시 마나 5획득
-        if (runningCoroutine != null)
+        if (runningCoroutine == null)
         {
             StartCoroutine(nameof(FlashCoroutine));
         }

@@ -177,6 +177,27 @@ public class Spinps : LivingEntity
         }
         return false;
     }
+    public override void OnDamage(int damage, bool isCritical)
+    {
+        base.OnDamage(damage, isCritical);
+
+        //체력이 0보다 작을경우 비활성화
+        if (health <= 0)
+        {
+            StopAllCoroutines();
+            isAttack = true;
+            health = maxHealth;
+            mana = 0;
+            renderer.material = defaultMaterial;
+            GameObject disabledObjects = GameObject.Find("DisabledObjects"); //비활성화 관리하는 오브젝트
+            transform.SetParent(disabledObjects.transform);
+            HPSlider.transform.SetParent(disabledObjects.transform);
+            MPSlider.transform.SetParent(disabledObjects.transform);
+            HPSlider.gameObject.SetActive(false);
+            MPSlider.gameObject.SetActive(false);
+            this.gameObject.SetActive(false);
+        }
+    }
 
     //공격 코루틴
     IEnumerator AttackAnim()
