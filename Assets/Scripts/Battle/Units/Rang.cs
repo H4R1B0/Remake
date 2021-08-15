@@ -17,7 +17,8 @@ public class Rang : LivingEntity
 
     private bool isAlter; //분신인지
 
-    public GameObject rang; //분신 랑
+    public GameObject RangPrefab; //분신 랑
+    private GameObject rang1, rang2; //분신 1,2
 
     //public bool isWeapon = true; //무기가 있는지
     //public bool isWeaponRotate = true; //무기가 회전하는지
@@ -61,7 +62,7 @@ public class Rang : LivingEntity
 
         isSkill = false;
 
-        isAlter = false;
+        isAlter = false; //본체
     }
     private void Start()
     {
@@ -211,6 +212,16 @@ public class Rang : LivingEntity
         //체력이 0보다 작을경우 비활성화
         if (health <= 0)
         {
+            //분신 파괴
+            if (rang1 != null)
+            {
+                Destroy(rang1);
+            }
+            if (rang2 != null)
+            {
+                Destroy(rang2);
+            }
+
             StopAllCoroutines();
             isAttack = true;
             health = maxHealth;
@@ -260,13 +271,19 @@ public class Rang : LivingEntity
     //랑 스킬 : 8초간 본체 성능의 40(+10)% 2마리 랑 복제품 소환
     IEnumerator RangSkill()
     {
-        GameObject rang1, rang2;
-        rang1 = Instantiate(rang);
+        //GameObject rang1, rang2;
+        rang1 = Instantiate(RangPrefab);
+        rang1.gameObject.tag = "Alter"; //태그 분신으로 변경
+        rang1.GetComponent<Rang>().defaultMaterial = defaultMaterial; //이미지 메테리얼 저장
+        rang1.transform.GetChild(0).GetComponent<SpriteRenderer>().material = defaultMaterial; //분신 소환시 플래시 오류 수정
         rang1.transform.localScale = new Vector3(transform.localScale.x * 0.6f, transform.localScale.y * 0.6f, transform.localScale.z);
         rang1.transform.position = new Vector3(transform.position.x - 0.5f, transform.position.y - 0.5f, transform.position.z);
         rang1.GetComponent<Rang>().SetAlter(power * (3 + level) * 10 / 100, maxHealth * (3 + level) * 10 / 100);
 
-        rang2 = Instantiate(rang);
+        rang2 = Instantiate(RangPrefab);
+        rang2.gameObject.tag = "Alter"; //태그 분신으로 변경
+        rang2.GetComponent<Rang>().defaultMaterial = defaultMaterial; //이미지 메테리얼 저장
+        rang2.transform.GetChild(0).GetComponent<SpriteRenderer>().material = defaultMaterial; //분신 소환시 플래시 오류 수정
         rang2.transform.localScale = new Vector3(transform.localScale.x * 0.6f, transform.localScale.y * 0.6f, transform.localScale.z);
         rang2.transform.position = new Vector3(transform.position.x - 1f, transform.position.y - 0.5f, transform.position.z);
         rang2.GetComponent<Rang>().SetAlter(power * (3 + level) * 10 / 100, maxHealth * (3 + level) * 10 / 100);
