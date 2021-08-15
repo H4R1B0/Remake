@@ -83,10 +83,15 @@ public class LivingEntity : MonoBehaviour
     {
         health -= damage;
 
+        //유닛인 경우에 마나 회복
+        if (this.gameObject.tag == "Unit")
+        {
+            mana += 5;
+        }
+
         GameObject DamageText = Instantiate(UIText, Camera.main.WorldToScreenPoint(this.transform.position + new Vector3(0, 1, 0)), Quaternion.identity);
         DamageText.GetComponent<UIText>().Number = damage;
 
-        //mana += 5; //피격시 마나 5획득
         if (runningCoroutine == null)
         {
             StartCoroutine(nameof(FlashCoroutine));
