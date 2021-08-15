@@ -241,6 +241,13 @@ public class GameStartButton : MonoBehaviour
     //유닛이 이겼을때
     IEnumerator GameEndPass()
     {
+        //분신들 모두 파괴
+        GameObject[] foundAlters = GameObject.FindGameObjectsWithTag("Alter");
+        foreach (GameObject foundAlter in foundAlters)
+        {
+            Destroy(foundAlter);
+        }
+
         //살아있는 유닛만큼 스타포인트 지급
         GameObject[] foundUnits = GameObject.FindGameObjectsWithTag("Unit");
         foreach (GameObject foundUnit in foundUnits)
@@ -283,6 +290,8 @@ public class GameStartButton : MonoBehaviour
 
         this.GetComponent<Button>().interactable = true; //게임시작 버튼 활성화
     }
+
+    //몬스터가 이겼을때
     IEnumerator GameEndFail()
     {
         //모든 몬스터 파괴
@@ -291,6 +300,13 @@ public class GameStartButton : MonoBehaviour
         {
             Destroy(foundMonster.gameObject);
             yield return null;
+        }
+
+        //분신들 모두 파괴
+        GameObject[] foundAlters = GameObject.FindGameObjectsWithTag("Alter");
+        foreach (GameObject foundAlter in foundAlters)
+        {
+            Destroy(foundAlter);
         }
 
         int disableCount = disabledObjects.transform.childCount; //비활성화된 오브젝트 개수 얻기
