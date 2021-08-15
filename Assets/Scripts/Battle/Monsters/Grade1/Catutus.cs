@@ -152,6 +152,11 @@ public class Catutus : LivingEntity
         return false;
     }
 
+    public void OnDestroy()
+    {
+        Destroy(HPSlider.gameObject);
+    }
+
     //공격 코루틴
     IEnumerator AttackAnim()
     {
@@ -183,7 +188,7 @@ public class Catutus : LivingEntity
         renderer.material = defaultMaterial;
         //Debug.Log("FlashCoroutine 멈춤");
 
-        Destroy(HPSlider.gameObject); //체력바 파괴
+        //Destroy(HPSlider.gameObject); //체력바 파괴
         animators[0].SetBool("isDie", isDie); //isDie로 애니메이션 실행
         yield return new WaitForSeconds(animators[0].GetFloat("dieTime")); //죽는 모션
         animators[0].speed = 0; //죽은 후에 애니메이션 멈춤

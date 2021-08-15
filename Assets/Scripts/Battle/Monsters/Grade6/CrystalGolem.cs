@@ -166,6 +166,10 @@ public class CrystalGolem : LivingEntity
         maxHealth = maxHealth * 40 / 100;
         health = maxHealth;
     }
+    public void OnDestroy()
+    {
+        Destroy(HPSlider.gameObject);
+    }
 
     //공격 코루틴
     IEnumerator AttackAnim()
@@ -199,7 +203,7 @@ public class CrystalGolem : LivingEntity
         renderer.material = defaultMaterial;
         //Debug.Log("FlashCoroutine 멈춤");
 
-        Destroy(HPSlider.gameObject); //체력바 파괴
+        //Destroy(HPSlider.gameObject); //체력바 파괴
         animators[0].SetBool("isDie", isDie); //isDie로 애니메이션 실행
         yield return new WaitForSeconds(animators[0].GetFloat("dieTime")); //죽는 모션
         animators[0].speed = 0; //죽은 후에 애니메이션 멈춤
@@ -219,6 +223,7 @@ public class CrystalGolem : LivingEntity
             for (int i = 0; i < crystalgolems.Length; i++)
             {
                 crystalgolems[i] = Instantiate(this.gameObject);
+                crystalgolems[i].gameObject.tag = "Alter"; //태그 분신으로 변경
                 crystalgolems[i].transform.localScale = new Vector3(transform.localScale.x * 0.6f, transform.localScale.y * 0.6f, transform.localScale.z);
                 crystalgolems[i].transform.position = new Vector3(transform.position.x - 0.5f*(i+1), transform.position.y - 0.5f, transform.position.z);
                 crystalgolems[i].GetComponent<CrystalGolem>().SetAlter();
