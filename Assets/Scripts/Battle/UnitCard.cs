@@ -60,17 +60,35 @@ public class UnitCard : MonoBehaviour
                 //유닛 판매시에 되돌려받기위해 비용 저장
                 unit.GetComponent<LivingEntity>().UnitPrice = crystal;
 
-                //현재 보여지는 유닛카드에 해당하는 이름이 있으면 포함해서 수정 비용 증가
-                for(int i=0;i< GameObject.Find("CardSelects").transform.childCount; i++)
+                //유닛 레벨 지정
+                if (unitName == "Baroque" || unitName == "Fenny" || unitName == "Jenis" || unitName == "Nano" || unitName == "Orihiru" || unitName == "Squil")
                 {
-                    if(GameObject.Find("CardSelects").transform.GetChild(i).name == unitName + "Card(Clone)")
+                    unit.GetComponent<LivingEntity>().Level = 1;
+                }
+                else if (unitName == "Anima" || unitName == "Destiny" || unitName == "Dicafrio" || unitName == "Hades" || unitName == "Rang" || unitName == "Wright")
+                {
+                    unit.GetComponent<LivingEntity>().Level = 2;
+                }
+                else if (unitName == "Batti" || unitName == "Beomho" || unitName == "Kelsy" || unitName == "Rifi" || unitName == "Spinps")
+                {
+                    unit.GetComponent<LivingEntity>().Level = 3;
+                }
+                else if (unitName == "Crusher" || unitName == "Kirabee" || unitName == "Tomb")
+                {
+                    unit.GetComponent<LivingEntity>().Level = 4;
+                }
+
+                //현재 보여지는 유닛카드에 해당하는 이름이 있으면 포함해서 수정 비용 증가
+                for (int i = 0; i < GameObject.Find("CardSelects").transform.childCount; i++)
+                {
+                    if (GameObject.Find("CardSelects").transform.GetChild(i).name == unitName + "Card(Clone)")
                     {
                         GameObject.Find("CardSelects").transform.GetChild(i).GetComponent<UnitCard>().crystal += 10; //소환 비용 증가
                     }
-                    
+
                 }
                 //카드에 해당하는 플레이어의 유닛카드 수정 소모 비용 증가
-                GameObject card = player.UnitCards.Find(x => x.name == unitName + "Card"); 
+                GameObject card = player.UnitCards.Find(x => x.name == unitName + "Card");
                 card.GetComponent<UnitCard>().crystal += 10; //소환 비용 증가
                 player.CallUnitCount++; //유닛 소환 수 증가
                 Debug.Log(player.CallUnitCount);
