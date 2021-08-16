@@ -29,8 +29,8 @@ public class RockSoldierWeapon : Attack
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        //타겟과 충돌시에 공격, 관통
-        if (collision.gameObject.tag=="Unit")
+        //타겟과 충돌시에 공격
+        if (collision.gameObject.tag == "Unit")
         {
             collision.gameObject.GetComponent<LivingEntity>().OnDamage(power, false);
             Destroy(this.gameObject);

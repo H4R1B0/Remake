@@ -20,6 +20,7 @@ public class CowmushWeapon : Attack
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        //°üÅë
         if(collision.gameObject.tag == "Unit")
         {
             collision.gameObject.GetComponent<LivingEntity>().OnDamage(power, false);
