@@ -15,8 +15,6 @@ public class Rang : LivingEntity
 
     private bool isSkill; //스킬 사용 가능 여부
 
-    private bool isAlter; //분신인지
-
     public GameObject RangPrefab; //분신 랑
     private GameObject rang1, rang2; //분신 1,2
 
@@ -273,7 +271,6 @@ public class Rang : LivingEntity
     {
         //GameObject rang1, rang2;
         rang1 = Instantiate(RangPrefab);
-        rang1.gameObject.tag = "Alter"; //태그 분신으로 변경
         rang1.GetComponent<Rang>().defaultMaterial = defaultMaterial; //이미지 메테리얼 저장
         rang1.transform.GetChild(0).GetComponent<SpriteRenderer>().material = defaultMaterial; //분신 소환시 플래시 오류 수정
         rang1.transform.localScale = new Vector3(transform.localScale.x * 0.6f, transform.localScale.y * 0.6f, transform.localScale.z);
@@ -281,7 +278,6 @@ public class Rang : LivingEntity
         rang1.GetComponent<Rang>().SetAlter(power * (3 + level) * 10 / 100, maxHealth * (3 + level) * 10 / 100);
 
         rang2 = Instantiate(RangPrefab);
-        rang2.gameObject.tag = "Alter"; //태그 분신으로 변경
         rang2.GetComponent<Rang>().defaultMaterial = defaultMaterial; //이미지 메테리얼 저장
         rang2.transform.GetChild(0).GetComponent<SpriteRenderer>().material = defaultMaterial; //분신 소환시 플래시 오류 수정
         rang2.transform.localScale = new Vector3(transform.localScale.x * 0.6f, transform.localScale.y * 0.6f, transform.localScale.z);

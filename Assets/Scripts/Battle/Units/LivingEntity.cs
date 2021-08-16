@@ -66,6 +66,14 @@ public class LivingEntity : MonoBehaviour
         }
     }
 
+    protected bool isAlter = false; //분신인지 확인
+    public bool IsAlter
+    {
+        get
+        {
+            return isAlter;
+        }
+    }
     protected int unitPirce = 0; //유닛 생성 비용이자 파는 비용
     public int UnitPrice
     {
