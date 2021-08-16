@@ -14,6 +14,10 @@ public class LivingEntity : MonoBehaviour
         {
             return level;
         }
+        set
+        {
+            level = value;
+        }
     }
     protected int power = 30; //공격력
     protected int originPower; //원래 공격력

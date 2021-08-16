@@ -25,7 +25,7 @@ public class Rang : LivingEntity
     //public GameObject attackPrefab; //공격 프리팹
     private void Awake()
     {
-        level = 1; //유닛 레벨
+        //level = 1; //유닛 레벨
 
         //생성시 원래 공격력과 체력 저장
         originPower = 70; //원래 공격력

@@ -26,7 +26,7 @@ public class Wright : LivingEntity
 
     private void Start()
     {
-        level = 1; //À¯´Ö ·¹º§
+        //level = 1; //À¯´Ö ·¹º§
 
         tribe = "Mammal";
 

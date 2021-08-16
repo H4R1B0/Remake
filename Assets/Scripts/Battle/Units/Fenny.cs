@@ -24,7 +24,7 @@ public class Fenny : LivingEntity
 
     private void Start()
     {
-        level = 1; //유닛 레벨
+        //level = 1; //유닛 레벨
 
         //생성시 원래 공격력과 체력 저장
         originPower = 50; //원래 공격력
