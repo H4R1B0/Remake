@@ -109,7 +109,7 @@ public class UnitControl : MonoBehaviour
             //Debug.Log("마우스 업");
 
             Vector2 touchPos = Camera.main.ScreenToWorldPoint(Input.mousePosition); //터치한 좌표값 얻기
-            Debug.Log(touchPos);
+            //Debug.Log(touchPos);
             RaycastHit2D hitInformation = Physics2D.Raycast(touchPos, Camera.main.transform.forward); //터치한 오브젝트
 
             //Debug.Log(hitInformation.transform);
