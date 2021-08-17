@@ -16,14 +16,7 @@ public class RockSoldierWeapon : Attack
     void Update()
     {
         //총알이 화면 밖으로 나갈경우 파괴
-        if (this.transform.position.x < Camera.main.ScreenToWorldPoint(this.transform.position).x //왼쪽 화면 넘어갈떄
-            || this.transform.position.x > -Camera.main.ScreenToWorldPoint(this.transform.position).x //오른쪽 화면 넘어갈때
-            || this.transform.position.y < Camera.main.ScreenToWorldPoint(this.transform.position).y //아래 화면 넘어갈때
-            || this.transform.position.y > -Camera.main.ScreenToWorldPoint(this.transform.position).y //위 화면 넘어갈때
-           )
-        {
-            Destroy(this.gameObject);
-        }
+        CheckInScreen();
         transform.Translate(vec3dir * Time.deltaTime * moveSpeed);
     }
 

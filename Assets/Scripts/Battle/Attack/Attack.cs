@@ -42,4 +42,14 @@ public class Attack : MonoBehaviour
         float target_Y = start.y + (end.y - start.y) * time + heigh * (1 - (Mathf.Abs(0.5f - time) / 0.5f) * (Mathf.Abs(0.5f - time) / 0.5f));
         this.transform.position = new Vector3(target_X, target_Y);
     }
+
+    //화면 넘어가면 파괴
+    protected void CheckInScreen()
+    {
+        Vector3 targetScreenPos = Camera.main.WorldToScreenPoint(this.gameObject.transform.position);
+        if (targetScreenPos.x > Screen.width || targetScreenPos.x < 0 || targetScreenPos.y > Screen.height || targetScreenPos.y < 0)
+        {
+            Destroy(this.gameObject);
+        }
+    }
 }

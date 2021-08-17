@@ -12,6 +12,7 @@ public class WrightWeapon : Attack
     void Update()
     {
         transform.Translate(vec3dir * Time.deltaTime * moveSpeed);
-        //Debug.Log(vec3dir);
+        //총알이 화면 밖으로 나갈경우 파괴
+        CheckInScreen();
     }
 }

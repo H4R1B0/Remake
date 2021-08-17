@@ -22,14 +22,9 @@ public class DewlimeWeapon : Attack
     {
         //포물선 이동
         Parabolic(startPos, target.transform.position, (Time.time - preTime) / duration);
-        //포물선으로 이동
-        //this.transform.position = Vector3.Slerp(transform.position, target.transform.position + (Vector3)target.GetComponent<BoxCollider2D>().offset, 0.02f);
-        //transform.Translate(vec3dir * Time.deltaTime * moveSpeed);
 
         //총알이 화면 밖으로 나갈경우 파괴
-        if (this.transform.position.x < Camera.main.ScreenToWorldPoint(this.transform.position).x)
-            Destroy(this.gameObject);
-        //Debug.Log(Camera.main.ScreenToWorldPoint(this.transform.position));
+        CheckInScreen();
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

@@ -16,8 +16,7 @@ public class SwimmerWeapon : Attack
         }
 
         //총알이 화면 밖으로 나갈경우 파괴
-        if (this.transform.position.x < Camera.main.ScreenToWorldPoint(this.transform.position).x)
-            Destroy(this.gameObject);
+        CheckInScreen();
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

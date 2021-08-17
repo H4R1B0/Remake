@@ -23,8 +23,6 @@ public class DoubleDanceFireWeapon : Attack
         Parabolic(startPos, target.transform.position, (Time.time - preTime) / duration);
 
         //총알이 화면 밖으로 나갈경우 파괴
-        if (this.transform.position.x < Camera.main.ScreenToWorldPoint(this.transform.position).x)
-            Destroy(this.gameObject);
-        //Debug.Log(Camera.main.ScreenToWorldPoint(this.transform.position));
+        CheckInScreen();
     }
 }
