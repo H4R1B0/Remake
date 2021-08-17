@@ -3,40 +3,37 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class TrumpetStone : LivingEntity
+public class TrumpetStone : Monster
 {
-    private List<GameObject> FoundTargets; //Ã£Àº Å¸°Ùµé
-    private float shortDis; //Å¸°Ùµé Áß¿¡ °¡Àå ÂªÀº °Å¸®
+    private int attackCount;//ê³µê²© ì¹´ìš´íŠ¸
 
-    private int baseHP = 400; //±âº» Ã¼·Â
-    private int roundHP = 50; //¶ó¿îµå´ç Ãß°¡µÇ´Â Ã¼·Â
-    private int basePower = 30; //±âº» °ø°İ·Â
-    private int roundPower = 4; //¶ó¿îµå´ç Ãß°¡µÇ´Â °ø°İ·Â
-
-    private int attackCount;//°ø°İ Ä«¿îÆ®
-
-    public Slider HPSliderPrefab; //Ã¼·Â °ÔÀÌÁö ÇÁ¸®ÆÕ
-    private Slider HPSlider; //Ã¼·Â °ÔÀÌÁö
+    private void Awake()
+    {
+        baseHP = 400; //ê¸°ë³¸ ì²´ë ¥
+        roundHP = 50; //ë¼ìš´ë“œë‹¹ ì¶”ê°€ë˜ëŠ” ì²´ë ¥
+        basePower = 30; //ê¸°ë³¸ ê³µê²©ë ¥
+        roundPower = 4; //ë¼ìš´ë“œë‹¹ ì¶”ê°€ë˜ëŠ” ê³µê²©ë ¥
+    }
 
     void Start()
     {
         isDie = false;
 
-        defaultMaterial = transform.GetChild(0).GetComponent<SpriteRenderer>().material; //ÀÌ¹ÌÁö ¸ŞÅ×¸®¾ó ÀúÀå
-        renderer = GetComponentInChildren<SpriteRenderer>();
+        defaultMaterial = transform.GetChild(0).GetComponent<SpriteRenderer>().material; //ì´ë¯¸ì§€ ë©”í…Œë¦¬ì–¼ ì €ì¥
+        spriteRenderer = GetComponentInChildren<SpriteRenderer>();
 
-        //»ı¼º½Ã ¿ø·¡ °ø°İ·Â°ú Ã¼·Â ÀúÀå
-        power = basePower + roundPower * (GameManager.instance.Round - 1); //°ø°İ·Â
-        health = baseHP + roundHP * (GameManager.instance.Round - 1); //Ã¼·Â
+        //ìƒì„±ì‹œ ì›ë˜ ê³µê²©ë ¥ê³¼ ì²´ë ¥ ì €ì¥
+        power = basePower + roundPower * (GameManager.instance.Round - 1); //ê³µê²©ë ¥
+        health = baseHP + roundHP * (GameManager.instance.Round - 1); //ì²´ë ¥
         maxHealth = health;
         //originCritical = critical;
 
-        attackRange = 0.5f; //°ø°İ ¹üÀ§
-        attackSpeed = 2f; //°ø°İ ¼Óµµ
+        attackRange = 0.5f; //ê³µê²© ë²”ìœ„
+        attackSpeed = 2f; //ê³µê²© ì†ë„
 
-        animators = GetComponentsInChildren<Animator>(); //¾Ö´Ï¸ŞÀÌÅÍµé °¡Á®¿À±â
+        animators = GetComponentsInChildren<Animator>(); //ì• ë‹ˆë©”ì´í„°ë“¤ ê°€ì ¸ì˜¤ê¸°
 
-        //HP, MP »ı¼º
+        //HP, MP ìƒì„±
         HPSlider = Instantiate(HPSliderPrefab, Camera.main.WorldToScreenPoint(transform.Find("HPPosition").position), Quaternion.identity);
         HPSlider.transform.SetParent(GameObject.Find("UnitUIManager").transform);
         HPSlider.maxValue = maxHealth;
@@ -46,11 +43,11 @@ public class TrumpetStone : LivingEntity
         rigid = GetComponent<Rigidbody2D>();
 
         isAttack = true;
-        attackCount = 0; //°ø°İ Ä«¿îÆ® ÃÊ±âÈ­
+        attackCount = 0; //ê³µê²© ì¹´ìš´íŠ¸ ì´ˆê¸°í™”
     }
     void Update()
     {
-        //Ã¼·Â °ÔÀÌÁö°ª, À§Ä¡ º¯°æ
+        //ì²´ë ¥ ê²Œì´ì§€ê°’, ìœ„ì¹˜ ë³€ê²½
         HPSlider.value = health;
         HPSlider.maxValue = maxHealth;
         //HP
@@ -58,11 +55,11 @@ public class TrumpetStone : LivingEntity
         if (HPSlider != null)
         {
             HPSlider.transform.Find("HPCount").GetComponent<Text>().text = HPSlider.value.ToString();
-            HPSlider.transform.Find("AttackCount").GetComponent<Text>().text = "°ø°İ·Â : " + power.ToString();
+            HPSlider.transform.Find("AttackCount").GetComponent<Text>().text = "ê³µê²©ë ¥ : " + power.ToString();
             HPSlider.transform.position = Camera.main.WorldToScreenPoint(transform.Find("HPPosition").position);
         }
 
-        //Å¸°Ù ÇâÇÏ´Â
+        //íƒ€ê²Ÿ í–¥í•˜ëŠ”
         if (vec3dir.x >= 0)
         {
             transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x) * -1, transform.localScale.y, transform.localScale.z);
@@ -72,44 +69,44 @@ public class TrumpetStone : LivingEntity
             transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
         }
 
-        //Å¸°ÙÀÌ Á¤ÇØÁöÁö ¾Ê¾Ò°Å³ª Á×¾úÀ»°æ¿ì FindUnit
+        //íƒ€ê²Ÿì´ ì •í•´ì§€ì§€ ì•Šì•˜ê±°ë‚˜ ì£½ì—ˆì„ê²½ìš° FindUnit
         if (target == null || target.GetComponent<LivingEntity>().IsDie == true)
         {
             animators[0].SetBool("isAttack", false);
-            //Debug.Log("Å¸°Ù Ã£±â");
+            //Debug.Log("íƒ€ê²Ÿ ì°¾ê¸°");
             FindUnit();
         }
-        //Å¸°ÙÀÌ °ø°İ ¹üÀ§ ¾È¿¡ ÀÖÀ» °æ¿ì
+        //íƒ€ê²Ÿì´ ê³µê²© ë²”ìœ„ ì•ˆì— ìˆì„ ê²½ìš°
         else if (UnitInCircle() == true)
         {
             //animators[0].SetBool("isMove", false);
-            //°ø°İ
+            //ê³µê²©
             if (isAttack == true && isDie == false)
             {
                 StartCoroutine(nameof(AttackAnim));
                 StartCoroutine(nameof(AttackCoroutine));
             }
         }
-        //Å¸°ÙÂÊÀ¸·Î ÀÌµ¿
+        //íƒ€ê²Ÿìª½ìœ¼ë¡œ ì´ë™
         else if (target != null && UnitInCircle() == false)
         {
             FindUnit();
             animators[0].SetBool("isAttack", false);
             transform.Translate(vec3dir * Time.deltaTime * moveSpeed);
         }
-        //¸Ê¿¡ À¯´ÖÀÌ ¾øÀ»°æ¿ì
+        //ë§µì— ìœ ë‹›ì´ ì—†ì„ê²½ìš°
         else if (FoundTargets.Count == 0)
         {
             animators[0].SetBool("isAttack", false);
         }
     }
 
-    //ÇÇ°İ
+    //í”¼ê²©
     public override void OnDamage(int damage, bool isCritical)
     {
         base.OnDamage(damage, isCritical);
 
-        //Ã¼·ÂÀÌ 0º¸´Ù ÀÛÀ»°æ¿ì ÆÄ±«
+        //ì²´ë ¥ì´ 0ë³´ë‹¤ ì‘ì„ê²½ìš° íŒŒê´´
         if (health <= 0)
         {
             isDie = true;
@@ -123,14 +120,14 @@ public class TrumpetStone : LivingEntity
         FoundTargets = new List<GameObject>(GameObject.FindGameObjectsWithTag("Unit"));
         if (FoundTargets.Count != 0)
         {
-            shortDis = Vector3.Distance(transform.position, FoundTargets[0].transform.position); // Ã¹¹øÂ°¸¦ ±âÁØÀ¸·Î Àâ¾ÆÁÖ±â 
+            shortDis = Vector3.Distance(transform.position, FoundTargets[0].transform.position); // ì²«ë²ˆì§¸ë¥¼ ê¸°ì¤€ìœ¼ë¡œ ì¡ì•„ì£¼ê¸° 
 
-            target = FoundTargets[0]; // Ã¹¹øÂ°¸¦ ¸ÕÀú 
+            target = FoundTargets[0]; // ì²«ë²ˆì§¸ë¥¼ ë¨¼ì € 
             foreach (GameObject found in FoundTargets)
             {
                 float Distance = Vector3.Distance(gameObject.transform.position, found.transform.position);
 
-                if (Distance < shortDis) // À§¿¡¼­ ÀâÀº ±âÁØÀ¸·Î °Å¸® Àç±â
+                if (Distance < shortDis) // ìœ„ì—ì„œ ì¡ì€ ê¸°ì¤€ìœ¼ë¡œ ê±°ë¦¬ ì¬ê¸°
                 {
                     target = found;
                     shortDis = Distance;
@@ -160,13 +157,13 @@ public class TrumpetStone : LivingEntity
         Destroy(HPSlider.gameObject);
     }
 
-    //°ø°İ ÄÚ·çÆ¾
+    //ê³µê²© ì½”ë£¨í‹´
     IEnumerator AttackAnim()
     {
         animators[0].SetBool("isAttack", true);
-        yield return new WaitForSeconds(animators[0].GetFloat("attackTime")); //°ø°İ ¾Ö´Ï¸ŞÀÌ¼Ç Å¸ÀÓ
+        yield return new WaitForSeconds(animators[0].GetFloat("attackTime")); //ê³µê²© ì• ë‹ˆë©”ì´ì…˜ íƒ€ì„
 
-        //20¹øÂ° °ø°İÀÌ ÀûÀ» 3ÃÊ°£ ±âÀı½ÃÅµ´Ï´Ù
+        //20ë²ˆì§¸ ê³µê²©ì´ ì ì„ 3ì´ˆê°„ ê¸°ì ˆì‹œí‚µë‹ˆë‹¤
         if (attackCount == 20)
         {
             attackCount = 0;
@@ -181,7 +178,7 @@ public class TrumpetStone : LivingEntity
         animators[0].SetBool("isAttack", false);
     }
 
-    //°ø°İ ÄğÅ¸ÀÓ ÄÚ·çÆ¾
+    //ê³µê²© ì¿¨íƒ€ì„ ì½”ë£¨í‹´
     IEnumerator AttackCoroutine()
     {
         isAttack = false;
@@ -191,34 +188,34 @@ public class TrumpetStone : LivingEntity
 
 
 
-    //Á×¾úÀ»¶§ ÄÚ·çÆ¾
+    //ì£½ì—ˆì„ë•Œ ì½”ë£¨í‹´
     IEnumerator DestroyCoroutine()
     {
-        //ÇÃ·¡½Ã ÄÚ·çÆ¾ ¸ØÃß°í ¿ø·¡ ¸ŞÅ×¸®¾ó·Î º¹±¸
+        //í”Œë˜ì‹œ ì½”ë£¨í‹´ ë©ˆì¶”ê³  ì›ë˜ ë©”í…Œë¦¬ì–¼ë¡œ ë³µêµ¬
         StopCoroutine(nameof(FlashCoroutine));
-        renderer.material = defaultMaterial;
-        //Debug.Log("FlashCoroutine ¸ØÃã");
+        spriteRenderer.material = defaultMaterial;
+        //Debug.Log("FlashCoroutine ë©ˆì¶¤");
 
-        //Destroy(HPSlider.gameObject); //Ã¼·Â¹Ù ÆÄ±«
-        animators[0].SetBool("isDie", isDie); //isDie·Î ¾Ö´Ï¸ŞÀÌ¼Ç ½ÇÇà
-        yield return new WaitForSeconds(animators[0].GetFloat("dieTime")); //Á×´Â ¸ğ¼Ç
-        animators[0].speed = 0; //Á×Àº ÈÄ¿¡ ¾Ö´Ï¸ŞÀÌ¼Ç ¸ØÃã
+        //Destroy(HPSlider.gameObject); //ì²´ë ¥ë°” íŒŒê´´
+        animators[0].SetBool("isDie", isDie); //isDieë¡œ ì• ë‹ˆë©”ì´ì…˜ ì‹¤í–‰
+        yield return new WaitForSeconds(animators[0].GetFloat("dieTime")); //ì£½ëŠ” ëª¨ì…˜
+        animators[0].speed = 0; //ì£½ì€ í›„ì— ì• ë‹ˆë©”ì´ì…˜ ë©ˆì¶¤
         //Debug.Log(animators[0].GetBool("isDie"));
 
-        StartCoroutine(nameof(FadeoutCoroutine)); //Á×À»¶§ ÆäÀÌµå¾Æ¿ô
-        //yield return new WaitForSeconds(animators[0].GetFloat("dieTime")); //Á×´Â ¸ğ¼Ç ½Ã°£
-        yield return new WaitForSeconds(1); //1ÃÊ
+        StartCoroutine(nameof(FadeoutCoroutine)); //ì£½ì„ë•Œ í˜ì´ë“œì•„ì›ƒ
+        //yield return new WaitForSeconds(animators[0].GetFloat("dieTime")); //ì£½ëŠ” ëª¨ì…˜ ì‹œê°„
+        yield return new WaitForSeconds(1); //1ì´ˆ
 
         //gameObject.SetActive(false);
         Destroy(this.gameObject);
     }
 
-    //ÀÌ¹ÌÁö ÆäÀÌµå¾Æ¿ô
+    //ì´ë¯¸ì§€ í˜ì´ë“œì•„ì›ƒ
     IEnumerator FadeoutCoroutine()
     {
         for (float i = 1f; i > 0; i -= 0.1f)
         {
-            renderer.material.color = new Vector4(1, 1, 1, i);
+            spriteRenderer.material.color = new Vector4(1, 1, 1, i);
             yield return new WaitForSeconds(0.1f);
         }
     }

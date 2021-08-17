@@ -3,24 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Fenny : LivingEntity
+public class Fenny : Unit
 {
-    private List<GameObject> FoundTargets; //찾은 타겟들
-    private float shortDis; //타겟들 중에 가장 짧은 거리
-
-    public Slider HPSliderPrefab; //체력 게이지 프리팹
-    public Slider MPSliderPrefab; //마나 게이지 프리팹
-    private Slider HPSlider; //체력 게이지
-    private Slider MPSlider; //마나 게이지
-
     public GameObject FireBallPrefab; //스킬 사용시 파이어볼
     private GameObject fireBall; //스킬 사용시 파이어볼
-
-    //public bool isWeapon = true; //무기가 있는지
-    //public bool isWeaponRotate = true; //무기가 회전하는지
-    //[ShowIf("isWeapon")] //무기 있을때만 표시
-    //public float attackAnimTime = 0; //공격 애니메이션 쿨타임
-    //public GameObject attackPrefab; //공격 프리팹
 
     private void Start()
     {
@@ -50,7 +36,7 @@ public class Fenny : LivingEntity
         MPSlider.value = mana;
 
         defaultMaterial = transform.GetChild(0).GetComponent<SpriteRenderer>().material; //이미지 메테리얼 저장
-        renderer = GetComponentInChildren<SpriteRenderer>();
+        spriteRenderer = GetComponentInChildren<SpriteRenderer>();
 
         isAttack = true;
     }
@@ -200,7 +186,7 @@ public class Fenny : LivingEntity
             isAttack = true;
             health = maxHealth;
             mana = 0;
-            renderer.material = defaultMaterial;
+            spriteRenderer.material = defaultMaterial;
             GameObject disabledObjects = GameObject.Find("DisabledObjects"); //비활성화 관리하는 오브젝트
             transform.SetParent(disabledObjects.transform);
             HPSlider.transform.SetParent(disabledObjects.transform);

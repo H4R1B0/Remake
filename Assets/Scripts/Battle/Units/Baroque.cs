@@ -4,41 +4,28 @@ using UnityEngine;
 using UnityEngine.UI;
 using NaughtyAttributes;
 
-public class Baroque : LivingEntity
+public class Baroque : Unit
 {
-    private List<GameObject> FoundTargets; //Ã£Àº Å¸°Ùµé
-    private float shortDis; //Å¸°Ùµé Áß¿¡ °¡Àå ÂªÀº °Å¸®
-
-    public Slider HPSliderPrefab; //Ã¼·Â °ÔÀÌÁö ÇÁ¸®ÆÕ
-    public Slider MPSliderPrefab; //¸¶³ª °ÔÀÌÁö ÇÁ¸®ÆÕ
-    private Slider HPSlider; //Ã¼·Â °ÔÀÌÁö
-    private Slider MPSlider; //¸¶³ª °ÔÀÌÁö
-
-    //public bool isWeapon = true; //¹«±â°¡ ÀÖ´ÂÁö
-    //public bool isWeaponRotate = true; //¹«±â°¡ È¸ÀüÇÏ´ÂÁö
-    //[ShowIf("isWeapon")] //¹«±â ÀÖÀ»¶§¸¸ Ç¥½Ã
-    //public float attackAnimTime = 0; //°ø°İ ¾Ö´Ï¸ŞÀÌ¼Ç ÄğÅ¸ÀÓ
-    //public GameObject attackPrefab; //°ø°İ ÇÁ¸®ÆÕ
 
     private void Start()
     {
-        //level = 1; //À¯´Ö ·¹º§
+        //level = 1; //ìœ ë‹› ë ˆë²¨
 
-        //»ı¼º½Ã ¿ø·¡ °ø°İ·Â°ú Ã¼·Â ÀúÀå
-        originPower = 60; //¿ø·¡ °ø°İ·Â
-        power = originPower; //°ø°İ·Â
-        originHealth = 600; //¿ø·¡ Ã¼·Â
-        health = originHealth; //Ã¼·Â
+        //ìƒì„±ì‹œ ì›ë˜ ê³µê²©ë ¥ê³¼ ì²´ë ¥ ì €ì¥
+        originPower = 60; //ì›ë˜ ê³µê²©ë ¥
+        power = originPower; //ê³µê²©ë ¥
+        originHealth = 600; //ì›ë˜ ì²´ë ¥
+        health = originHealth; //ì²´ë ¥
         maxHealth = health;
         mana = 0;
         //originCritical = critical;
 
-        attackRange = 0.5f; //°ø°İ ¹üÀ§
-        attackSpeed = 0.8f; //°ø°İ ¼Óµµ
+        attackRange = 0.5f; //ê³µê²© ë²”ìœ„
+        attackSpeed = 0.8f; //ê³µê²© ì†ë„
 
-        animators = GetComponentsInChildren<Animator>(); //¾Ö´Ï¸ŞÀÌÅÍµé °¡Á®¿À±â
+        animators = GetComponentsInChildren<Animator>(); //ì• ë‹ˆë©”ì´í„°ë“¤ ê°€ì ¸ì˜¤ê¸°
 
-        //HP, MP »ı¼º
+        //HP, MP ìƒì„±
         HPSlider = Instantiate(HPSliderPrefab, Camera.main.WorldToScreenPoint(transform.Find("HPPosition").position), Quaternion.identity);
         HPSlider.transform.SetParent(GameObject.Find("UnitUIManager").transform);
         HPSlider.maxValue = maxHealth;
@@ -47,27 +34,27 @@ public class Baroque : LivingEntity
         MPSlider.transform.SetParent(GameObject.Find("UnitUIManager").transform);
         MPSlider.value = mana;
 
-        defaultMaterial = transform.GetChild(0).GetComponent<SpriteRenderer>().material; //ÀÌ¹ÌÁö ¸ŞÅ×¸®¾ó ÀúÀå
-        renderer = GetComponentInChildren<SpriteRenderer>();
+        defaultMaterial = transform.GetChild(0).GetComponent<SpriteRenderer>().material; //ì´ë¯¸ì§€ ë©”í…Œë¦¬ì–¼ ì €ì¥
+        spriteRenderer = GetComponentInChildren<SpriteRenderer>();
 
         isAttack = true;
     }
     private void Update()
     {
-        //Ã¼·Â °ÔÀÌÁö°ª, À§Ä¡ º¯°æ
+        //ì²´ë ¥ ê²Œì´ì§€ê°’, ìœ„ì¹˜ ë³€ê²½
         HPSlider.value = health;
         MPSlider.value = mana;
         HPSlider.maxValue = maxHealth;
 
         //HP
         HPSlider.transform.Find("HPCount").GetComponent<Text>().text = HPSlider.value.ToString();
-        HPSlider.transform.Find("AttackCount").GetComponent<Text>().text = "°ø°İ·Â : " + power.ToString();
+        HPSlider.transform.Find("AttackCount").GetComponent<Text>().text = "ê³µê²©ë ¥ : " + power.ToString();
         HPSlider.transform.position = Camera.main.WorldToScreenPoint(transform.Find("HPPosition").position);
         //MP
         MPSlider.transform.Find("MPCount").GetComponent<Text>().text = MPSlider.value.ToString();
         MPSlider.transform.position = Camera.main.WorldToScreenPoint(transform.Find("MPPosition").position);
 
-        //Å¸°Ù ÇâÇÏ´Â
+        //íƒ€ê²Ÿ í–¥í•˜ëŠ”
         if (vec3dir.x < 0)
         {
             transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x) * -1, transform.localScale.y, transform.localScale.z);
@@ -77,34 +64,34 @@ public class Baroque : LivingEntity
             transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
         }
 
-        //°ÔÀÓ ½ÃÀÛ
+        //ê²Œì„ ì‹œì‘
         if (GameManager.instance.IsStart == true)
         {
-            //Å¸°ÙÀÌ Á¤ÇØÁöÁö ¾Ê¾Ò°Å³ª Á×¾úÀ»°æ¿ì FindMonster
+            //íƒ€ê²Ÿì´ ì •í•´ì§€ì§€ ì•Šì•˜ê±°ë‚˜ ì£½ì—ˆì„ê²½ìš° FindMonster
             if (target == null || target.GetComponent<LivingEntity>().IsDie == true)
             {
                 animators[1].SetBool("isAttack", false);
-                //Debug.Log("Å¸°Ù Ã£±â");
+                //Debug.Log("íƒ€ê²Ÿ ì°¾ê¸°");
                 FindMonster();
             }
-            //Å¸°ÙÀÌ °ø°İ ¹üÀ§ ¾È¿¡ ÀÖÀ» °æ¿ì
+            //íƒ€ê²Ÿì´ ê³µê²© ë²”ìœ„ ì•ˆì— ìˆì„ ê²½ìš°
             else if (MonsterInCircle() == true)
             {
-                //¸¶³ª 100ÀÏ °æ¿ì ½ºÅ³ ½ÃÀü
+                //ë§ˆë‚˜ 100ì¼ ê²½ìš° ìŠ¤í‚¬ ì‹œì „
                 if (mana >= 100)
                 {
                     Skill();
                     mana = 0;
                 }
                 animators[0].SetBool("isMove", false);
-                //°ø°İ
+                //ê³µê²©
                 if (isAttack == true && isStern == false)
                 {
                     StartCoroutine(nameof(AttackAnim));
                     StartCoroutine(nameof(AttackCoroutine));
                 }
             }
-            //Å¸°ÙÀÌ ÀÖÀ¸³ª ¹üÀ§¿¡¼­ ¹ş¾î³µÀ»°æ¿ì ÀçÅ½»ö
+            //íƒ€ê²Ÿì´ ìˆìœ¼ë‚˜ ë²”ìœ„ì—ì„œ ë²—ì–´ë‚¬ì„ê²½ìš° ì¬íƒìƒ‰
             else if (target != null && MonsterInCircle() == false)
             {
                 animators[0].SetBool("isMove", true);
@@ -112,11 +99,11 @@ public class Baroque : LivingEntity
                 transform.Translate(vec3dir * Time.deltaTime * moveSpeed);
             }
         }
-        //°ÔÀÓ ½ÃÀÛ Àü ÀÌ°Å³ª °ÔÀÓ Á¾·á 
+        //ê²Œì„ ì‹œì‘ ì „ ì´ê±°ë‚˜ ê²Œì„ ì¢…ë£Œ 
         else
         {
-            health = maxHealth; //ÃÖ´ë Ã¼·ÂÀ¸·Î È¸º¹
-            mana = 0; //¸¶³ª ÃÊ±âÈ­
+            health = maxHealth; //ìµœëŒ€ ì²´ë ¥ìœ¼ë¡œ íšŒë³µ
+            mana = 0; //ë§ˆë‚˜ ì´ˆê¸°í™”
 
             animators[1].SetBool("isAttack", false);
         }
@@ -131,18 +118,18 @@ public class Baroque : LivingEntity
 
     private void Skill()
     {
-        Debug.Log("¹Ù·ÎÅ© ½ºÅ³ ½ÃÀü");
-        StartCoroutine(nameof(BaroqueSkill)); //¹Ù·ÎÅ© ½ºÅ³ ½ÃÀü
+        Debug.Log("ë°”ë¡œí¬ ìŠ¤í‚¬ ì‹œì „");
+        StartCoroutine(nameof(BaroqueSkill)); //ë°”ë¡œí¬ ìŠ¤í‚¬ ì‹œì „
     }
 
-    //¸ó½ºÅÍ Ã£±â
+    //ëª¬ìŠ¤í„° ì°¾ê¸°
     public void FindMonster()
     {
-        //Debug.Log("Ã£±â");
+        //Debug.Log("ì°¾ê¸°");
         FoundTargets = new List<GameObject>(GameObject.FindGameObjectsWithTag("Monster"));
         if (FoundTargets.Count != 0)
         {
-            //ÂªÀº °Å¸® Ã£±â
+            //ì§§ì€ ê±°ë¦¬ ì°¾ê¸°
             shortDis = Vector3.Distance(transform.position, FoundTargets[0].transform.position);
             target = FoundTargets[0];
             foreach (GameObject found in FoundTargets)
@@ -159,7 +146,7 @@ public class Baroque : LivingEntity
         }
     }
 
-    //ÀÏÁ¤ÇÑ ¹üÀ§ ³»¿¡ ¸ó½ºÅÍ ÀÖ´ÂÁö È®ÀÎ
+    //ì¼ì •í•œ ë²”ìœ„ ë‚´ì— ëª¬ìŠ¤í„° ìˆëŠ”ì§€ í™•ì¸
     public bool MonsterInCircle()
     {
         Collider2D[] colliders = Physics2D.OverlapCircleAll(new Vector2(transform.position.x, transform.position.y), attackRange);
@@ -178,15 +165,15 @@ public class Baroque : LivingEntity
     {
         base.OnDamage(damage, isCritical);
 
-        //Ã¼·ÂÀÌ 0º¸´Ù ÀÛÀ»°æ¿ì ºñÈ°¼ºÈ­
+        //ì²´ë ¥ì´ 0ë³´ë‹¤ ì‘ì„ê²½ìš° ë¹„í™œì„±í™”
         if (health <= 0)
         {
             StopAllCoroutines();
             isAttack = true;
             health = maxHealth;
             mana = 0;
-            renderer.material = defaultMaterial;
-            GameObject disabledObjects = GameObject.Find("DisabledObjects"); //ºñÈ°¼ºÈ­ °ü¸®ÇÏ´Â ¿ÀºêÁ§Æ®
+            spriteRenderer.material = defaultMaterial;
+            GameObject disabledObjects = GameObject.Find("DisabledObjects"); //ë¹„í™œì„±í™” ê´€ë¦¬í•˜ëŠ” ì˜¤ë¸Œì íŠ¸
             transform.SetParent(disabledObjects.transform);
             HPSlider.transform.SetParent(disabledObjects.transform);
             MPSlider.transform.SetParent(disabledObjects.transform);
@@ -196,20 +183,20 @@ public class Baroque : LivingEntity
         }
     }
 
-    //°ø°İ ÄÚ·çÆ¾
+    //ê³µê²© ì½”ë£¨í‹´
     IEnumerator AttackAnim()
     {
         animators[1].SetBool("isAttack", true);
-        mana += 10; //°ø°İ½Ã ¸¶³ª 10È¹µæ
-        yield return new WaitForSeconds(animators[1].GetFloat("attackTime")); //°ø°İ ÄğÅ¸ÀÓ
-        // ¿ø°Å¸®        
-        target.GetComponent<LivingEntity>().OnDamage(power, false); //°ø°İ
+        mana += 10; //ê³µê²©ì‹œ ë§ˆë‚˜ 10íšë“
+        yield return new WaitForSeconds(animators[1].GetFloat("attackTime")); //ê³µê²© ì¿¨íƒ€ì„
+        // ì›ê±°ë¦¬        
+        target.GetComponent<LivingEntity>().OnDamage(power, false); //ê³µê²©
         //GameObject attack = Instantiate(attackPrefab, transform.position, Quaternion.identity);
         //vec3dir = target.transform.position - transform.position;
         //vec3dir.Normalize();
         //attack.GetComponent<Attack>().target = target;
         //attack.GetComponent<Bullet>().setDir(vec3dir);
-        ////Å©¸®Æ¼ÄÃ
+        ////í¬ë¦¬í‹°ì»¬
         //int rand = Random.Range(0, 100);
         //if (rand >= 0 && rand <= critical)
         //{
@@ -224,25 +211,25 @@ public class Baroque : LivingEntity
         animators[1].SetBool("isAttack", false);
     }
 
-    //°ø°İ ÄğÅ¸ÀÓ ÄÚ·çÆ¾
+    //ê³µê²© ì¿¨íƒ€ì„ ì½”ë£¨í‹´
     IEnumerator AttackCoroutine()
     {
         isAttack = false;
         yield return new WaitForSeconds(1f / attackSpeed);
         isAttack = true;
     }
-    //¹Ù·ÎÅ© ½ºÅ³ : Ã¼·ÂÀ» 200/400/800 È¸º¹ÇÏ°í °ø°İ·ÂÀÌ 10/20/40Áõ°¡ÇÕ´Ï´Ù -> 10ÃÊ°£
+    //ë°”ë¡œí¬ ìŠ¤í‚¬ : ì²´ë ¥ì„ 200/400/800 íšŒë³µí•˜ê³  ê³µê²©ë ¥ì´ 10/20/40ì¦ê°€í•©ë‹ˆë‹¤ -> 10ì´ˆê°„
     IEnumerator BaroqueSkill()
     {
-        //½ºÅ×ÀÌÅÍ½º Çâ»ó
+        //ìŠ¤í…Œì´í„°ìŠ¤ í–¥ìƒ
         Instantiate(StatusUpEffect, this.transform.position + new Vector3(0, 1, 0), Quaternion.identity);
 
-        //Ã¼·Â È¸º¹
+        //ì²´ë ¥ íšŒë³µ
         health = maxHealth > health + (int)(Mathf.Pow(2, level - 1)) * 200 ? health + (int)(Mathf.Pow(2, level - 1)) * 200 : maxHealth;
 
-        //10ÃÊ°£ °ø°İ·Â 2^(level-1)*10 ¸¸Å­ Áõ°¡
+        //10ì´ˆê°„ ê³µê²©ë ¥ 2^(level-1)*10 ë§Œí¼ ì¦ê°€
         power += (int)(Mathf.Pow(2, level - 1)) * 10;
-        yield return new WaitForSeconds(10); //10ÃÊ°£ Áõ°¡
+        yield return new WaitForSeconds(10); //10ì´ˆê°„ ì¦ê°€
         power -= (int)(Mathf.Pow(2, level - 1)) * 10;
     }
 }
