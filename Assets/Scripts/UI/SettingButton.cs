@@ -33,6 +33,18 @@ public class SettingButton : MonoBehaviour
     //홈화면으로 이동
     public void GoLobby()
     {
+        //로비로 이동할때 모든 유닛 파괴 및 수정 돌려줌
+        List<GameObject> foundUnits = new List<GameObject>(GameObject.FindGameObjectsWithTag("Unit"));
+        foreach(GameObject foundUnit in foundUnits)
+        {
+            Player.instance.Crystal += foundUnit.GetComponent<Unit>().UnitPrice; //유닛 판매 비용 돌려주기
+
+            //유닛에 해당하는 플레이어의 유닛카드 수정 소모 비용 감소
+            GameObject card = Player.instance.UnitCards.Find(x => x.name == foundUnit.GetComponent<Unit>().UnitName + "Card");
+            card.GetComponent<UnitCard>().crystal -= 10; //소환 비용 감소
+        }
+
+
         Time.timeScale = 1;
         Player.instance.CallUnitCount = 0;
         GameManager.instance.IsStart = false;
