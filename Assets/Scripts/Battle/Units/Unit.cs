@@ -26,6 +26,19 @@ public class Unit : LivingEntity
         }
     }
 
+    protected string unitName = "";
+    public string UnitName
+    {
+        get
+        {
+            return unitName;
+        }
+        set
+        {
+            unitName = value;
+        }
+    }
+
     
 
     protected string tribe; //Á¾Á·

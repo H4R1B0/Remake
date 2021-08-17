@@ -59,6 +59,7 @@ public class UnitCard : MonoBehaviour
 
                 //유닛 판매시에 되돌려받기위해 비용 저장
                 unit.GetComponent<Unit>().UnitPrice = crystal;
+                unit.GetComponent<Unit>().UnitName = unitName;
 
                 //유닛 레벨 지정
                 if (unitName == "Baroque" || unitName == "Fenny" || unitName == "Jenis" || unitName == "Nano" || unitName == "Orihiru" || unitName == "Squil")
