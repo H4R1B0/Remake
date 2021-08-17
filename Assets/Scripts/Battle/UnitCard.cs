@@ -58,24 +58,24 @@ public class UnitCard : MonoBehaviour
                 player.Crystal -= crystal; //소환 비용만큼 수정 감소
 
                 //유닛 판매시에 되돌려받기위해 비용 저장
-                unit.GetComponent<LivingEntity>().UnitPrice = crystal;
+                unit.GetComponent<Unit>().UnitPrice = crystal;
 
                 //유닛 레벨 지정
                 if (unitName == "Baroque" || unitName == "Fenny" || unitName == "Jenis" || unitName == "Nano" || unitName == "Orihiru" || unitName == "Squil")
                 {
-                    unit.GetComponent<LivingEntity>().Level = 1;
+                    unit.GetComponent<Unit>().Level = 1;
                 }
                 else if (unitName == "Anima" || unitName == "Destiny" || unitName == "Dicafrio" || unitName == "Hades" || unitName == "Rang" || unitName == "Wright")
                 {
-                    unit.GetComponent<LivingEntity>().Level = 2;
+                    unit.GetComponent<Unit>().Level = 2;
                 }
                 else if (unitName == "Batti" || unitName == "Beomho" || unitName == "Kelsy" || unitName == "Rifi" || unitName == "Spinps")
                 {
-                    unit.GetComponent<LivingEntity>().Level = 3;
+                    unit.GetComponent<Unit>().Level = 3;
                 }
                 else if (unitName == "Crusher" || unitName == "Kirabee" || unitName == "Tomb")
                 {
-                    unit.GetComponent<LivingEntity>().Level = 4;
+                    unit.GetComponent<Unit>().Level = 4;
                 }
 
                 //현재 보여지는 유닛카드에 해당하는 이름이 있으면 포함해서 수정 비용 증가

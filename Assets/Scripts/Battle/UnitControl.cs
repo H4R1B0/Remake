@@ -139,7 +139,7 @@ public class UnitControl : MonoBehaviour
                 {
                     Debug.Log("유닛 삭제");
                     UnitBoard.RefreshTile(UnitBoard.WorldToCell(selectedObject.transform.position + adjustVector)); //타일 색 원래대로
-                    player.Crystal += selectedObject.GetComponent<LivingEntity>().UnitPrice; //유닛 판매 비용 돌려주기
+                    player.Crystal += selectedObject.GetComponent<Unit>().UnitPrice; //유닛 판매 비용 돌려주기
                     Destroy(selectedObject.gameObject); //선택된 유닛 삭제
                     
                     player.CallUnitCount--; //플레이어 유닛수 감소

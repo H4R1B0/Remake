@@ -253,7 +253,7 @@ public class GameStartButton : MonoBehaviour
             }
 
             GameObject starPoint = Instantiate(StarPoint, GameObject.Find("BattleUI").transform);
-            starPoint.GetComponent<StarPoint>().Point = foundUnit.GetComponent<LivingEntity>().Level;
+            starPoint.GetComponent<StarPoint>().Point = foundUnit.GetComponent<Unit>().Level;
             starPoint.transform.position = Camera.main.WorldToScreenPoint(foundUnit.transform.position + new Vector3(0, -0.5f, 0));
             yield return new WaitForSeconds(0.3f);
         }
