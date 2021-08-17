@@ -28,12 +28,4 @@ public class FireballObject : Attack
             Destroy(this.gameObject);
         }
     }
-    private void CheckInScreen()
-    {
-        Vector3 targetScreenPos = Camera.main.WorldToScreenPoint(this.gameObject.transform.position);
-        if (targetScreenPos.x > Screen.width || targetScreenPos.x < 0 || targetScreenPos.y > Screen.height || targetScreenPos.y < 0)
-        {
-            Destroy(this.gameObject);
-        }
-    }
 }
