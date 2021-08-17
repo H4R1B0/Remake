@@ -55,7 +55,7 @@ public class UnitControl : MonoBehaviour
                     //마우스 입력 좌표 받기
                     //Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                     unitClone.transform.position = Input.mousePosition + new Vector3(0, 40, 0);
-                    Debug.Log(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+                    //Debug.Log(Camera.main.ScreenToWorldPoint(Input.mousePosition));
                     //unitClone.transform.position = Input.mousePosition;
                     UnitDeletePanel.SetActive(true);
                 }
