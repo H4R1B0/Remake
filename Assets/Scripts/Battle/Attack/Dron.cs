@@ -25,7 +25,7 @@ public class Dron : MonoBehaviour
     public Material FlashWhite; //피격시 변경할 메테리얼
     private Material defaultMaterial; //기본 메테리얼
     //private Coroutine runningCoroutine = null; //실행중인 코루틴
-    private new Renderer renderer; //이미지 렌더러
+    private Renderer spriteRenderer; //이미지 렌더러
 
     private List<GameObject> FoundTargets; //찾은 타겟들
     private float shortDis; //타겟들 중에 가장 짧은 거리
