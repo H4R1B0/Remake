@@ -149,7 +149,7 @@ public class Anima : Unit
     {
         Destroy(HPSlider.gameObject);
         Destroy(MPSlider.gameObject);
-        Destroy(this.gameObject);
+        //Destroy(this.gameObject);
         //GameObject.Find("CallUnitCountText").GetComponent<CallUnitCountText>().RenewText(); //유닛 소환 텍스트 갱신
     }
 

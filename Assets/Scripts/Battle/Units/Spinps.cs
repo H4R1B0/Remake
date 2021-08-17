@@ -123,7 +123,7 @@ public class Spinps : Unit
     {
         Destroy(HPSlider.gameObject);
         Destroy(MPSlider.gameObject);
-        Destroy(this.gameObject);
+        //Destroy(this.gameObject);
     }
 
     //몬스터 찾기

@@ -122,7 +122,7 @@ public class Wright : Unit
     {
         Destroy(HPSlider.gameObject);
         Destroy(MPSlider.gameObject);
-        Destroy(this.gameObject);
+        //Destroy(this.gameObject);
     }
     public override void OnDamage(int damage, bool isCritical)
     {

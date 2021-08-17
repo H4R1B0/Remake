@@ -139,7 +139,7 @@ public class Jenis : Unit
     {
         Destroy(HPSlider.gameObject);
         Destroy(MPSlider.gameObject);
-        Destroy(this.gameObject);
+        //Destroy(this.gameObject);
     }
 
     //일정한 범위 내에 몬스터 있는지 확인

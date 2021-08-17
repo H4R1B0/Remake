@@ -110,7 +110,7 @@ public class Batti : Unit
     {
         Destroy(HPSlider.gameObject);
         Destroy(MPSlider.gameObject);
-        Destroy(this.gameObject);
+        //Destroy(this.gameObject);
     }
 
     private void Skill()
