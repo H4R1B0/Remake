@@ -16,7 +16,7 @@ public class Wright : Unit
     {
         //level = 1; //유닛 레벨
 
-        tribe = "Mammal";
+        //tribe = "Mammal";
 
         //생성시 원래 공격력과 체력 저장
         originPower = 90; //원래 공격력

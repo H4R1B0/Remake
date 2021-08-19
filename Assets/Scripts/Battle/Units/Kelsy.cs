@@ -11,7 +11,7 @@ public class Kelsy : Unit
     {
         //level = 1; //유닛 레벨
 
-        tribe = "Mammal";
+        //tribe = "Mammal";
 
         //생성시 원래 공격력과 체력 저장
         originPower = 30; //원래 공격력
@@ -207,7 +207,8 @@ public class Kelsy : Unit
         GameObject[] foundUnits = GameObject.FindGameObjectsWithTag("Unit");
         foreach (GameObject foundUnit in foundUnits)
         {
-            if (foundUnit.GetComponent<Unit>().Tribe == "Mammal")
+            //유닛의 종족에 메멀이 있는지
+            if (foundUnit.GetComponent<Unit>().Tribe.Contains("Memel"))
             {
                 //스테이터스 향상
                 Instantiate(StatusUpEffect, foundUnit.transform.position + new Vector3(0, 1, 0), Quaternion.identity);
