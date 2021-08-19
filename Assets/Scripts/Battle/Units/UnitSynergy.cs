@@ -20,13 +20,10 @@ public class UnitSynergy : MonoBehaviour
     private List<GameObject> Mecanics; //메카닉 리스트
     private List<GameObject> Guardians; //수호자 리스트
 
-    private void Start()
-    {
-
-    }
     //시너지 적용
     public void SynergyApply()
     {
+        //종족 시너지
         MemelSynergy(); //메멀 시너지
         BeastSynergy(); //비스트 시너지
         RaptorSynergy(); //랩터 시너지
