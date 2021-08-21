@@ -13,18 +13,33 @@ public class Unit : LivingEntity
     public Slider MPSliderPrefab; //마나 게이지 프리팹
     protected Slider MPSlider; //마나 게이지
 
-    protected int level = 0; //유닛 레벨
-    public int Level
+    protected int unitLevel = 1; //유닛 레벨
+    public int UnitLevel
     {
         get
         {
-            return level;
+            return unitLevel;
         }
         set
         {
-            level = value;
+            unitLevel = value;
         }
     }
+
+    protected int starLevel = 0; //스타 레벨
+    public int StarLevel
+    {
+        get
+        {
+            return starLevel;
+        }
+        set
+        {
+            starLevel = value;
+        }
+    }
+
+
 
     protected string unitName = "";
     public string UnitName
@@ -90,6 +105,7 @@ public class Unit : LivingEntity
         }
     }
 
+    protected Coroutine runningRaptorCoroutine = null; //실행중인 랩터 코루틴
     protected int raptorSynergyHealHP = 0; //랩터 시너지로 초당 회복하는 체력
     public int RaptorSynergyHealHP
     {
@@ -161,12 +177,41 @@ public class Unit : LivingEntity
         mana = 100 > mana + count ? mana + count : 100;
     }
 
+    public void SetHealthSynergy()
+    {
+        Debug.Log(this.unitName+"체력 시너지 적용");
+        //체력 시너지
+        health = originHealth + memelSynergyHP + fossilSynergyHP;
+        maxHealth = health;
+    }
+
+    public void SetPowerSynergy()
+    {
+        Debug.Log("공격력 시너지 적용");
+        //공격력 시너지
+        power = originPower + fossilSynergyPower;
+    }
+
+
     //몇초간 count만큼 체력 회복하는 코루틴
     public IEnumerator IncreasingHPCoroutine(int time, int count) //시간, 회복하는 체력량
     {
         for (int i = 0; i < time; i++)
         {
             HealHP(count);
+            yield return new WaitForSeconds(1);
+        }
+    }
+
+    //랩터 시너지 효과
+    protected IEnumerator RaptorSynergyCoroutine()
+    {
+        while (true)
+        {
+            Debug.Log("랩터 시너지 실행");
+            //매초 랩터 시너지 만큼 체력, 공격력 회복
+            HealHP(raptorSynergyHealHP);
+            HealMP(raptorSynergyHealMana);
             yield return new WaitForSeconds(1);
         }
     }
