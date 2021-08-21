@@ -61,22 +61,34 @@ public class UnitCard : MonoBehaviour
                 unit.GetComponent<Unit>().UnitPrice = crystal;
                 unit.GetComponent<Unit>().UnitName = unitName;
 
+                //유닛의 종족 리스트 개수 만큼 유닛시너지 리스트에 추가
+                for(int i = 0; i < unit.GetComponent<Unit>().Tribe.Count; i++)
+                {
+                    GameObject.Find("UnitSynergy").GetComponent<UnitSynergy>().TribeAdd(unit.GetComponent<Unit>().Tribe[i], unit);
+                }
+                //유닛의 직업 리스트 개수 만큼 유닛시너지 리스트에 추가
+                for (int i = 0; i < unit.GetComponent<Unit>().Job.Count; i++)
+                {
+                    GameObject.Find("UnitSynergy").GetComponent<UnitSynergy>().JobAdd(unit.GetComponent<Unit>().Job[i], unit);
+                }
+                GameObject.Find("UnitSynergy").GetComponent<UnitSynergy>().SynergyApply(); //시너지 적용
+
                 //유닛 레벨 지정
                 if (unitName == "Baroque" || unitName == "Fenny" || unitName == "Jenis" || unitName == "Nano" || unitName == "Orihiru" || unitName == "Squil")
                 {
-                    unit.GetComponent<Unit>().Level = 1;
+                    unit.GetComponent<Unit>().StarLevel = 1;
                 }
                 else if (unitName == "Anima" || unitName == "Destiny" || unitName == "Dicafrio" || unitName == "Hades" || unitName == "Rang" || unitName == "Wright")
                 {
-                    unit.GetComponent<Unit>().Level = 2;
+                    unit.GetComponent<Unit>().StarLevel = 2;
                 }
                 else if (unitName == "Batti" || unitName == "Beomho" || unitName == "Kelsy" || unitName == "Rifi" || unitName == "Spinps")
                 {
-                    unit.GetComponent<Unit>().Level = 3;
+                    unit.GetComponent<Unit>().StarLevel = 3;
                 }
                 else if (unitName == "Crusher" || unitName == "Kirabee" || unitName == "Tomb")
                 {
-                    unit.GetComponent<Unit>().Level = 4;
+                    unit.GetComponent<Unit>().StarLevel = 4;
                 }
 
                 //현재 보여지는 유닛카드에 해당하는 이름이 있으면 포함해서 수정 비용 증가

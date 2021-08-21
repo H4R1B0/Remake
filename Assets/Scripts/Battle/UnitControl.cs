@@ -139,9 +139,22 @@ public class UnitControl : MonoBehaviour
                 {
                     Debug.Log("유닛 삭제");
                     UnitBoard.RefreshTile(UnitBoard.WorldToCell(selectedObject.transform.position + adjustVector)); //타일 색 원래대로
-                    player.Crystal += selectedObject.GetComponent<Unit>().UnitPrice; //유닛 판매 비용 돌려주기
+                    player.Crystal += selectedObject.GetComponent<Unit>().UnitPrice; //유닛 판매 비용 돌려주기                    
+
+                    //유닛의 종족 리스트 개수 만큼 유닛시너지 리스트에서 삭제
+                    for (int i = 0; i < selectedObject.GetComponent<Unit>().Tribe.Count; i++)
+                    {
+                        GameObject.Find("UnitSynergy").GetComponent<UnitSynergy>().TribeDelete(selectedObject.GetComponent<Unit>().Tribe[i], selectedObject);
+                    }
+                    //유닛의 직업 리스트 개수 만큼 유닛시너지 리스트에서 삭제
+                    for (int i = 0; i < selectedObject.GetComponent<Unit>().Job.Count; i++)
+                    {
+                        GameObject.Find("UnitSynergy").GetComponent<UnitSynergy>().JobDelete(selectedObject.GetComponent<Unit>().Job[i], selectedObject);
+                    }
+                    GameObject.Find("UnitSynergy").GetComponent<UnitSynergy>().SynergyApply(); //시너지 적용
+
                     Destroy(selectedObject.gameObject); //선택된 유닛 삭제
-                    
+
                     player.CallUnitCount--; //플레이어 유닛수 감소
                 }
                 //Debug.Log(player.CallUnitCount);
