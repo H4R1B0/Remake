@@ -20,6 +20,26 @@ public class UnitSynergy : MonoBehaviour
     private List<GameObject> Mecanics; //메카닉 리스트
     private List<GameObject> Guardians; //수호자 리스트
 
+    private void Start()
+    {
+        //리스트 초기화
+        Memels = new List<GameObject>();
+        Beasts = new List<GameObject>();
+        Raptors = new List<GameObject>();
+        Insects = new List<GameObject>();
+        Shells = new List<GameObject>();
+        Fishs = new List<GameObject>();
+        Birds = new List<GameObject>();
+        Fossils = new List<GameObject>();
+
+        Warriors = new List<GameObject>();
+        Wizards = new List<GameObject>();
+        Assassins = new List<GameObject>();
+        Gunners = new List<GameObject>();
+        Mecanics = new List<GameObject>();
+        Guardians = new List<GameObject>();
+    }
+
     //시너지 적용
     public void SynergyApply()
     {
@@ -32,10 +52,24 @@ public class UnitSynergy : MonoBehaviour
         FishSynergy(); //피쉬 시너지
         BirdSynergy(); //버드 시너지
         FossilSynergy(); //화석 시너지
+
+        //체력 증가
+        for (int i = 0; i < Memels.Count; i++)
+        {
+            //메멀 시너지 효과 만큼 체력 증가
+            Memels[i].GetComponent<Unit>().SetHealthSynergy();
+        }
+        //체력, 공격력 증가
+        for (int i = 0; i < Fossils.Count; i++)
+        {
+            //화석 시너지 효과 만큼 체력 증가
+            Fossils[i].GetComponent<Unit>().SetHealthSynergy();
+            Fossils[i].GetComponent<Unit>().SetPowerSynergy();
+        }
     }
 
     //메멀 시너지
-    public void MemelSynergy()
+    private void MemelSynergy()
     {
         if (Memels.Count >= 4)
         {
@@ -64,7 +98,7 @@ public class UnitSynergy : MonoBehaviour
     }
 
     //비스트 시너지
-    public void BeastSynergy()
+    private void BeastSynergy()
     {
         if (Beasts.Count >= 4)
         {
@@ -93,7 +127,7 @@ public class UnitSynergy : MonoBehaviour
     }
 
     //랩터 시너지
-    public void RaptorSynergy()
+    private void RaptorSynergy()
     {
         if (Raptors.Count >= 4)
         {
@@ -128,7 +162,7 @@ public class UnitSynergy : MonoBehaviour
     }
 
     //인섹트 시너지
-    public void InsectSynergy()
+    private void InsectSynergy()
     {
         if (Insects.Count >= 4)
         {
@@ -157,7 +191,7 @@ public class UnitSynergy : MonoBehaviour
     }
 
     //쉘 시너지
-    public void ShellSynergy()
+    private void ShellSynergy()
     {
         if (Shells.Count >= 4)
         {
@@ -186,7 +220,7 @@ public class UnitSynergy : MonoBehaviour
     }
 
     //피쉬 시너지
-    public void FishSynergy()
+    private void FishSynergy()
     {
         if (Fishs.Count >= 4)
         {
@@ -215,7 +249,7 @@ public class UnitSynergy : MonoBehaviour
     }
 
     //버드 시너지
-    public void BirdSynergy()
+    private void BirdSynergy()
     {
         if (Birds.Count >= 4)
         {
@@ -244,7 +278,7 @@ public class UnitSynergy : MonoBehaviour
     }
 
     //화석 시너지
-    public void FossilSynergy()
+    private void FossilSynergy()
     {
         if (Fossils.Count >= 4)
         {
@@ -280,6 +314,7 @@ public class UnitSynergy : MonoBehaviour
     //종족 추가
     public void TribeAdd(string tribe, GameObject unit)
     {
+        Debug.Log(tribe + "종족 추가");
         if (tribe == "Memel")
         {
             Memels.Add(unit);
@@ -314,6 +349,43 @@ public class UnitSynergy : MonoBehaviour
         }
     }
 
+    //종족 제거
+    public void TribeDelete(string tribe, GameObject unit)
+    {
+        if (tribe == "Memel")
+        {
+            Memels.Remove(unit);
+        }
+        else if (tribe == "Beast")
+        {
+            Beasts.Remove(unit);
+        }
+        else if (tribe == "Raptor")
+        {
+            Raptors.Remove(unit);
+        }
+        else if (tribe == "Insect")
+        {
+            Insects.Remove(unit);
+        }
+        else if (tribe == "Shell")
+        {
+            Shells.Remove(unit);
+        }
+        else if (tribe == "Fish")
+        {
+            Fishs.Remove(unit);
+        }
+        else if (tribe == "Bird")
+        {
+            Birds.Remove(unit);
+        }
+        else if (tribe == "Fossil")
+        {
+            Fossils.Remove(unit);
+        }
+    }
+
     //직업 추가
     public void JobAdd(string job, GameObject unit)
     {
@@ -340,6 +412,35 @@ public class UnitSynergy : MonoBehaviour
         else if (job == "Guardian")
         {
             Guardians.Add(unit);
+        }
+    }
+
+    //직업 제거
+    public void JobDelete(string job, GameObject unit)
+    {
+        if (job == "Warrior")
+        {
+            Warriors.Remove(unit);
+        }
+        else if (job == "Wizard")
+        {
+            Wizards.Remove(unit);
+        }
+        else if (job == "Assassin")
+        {
+            Assassins.Remove(unit);
+        }
+        else if (job == "Gunner")
+        {
+            Gunners.Remove(unit);
+        }
+        else if (job == "Mecanic")
+        {
+            Mecanics.Remove(unit);
+        }
+        else if (job == "Guardian")
+        {
+            Guardians.Remove(unit);
         }
     }
 }
