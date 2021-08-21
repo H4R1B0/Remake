@@ -34,7 +34,7 @@ public class LivingEntity : MonoBehaviour
 
     public Material FlashWhite; //피격시 변경할 메테리얼
     protected Material defaultMaterial; //기본 메테리얼
-    protected Coroutine runningCoroutine = null; //실행중인 코루틴
+    protected Coroutine runningFlashCoroutine = null; //실행중인 코루틴
     protected SpriteRenderer spriteRenderer; //이미지 렌더러
 
     protected bool isDie; //죽었는지
@@ -68,13 +68,13 @@ public class LivingEntity : MonoBehaviour
         GameObject DamageText = Instantiate(UIText, Camera.main.WorldToScreenPoint(this.transform.position + new Vector3(0, 1, 0)), Quaternion.identity);
         DamageText.GetComponent<UIText>().Number = damage;
 
-        if (runningCoroutine == null)
+        if (runningFlashCoroutine == null)
         {
-            StartCoroutine(nameof(FlashCoroutine));
+            runningFlashCoroutine = StartCoroutine(nameof(FlashCoroutine));
         }
         else
         {
-            runningCoroutine = StartCoroutine(nameof(FlashCoroutine));
+            runningFlashCoroutine = StartCoroutine(nameof(FlashCoroutine));
         }
     }
 
