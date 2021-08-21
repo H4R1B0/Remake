@@ -267,14 +267,14 @@ public class Rang : Unit
         rang1.transform.GetChild(0).GetComponent<SpriteRenderer>().material = defaultMaterial; //분신 소환시 플래시 오류 수정
         rang1.transform.localScale = new Vector3(transform.localScale.x * 0.6f, transform.localScale.y * 0.6f, transform.localScale.z);
         rang1.transform.position = new Vector3(transform.position.x - 0.5f, transform.position.y - 0.5f, transform.position.z);
-        rang1.GetComponent<Rang>().SetAlter(power * (3 + level) * 10 / 100, maxHealth * (3 + level) * 10 / 100);
+        rang1.GetComponent<Rang>().SetAlter(power * (3 + unitLevel) * 10 / 100, maxHealth * (3 + unitLevel) * 10 / 100);
 
         rang2 = Instantiate(RangPrefab);
         rang2.GetComponent<Rang>().defaultMaterial = defaultMaterial; //이미지 메테리얼 저장
         rang2.transform.GetChild(0).GetComponent<SpriteRenderer>().material = defaultMaterial; //분신 소환시 플래시 오류 수정
         rang2.transform.localScale = new Vector3(transform.localScale.x * 0.6f, transform.localScale.y * 0.6f, transform.localScale.z);
         rang2.transform.position = new Vector3(transform.position.x - 1f, transform.position.y - 0.5f, transform.position.z);
-        rang2.GetComponent<Rang>().SetAlter(power * (3 + level) * 10 / 100, maxHealth * (3 + level) * 10 / 100);
+        rang2.GetComponent<Rang>().SetAlter(power * (3 + unitLevel) * 10 / 100, maxHealth * (3 + unitLevel) * 10 / 100);
 
         yield return new WaitForSeconds(8);
 

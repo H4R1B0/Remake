@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class Jenis : Unit
 {
-    private void Start()
+    private void Awake()
     {
         //level = 1; //유닛 레벨
 
@@ -201,7 +201,7 @@ public class Jenis : Unit
     //제니스 스킬 : 근접한 적에게 100/200/400%의 피해를 입히고 밀쳐냅니다
     IEnumerator JenisSkill()
     {
-        target.GetComponent<LivingEntity>().OnDamage((int)(Mathf.Pow(2, level - 1)) * power, false); //공격
+        target.GetComponent<LivingEntity>().OnDamage((int)(Mathf.Pow(2, unitLevel - 1)) * power, false); //공격
         target.GetComponent<LivingEntity>().Knockback(new Vector2(this.transform.position.x, this.transform.position.y)); //넉백
         yield return null;
     }

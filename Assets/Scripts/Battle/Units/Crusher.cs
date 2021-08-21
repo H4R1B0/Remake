@@ -14,7 +14,7 @@ public class Crusher : Unit
     //public float attackAnimTime = 0; //공격 애니메이션 쿨타임
     //public GameObject attackPrefab; //공격 프리팹
 
-    private void Start()
+    private void Awake()
     {
         //level = 1; //유닛 레벨
 
@@ -222,7 +222,7 @@ public class Crusher : Unit
         crusherEffect = Instantiate(CrusherEffectPrefab);
         crusherEffect.transform.position = this.transform.position;
 
-        int damage = (int)(Mathf.Pow(2, level - 1)) * 3 * power;
+        int damage = (int)(Mathf.Pow(2, unitLevel - 1)) * 3 * power;
         target.GetComponent<LivingEntity>().OnDamage(damage, false); //공격
         StartCoroutine(target.GetComponent<LivingEntity>().BleedingCoroutine(5, power * 20 / 100));
         yield return null;

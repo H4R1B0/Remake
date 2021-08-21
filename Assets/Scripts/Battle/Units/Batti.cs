@@ -6,24 +6,19 @@ using NaughtyAttributes;
 
 public class Batti : Unit
 {
-    private void Start()
+    private void Awake()
     {
-        //level = 1; //유닛 레벨
-
-        //생성시 원래 공격력과 체력 저장
+        // 생성시 원래 공격력과 체력 저장
         originPower = 30; //원래 공격력
         power = originPower; //공격력
         originHealth = 400; //원래 체력
         health = originHealth; //체력
         maxHealth = health;
         mana = 0;
-        //originCritical = critical;
-
         attackRange = 3f; //공격 범위
         attackSpeed = 0.6f; //공격 속도
 
         animators = GetComponentsInChildren<Animator>(); //애니메이터들 가져오기
-
         //HP, MP 생성
         HPSlider = Instantiate(HPSliderPrefab, Camera.main.WorldToScreenPoint(transform.Find("HPPosition").position), Quaternion.identity);
         HPSlider.transform.SetParent(GameObject.Find("UnitUIManager").transform);
@@ -37,6 +32,10 @@ public class Batti : Unit
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
 
         isAttack = true;
+    }
+    private void Start()
+    {
+        
     }
     private void Update()
     {
@@ -201,10 +200,10 @@ public class Batti : Unit
     //배티 스킬 : 적에게 500/1000/2000%의 피해를 입히고 200/400/800만큼 회복합니다
     IEnumerator BattiSkill()
     {
-        target.GetComponent<LivingEntity>().OnDamage((int)(Mathf.Pow(2, level - 1)) * 5 * power, false); //공격
+        target.GetComponent<LivingEntity>().OnDamage((int)(Mathf.Pow(2, unitLevel - 1)) * 5 * power, false); //공격
 
         //max체력과 2^level*100 회복후의 작은 값으로 회복
-        health = maxHealth > health + (int)(Mathf.Pow(2, level - 1)) * 200 ? health + (int)(Mathf.Pow(2, level - 1)) * 200 : maxHealth;
+        health = maxHealth > health + (int)(Mathf.Pow(2, unitLevel - 1)) * 200 ? health + (int)(Mathf.Pow(2, unitLevel - 1)) * 200 : maxHealth;
         yield return null;
     }
 }

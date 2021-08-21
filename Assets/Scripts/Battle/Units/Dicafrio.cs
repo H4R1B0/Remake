@@ -7,7 +7,7 @@ public class Dicafrio : Unit
 {
     private int DecreasingDamage; //감소하는 피해량
 
-    private void Start()
+    private void Awake()
     {
         //level = 1; //유닛 레벨
 
@@ -71,6 +71,12 @@ public class Dicafrio : Unit
         //게임 시작
         if (GameManager.instance.IsStart == true)
         {
+            //랩터 시너지
+            if (runningRaptorCoroutine == null && raptorSynergyHealHP != 0)
+            {
+                runningRaptorCoroutine = StartCoroutine(nameof(RaptorSynergyCoroutine));
+            }
+
             //타겟이 정해지지 않았거나 죽었을경우 FindMonster
             if (target == null || target.GetComponent<LivingEntity>().IsDie == true)
             {
@@ -106,6 +112,9 @@ public class Dicafrio : Unit
         //게임 시작 전 이거나 게임 종료 
         else
         {
+            runningRaptorCoroutine = null;
+            StopAllCoroutines();
+
             health = maxHealth; //최대 체력으로 회복
             mana = 0; //마나 초기화
 
@@ -204,7 +213,7 @@ public class Dicafrio : Unit
     //디카프리오 스킬: 5초간 받는피해량이 10(+5)%감소
     IEnumerator DicafrioSkill()
     {
-        DecreasingDamage = (level + 1) * 5;
+        DecreasingDamage = (unitLevel + 1) * 5;
         yield return new WaitForSeconds(5);
         DecreasingDamage = 0;
     }

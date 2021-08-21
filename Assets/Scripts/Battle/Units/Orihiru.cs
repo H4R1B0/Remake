@@ -16,7 +16,7 @@ public class Orihiru : Unit
     //public float attackAnimTime = 0; //공격 애니메이션 쿨타임
     //public GameObject attackPrefab; //공격 프리팹
 
-    private void Start()
+    private void Awake()
     {
         //level = 1; //유닛 레벨
 
@@ -236,7 +236,7 @@ public class Orihiru : Unit
 
         int originP = power;
         int originC = criticalRate;
-        power += level * 10;
+        power += unitLevel * 10;
         criticalRate *= 2;
         yield return new WaitForSeconds(5);
         power = originP;

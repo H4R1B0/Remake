@@ -8,7 +8,10 @@ public class Beomho : Unit
 {
     private bool isSkill; //스킬 사용 가능 여부
 
-    private void Start()
+    private Coroutine runningBeomhoSkillCoroutine = null; //실행중인 범호 스킬 코루틴
+    private int beomhoSkillOriginPower=0; //범호 스킬 쓰기 전 원래 공격력
+
+    private void Awake()
     {
         //level = 1; //유닛 레벨
 
@@ -109,9 +112,18 @@ public class Beomho : Unit
         //게임 시작 전 이거나 게임 종료 
         else
         {
+            //범호 스킬이 진행중이면
+            if (runningBeomhoSkillCoroutine != null)
+            {
+                runningBeomhoSkillCoroutine = null;
+                power = beomhoSkillOriginPower;
+                isSkill = false;
+            }
+            
+            StopAllCoroutines();
             health = maxHealth; //최대 체력으로 회복
             mana = 0; //마나 초기화
-
+            isSkill = false;
             animators[1].SetBool("isAttack", false);
         }
     }
@@ -164,6 +176,9 @@ public class Beomho : Unit
     public override void OnDamage(int damage, bool isCritical)
     {
         base.OnDamage(damage, isCritical);
+        if (isSkill == false) //스킬 시전이 안돼야 마나 획득
+            mana += 5; //공격시 마나 5획득
+        
 
         //체력이 0보다 작을경우 비활성화
         if (health <= 0)
@@ -195,15 +210,15 @@ public class Beomho : Unit
         int rand = Random.Range(0, 100);
         if (rand >= 0 && rand <= criticalRate)
         {
+            Debug.Log("크리티컬");
             target.GetComponent<LivingEntity>().OnDamage(power * CriticalDamageRate / 100, true); //크리티컬 공격
             if (isSkill == true) //스킬 시전시에만 크리티컬시 가능
             {
-                int rand2 = Random.Range(0, 100);
-                if (rand >= 0 && rand < 20 && runningCoroutine == null)
+                if (runningBeomhoSkillCoroutine == null)
                 {
                     Debug.Log("범호 스킬");
-                    runningCoroutine = StartCoroutine(nameof(BeomhoSkill));
-                }
+                    runningBeomhoSkillCoroutine = StartCoroutine(nameof(BeomhoSkill));
+                }                
             }
         }
         else
@@ -221,18 +236,19 @@ public class Beomho : Unit
         yield return new WaitForSeconds(1f / attackSpeed);
         isAttack = true;
     }
-    //범호 스킬 : 크리티컬 공격인 경우 20% 확률로 10초간 공격력 20/40/80 증가
+    //범호 스킬 : 크리티컬 공격인 경우 10초간 공격력 20/40/80 증가
     IEnumerator BeomhoSkill()
     {
         //스테이터스 향상
         Instantiate(StatusUpEffect, this.transform.position + new Vector3(0, 1, 0), Quaternion.identity);
 
-        //20% 확률로 10초간 공격력 증가
-        int origin = power;
-        power = originPower + (int)(Mathf.Pow(2, level - 1)) * 20;
+        //10초간 공격력 증가
+        beomhoSkillOriginPower = power;
+        power = originPower + (int)(Mathf.Pow(2, unitLevel - 1)) * 20;
         yield return new WaitForSeconds(10); //10초간 증가
         Debug.Log("10초 끝");
-        power = origin;
+        runningBeomhoSkillCoroutine = null;
+        power = beomhoSkillOriginPower;
         isSkill = false;
     }
 }

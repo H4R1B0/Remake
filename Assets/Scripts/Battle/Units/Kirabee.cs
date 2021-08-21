@@ -7,7 +7,7 @@ public class Kirabee : Unit
 {
     private bool isSkill; //스킬 사용 가능 여부
 
-    private void Start()
+    private void Awake()
     {
         //level = 1; //유닛 레벨
 
@@ -209,10 +209,10 @@ public class Kirabee : Unit
         int originP = power; //원래 공격력 저장
         float originS = attackSpeed; //원래 공격 속도 저장
         float oringAnimC = animators[1].GetFloat("attackTime"); //원래 공격 애니메이션 쿨
-        power += power * (level + 2) * 10 / 100; //공격력 30% 증가
-        attackSpeed *= (1 + (level + 2) * 0.1f); //공격속도 30% 증가
-        animators[1].SetFloat("attackTime", oringAnimC * (8 - level) * 0.1f); //애니메이션 속도 쿨
-        animators[1].SetFloat("attackSpeed", (12 + level) * 0.1f); //애니메이션 스피드 빠르게
+        power += power * (unitLevel + 2) * 10 / 100; //공격력 30% 증가
+        attackSpeed *= (1 + (unitLevel + 2) * 0.1f); //공격속도 30% 증가
+        animators[1].SetFloat("attackTime", oringAnimC * (8 - unitLevel) * 0.1f); //애니메이션 속도 쿨
+        animators[1].SetFloat("attackSpeed", (12 + unitLevel) * 0.1f); //애니메이션 스피드 빠르게
 
         yield return new WaitForSeconds(7); //7초 쿨
 

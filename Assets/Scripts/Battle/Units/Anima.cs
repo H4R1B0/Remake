@@ -6,7 +6,7 @@ using NaughtyAttributes;
 
 public class Anima : Unit
 {
-    private void Start()
+    private void Awake()
     {
         //생성시 원래 공격력과 체력 저장
         originPower = 50; //원래 공격력
@@ -62,40 +62,56 @@ public class Anima : Unit
             transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
         }
 
-        //타겟이 정해지지 않았거나 죽었을경우 FindMonster
-        if (target == null || target.GetComponent<LivingEntity>().IsDie == true)
+        //게임 시작
+        if (GameManager.instance.IsStart == true)
         {
-            animators[1].SetBool("isAttack", false);
-            //Debug.Log("타겟 찾기");
-            FindMonster();
-        }
-        //타겟이 공격 범위 안에 있을 경우
-        else if (MonsterInCircle() == true)
-        {
-            //마나 100일 경우 스킬 시전
-            if (mana >= 100)
+            //랩터 시너지
+            if (runningRaptorCoroutine == null && raptorSynergyHealHP!=0)
             {
-                Skill();
-                mana = 0;
+                runningRaptorCoroutine = StartCoroutine(nameof(RaptorSynergyCoroutine));
             }
-            animators[0].SetBool("isMove", false);
-            //공격
-            if (isAttack == true && isStern == false)
+
+            //타겟이 정해지지 않았거나 죽었을경우 FindMonster
+            if (target == null || target.GetComponent<LivingEntity>().IsDie == true)
             {
-                StartCoroutine(nameof(AttackAnim));
-                StartCoroutine(nameof(AttackCoroutine));
+                animators[1].SetBool("isAttack", false);
+                //Debug.Log("타겟 찾기");
+                FindMonster();
+            }
+            //타겟이 공격 범위 안에 있을 경우
+            else if (MonsterInCircle() == true)
+            {
+                //마나 100일 경우 스킬 시전
+                if (mana >= 100)
+                {
+                    Skill();
+                    mana = 0;
+                }
+                animators[0].SetBool("isMove", false);
+                //공격
+                if (isAttack == true && isStern == false)
+                {
+                    StartCoroutine(nameof(AttackAnim));
+                    StartCoroutine(nameof(AttackCoroutine));
+                }
+            }
+            //타겟이 있으나 범위에서 벗어났을경우 재탐색
+            else if (target != null && MonsterInCircle() == false)
+            {
+                animators[0].SetBool("isMove", true);
+                FindMonster();
+                transform.Translate(vec3dir * Time.deltaTime * moveSpeed);
             }
         }
-        //타겟이 있으나 범위에서 벗어났을경우 재탐색
-        else if (target != null && MonsterInCircle() == false)
+        //게임 시작 전 이거나 게임 종료 
+        else
         {
-            animators[0].SetBool("isMove", true);
-            FindMonster();
-            transform.Translate(vec3dir * Time.deltaTime * moveSpeed);
-        }
-        //맵에 몬스터가 없을경우
-        else if (FoundTargets.Count == 0)
-        {
+            runningRaptorCoroutine = null;
+            StopAllCoroutines();
+
+            health = maxHealth; //최대 체력으로 회복
+            mana = 0; //마나 초기화
+
             animators[1].SetBool("isAttack", false);
         }
     }
@@ -152,6 +168,27 @@ public class Anima : Unit
         //Destroy(this.gameObject);
         //GameObject.Find("CallUnitCountText").GetComponent<CallUnitCountText>().RenewText(); //유닛 소환 텍스트 갱신
     }
+    public override void OnDamage(int damage, bool isCritical)
+    {
+        base.OnDamage(damage, isCritical);
+
+        //체력이 0보다 작을경우 비활성화
+        if (health <= 0)
+        {
+            StopAllCoroutines();
+            isAttack = true;
+            health = maxHealth;
+            mana = 0;
+            spriteRenderer.material = defaultMaterial;
+            GameObject disabledObjects = GameObject.Find("DisabledObjects"); //비활성화 관리하는 오브젝트
+            transform.SetParent(disabledObjects.transform);
+            HPSlider.transform.SetParent(disabledObjects.transform);
+            MPSlider.transform.SetParent(disabledObjects.transform);
+            HPSlider.gameObject.SetActive(false);
+            MPSlider.gameObject.SetActive(false);
+            this.gameObject.SetActive(false);
+        }
+    }
 
     //공격 코루틴
     IEnumerator AttackAnim()
@@ -174,11 +211,12 @@ public class Anima : Unit
         yield return new WaitForSeconds(1f / attackSpeed);
         isAttack = true;
     }
+
     //아니마 스킬 time초마다 마나 회복
     IEnumerator AnimaSkill()
     {
         List<GameObject> FoundUnits = new List<GameObject>(GameObject.FindGameObjectsWithTag("Unit")); //찾은 모든 유닛들
-        int time = 4 + level; //4+level 초간 회복
+        int time = 4 + unitLevel; //4+level 초간 회복
         for (int i = time; i > 0; i--)
         {
             foreach (GameObject FoundUnit in FoundUnits)
@@ -187,5 +225,5 @@ public class Anima : Unit
             }
             yield return new WaitForSeconds(1);
         }
-    }
+    }    
 }

@@ -6,7 +6,7 @@ using NaughtyAttributes;
 
 public class Destiny : Unit
 {
-    private void Start()
+    private void Awake()
     {
         //level = 1; //유닛 레벨
 
@@ -201,7 +201,7 @@ public class Destiny : Unit
     //데스티니 스킬 : 적에게 500/1000/2000%의 피해를 입히고 2초간 기절시킵니다
     IEnumerator DestinySkill()
     {
-        int damage = (int)(Mathf.Pow(2, level - 1)) * 5 * power;
+        int damage = (int)(Mathf.Pow(2, unitLevel - 1)) * 5 * power;
         target.GetComponent<LivingEntity>().OnDamage(damage, false); //공격
         StartCoroutine(target.GetComponent<LivingEntity>().SternCoroutine(2)); //2초간 기절
         yield return null;

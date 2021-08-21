@@ -9,7 +9,7 @@ public class Tomb : Unit
     
     public GameObject attackPrefab; //공격 프리팹
 
-    private void Start()
+    private void Awake()
     {
         //level = 1; //유닛 레벨
 
@@ -196,7 +196,7 @@ public class Tomb : Unit
         yield return null; //공격 애니메이션 쿨타임
 
         //12(-1)번째 공격이 적을 1초간 기절시킵니다
-        if (attackCount == 13 - level)
+        if (attackCount == 13 - unitLevel)
         {
             attackCount = 0;
             GameObject attack = Instantiate(attackPrefab);

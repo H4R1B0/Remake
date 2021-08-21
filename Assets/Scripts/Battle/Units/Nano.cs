@@ -10,7 +10,7 @@ public class Nano : Unit
     public GameObject NanoEffectPrefab; //스킬 사용시 이펙트 프리팹
     private GameObject nanoEffect; //스킬 사용시 이펙트 프리팹
 
-    private void Start()
+    private void Awake()
     {
         //level = 1; //유닛 레벨
 
@@ -216,13 +216,13 @@ public class Nano : Unit
         nanoEffect.transform.position = this.transform.position;
         nanoEffect.GetComponent<ParticleSystem>().Stop(); //재생중에는 시간 변경 못함
         var main = nanoEffect.GetComponent<ParticleSystem>().main;
-        main.duration = level + 2;
+        main.duration = unitLevel + 2;
         nanoEffect.GetComponent<ParticleSystem>().Play();
 
         GameObject[] foundUnits = GameObject.FindGameObjectsWithTag("Unit");
         foreach (GameObject foundunit in foundUnits)
         {
-            StartCoroutine(foundunit.GetComponent<Unit>().IncreasingHPCoroutine(level + 2, 100));
+            StartCoroutine(foundunit.GetComponent<Unit>().IncreasingHPCoroutine(unitLevel + 2, 100));
         }
         yield return null;
     }

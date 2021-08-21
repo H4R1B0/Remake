@@ -12,7 +12,7 @@ public class Wright : Unit
     public GameObject WrightEffectPrefab; //스킬 사용시 이펙트 프리팹
     private GameObject wrightEffect; //스킬 사용시 이펙트 프리팹
 
-    private void Start()
+    private void Awake()
     {
         //level = 1; //유닛 레벨
 
@@ -225,7 +225,7 @@ public class Wright : Unit
         float originS = attackSpeed; //원래 공격 속도 저장
         attackSpeed = attackSpeed * (100 + power / 10) / 100; //공격속도 증가
 
-        yield return new WaitForSeconds(level + 2); //3(+1)초 쿨
+        yield return new WaitForSeconds(unitLevel + 2); //3(+1)초 쿨
 
         attackSpeed = originS; //원래 공격 속도
         isSkill = false;

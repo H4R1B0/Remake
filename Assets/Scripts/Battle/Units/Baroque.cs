@@ -7,7 +7,7 @@ using NaughtyAttributes;
 public class Baroque : Unit
 {
 
-    private void Start()
+    private void Awake()
     {
         //level = 1; //유닛 레벨
 
@@ -225,11 +225,11 @@ public class Baroque : Unit
         Instantiate(StatusUpEffect, this.transform.position + new Vector3(0, 1, 0), Quaternion.identity);
 
         //체력 회복
-        health = maxHealth > health + (int)(Mathf.Pow(2, level - 1)) * 200 ? health + (int)(Mathf.Pow(2, level - 1)) * 200 : maxHealth;
+        health = maxHealth > health + (int)(Mathf.Pow(2, unitLevel - 1)) * 200 ? health + (int)(Mathf.Pow(2, unitLevel - 1)) * 200 : maxHealth;
 
         //10초간 공격력 2^(level-1)*10 만큼 증가
-        power += (int)(Mathf.Pow(2, level - 1)) * 10;
+        power += (int)(Mathf.Pow(2, unitLevel - 1)) * 10;
         yield return new WaitForSeconds(10); //10초간 증가
-        power -= (int)(Mathf.Pow(2, level - 1)) * 10;
+        power -= (int)(Mathf.Pow(2, unitLevel - 1)) * 10;
     }
 }

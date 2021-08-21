@@ -9,7 +9,7 @@ public class Spinps : Unit
     
     public GameObject attackPrefab; //공격 프리팹
 
-    private void Start()
+    private void Awake()
     {
         //level = 1; //유닛 레벨
 
@@ -197,12 +197,12 @@ public class Spinps : Unit
         yield return null; //공격 애니메이션 쿨타임
 
         //8/6/4번째 공격마다 40(+1)% 추가 데미지
-        if (attackCount == 10 - level * 2)
+        if (attackCount == 10 - unitLevel * 2)
         {
             attackCount = 0;
             GameObject attack = Instantiate(attackPrefab);
             attack.transform.position = this.transform.position + new Vector3(0, -0.8f, 0);
-            attack.GetComponent<Attack>().SetPowerDir(power * (13 + level) / 10, target);
+            attack.GetComponent<Attack>().SetPowerDir(power * (13 + unitLevel) / 10, target);
 
         }
         else

@@ -8,7 +8,7 @@ public class Squil : Unit
     public GameObject DronPrefab; //드론 프리팹
     public GameObject DroneCreateEffect; //드론 생성 이펙트
 
-    private void Start()
+    private void Awake()
     {
         //level = 1; //유닛 레벨
 
@@ -203,7 +203,7 @@ public class Squil : Unit
         Instantiate(DroneCreateEffect, this.transform.position + new Vector3(0, 1, 0), Quaternion.identity);
         GameObject dron = Instantiate(DronPrefab);
         dron.transform.position = this.transform.position + new Vector3(0.5f, 0.5f, 0);
-        dron.GetComponent<Dron>().SetDron(10 * level, 100 * (level + 2));
+        dron.GetComponent<Dron>().SetDron(10 * unitLevel, 100 * (unitLevel + 2));
         yield return null;
     }
 }

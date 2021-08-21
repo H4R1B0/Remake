@@ -7,7 +7,7 @@ public class Kelsy : Unit
 {
     private bool isSkill; //스킬 사용 가능 여부
 
-    private void Start()
+    private void Awake()
     {
         //level = 1; //유닛 레벨
 
@@ -203,7 +203,7 @@ public class Kelsy : Unit
     IEnumerator KelsySkill()
     {
         isSkill = true;
-        int powercnt = (int)(Mathf.Pow(2, level - 1)) * 10;
+        int powercnt = (int)(Mathf.Pow(2, unitLevel - 1)) * 10;
         GameObject[] foundUnits = GameObject.FindGameObjectsWithTag("Unit");
         foreach (GameObject foundUnit in foundUnits)
         {

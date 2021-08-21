@@ -7,7 +7,7 @@ public class Rifi : Unit
 {
     public GameObject attackPrefab; //공격 프리팹
 
-    private void Start()
+    private void Awake()
     {
         //level = 1; //유닛 레벨
         //생성시 원래 공격력과 체력 저장
@@ -221,7 +221,7 @@ public class Rifi : Unit
         GameObject[] foundMonsters = GameObject.FindGameObjectsWithTag("Monster");
         foreach (GameObject foundMonster in foundMonsters)
         {
-            StartCoroutine(foundMonster.GetComponent<LivingEntity>().BleedingCoroutine(5, level * 10, "poison"));
+            StartCoroutine(foundMonster.GetComponent<LivingEntity>().BleedingCoroutine(5, unitLevel * 10, "poison"));
         }
         yield return null;
     }

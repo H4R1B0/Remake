@@ -8,7 +8,7 @@ public class Fenny : Unit
     public GameObject FireBallPrefab; //스킬 사용시 파이어볼
     private GameObject fireBall; //스킬 사용시 파이어볼
 
-    private void Start()
+    private void Awake()
     {
         //level = 1; //유닛 레벨
 
@@ -124,7 +124,7 @@ public class Fenny : Unit
         if (cnt > 0)
         {
             //유닛 레벨당 +1씩 공격할 적 늘어남
-            int mnstr = level <= cnt ? level : cnt; //레벨이나 적의 수 중에 작은 값 설정
+            int mnstr = unitLevel <= cnt ? unitLevel : cnt; //레벨이나 적의 수 중에 작은 값 설정
             for (int i = 0; i < mnstr; i++)
             {
                 fireBall = Instantiate(FireBallPrefab);

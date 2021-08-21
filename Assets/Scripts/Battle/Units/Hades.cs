@@ -7,7 +7,7 @@ public class Hades : Unit
 {
     private bool isSkill; //스킬 사용 가능 여부
 
-    private void Start()
+    private void Awake()
     {
         //level = 1; //유닛 레벨
 
@@ -214,12 +214,12 @@ public class Hades : Unit
         Instantiate(StatusUpEffect, this.transform.position + new Vector3(0, 1, 0), Quaternion.identity);
 
         isSkill = true;
-        power += level * 10;
+        power += unitLevel * 10;
         while (FoundTargets.Count != 0)
         {
             yield return null;
         }
         isSkill = false;
-        power -= level * 10;
+        power -= unitLevel * 10;
     }
 }
