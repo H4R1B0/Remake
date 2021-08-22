@@ -10,16 +10,8 @@ public class Orihiru : Unit
     public GameObject OrihiruEffectPrefab; //스킬 사용시 이펙트 프리팹
     private GameObject orihiruEffect; //스킬 사용시 이펙트 프리팹
 
-    //public bool isWeapon = true; //무기가 있는지
-    //public bool isWeaponRotate = true; //무기가 회전하는지
-    //[ShowIf("isWeapon")] //무기 있을때만 표시
-    //public float attackAnimTime = 0; //공격 애니메이션 쿨타임
-    //public GameObject attackPrefab; //공격 프리팹
-
     private void Awake()
     {
-        //level = 1; //유닛 레벨
-
         //생성시 원래 공격력과 체력 저장
         originPower = 60; //원래 공격력
         power = originPower; //공격력
@@ -27,7 +19,8 @@ public class Orihiru : Unit
         health = originHealth; //체력
         maxHealth = health;
         mana = 0;
-        originCriticalRate = 30; //원래 치명타율
+
+        originCriticalRate = 10; //원래 치명타율
         criticalRate = originCriticalRate; //치명타율
         CriticalDamageRate = 130; //치명타 피해율
         originCriticalDamageRate = CriticalDamageRate; //원래 치명타 피해율

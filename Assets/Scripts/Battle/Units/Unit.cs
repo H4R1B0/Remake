@@ -39,8 +39,6 @@ public class Unit : LivingEntity
         }
     }
 
-
-
     protected string unitName = "";
     public string UnitName
     {
@@ -66,6 +64,7 @@ public class Unit : LivingEntity
             unitPirce = value;
         }
     }
+
     public List<string> Tribe; //종족
     public List<string> Job; //직업
 

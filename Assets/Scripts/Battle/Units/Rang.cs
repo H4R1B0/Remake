@@ -17,8 +17,6 @@ public class Rang : Unit
     //public GameObject attackPrefab; //공격 프리팹
     private void Awake()
     {
-        //level = 1; //유닛 레벨
-
         //생성시 원래 공격력과 체력 저장
         originPower = 70; //원래 공격력
         power = originPower; //공격력
@@ -26,7 +24,8 @@ public class Rang : Unit
         health = originHealth; //체력
         maxHealth = health;
         mana = 0;
-        originCriticalRate = 30; //원래 치명타율
+
+        originCriticalRate = 10; //원래 치명타율
         criticalRate = originCriticalRate; //치명타율
         CriticalDamageRate = 130; //치명타 피해율
         originCriticalDamageRate = CriticalDamageRate; //원래 치명타 피해율

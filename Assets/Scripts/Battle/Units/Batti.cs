@@ -15,6 +15,12 @@ public class Batti : Unit
         health = originHealth; //체력
         maxHealth = health;
         mana = 0;
+
+        originCriticalRate = 10; //원래 치명타율
+        criticalRate = originCriticalRate; //치명타율
+        CriticalDamageRate = 130; //치명타 피해율
+        originCriticalDamageRate = CriticalDamageRate; //원래 치명타 피해율
+
         attackRange = 3f; //공격 범위
         attackSpeed = 0.6f; //공격 속도
 

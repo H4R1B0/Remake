@@ -14,10 +14,6 @@ public class Wright : Unit
 
     private void Awake()
     {
-        //level = 1; //유닛 레벨
-
-        //tribe = "Mammal";
-
         //생성시 원래 공격력과 체력 저장
         originPower = 90; //원래 공격력
         power = originPower; //공격력
@@ -25,7 +21,11 @@ public class Wright : Unit
         health = originHealth; //체력
         maxHealth = health;
         mana = 0;
-        //originCritical = critical;
+
+        originCriticalRate = 10; //원래 치명타율
+        criticalRate = originCriticalRate; //치명타율
+        CriticalDamageRate = 130; //치명타 피해율
+        originCriticalDamageRate = CriticalDamageRate; //원래 치명타 피해율
 
         attackRange = 5f; //공격 범위
         attackSpeed = 0.8f; //공격 속도

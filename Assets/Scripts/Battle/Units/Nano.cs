@@ -12,8 +12,6 @@ public class Nano : Unit
 
     private void Awake()
     {
-        //level = 1; //유닛 레벨
-
         //생성시 원래 공격력과 체력 저장
         originPower = 30; //원래 공격력
         power = originPower; //공격력
@@ -21,7 +19,11 @@ public class Nano : Unit
         health = originHealth; //체력
         maxHealth = health;
         mana = 0;
-        //originCritical = critical;
+
+        originCriticalRate = 10; //원래 치명타율
+        criticalRate = originCriticalRate; //치명타율
+        CriticalDamageRate = 130; //치명타 피해율
+        originCriticalDamageRate = CriticalDamageRate; //원래 치명타 피해율
 
         attackRange = 4f; //공격 범위
         attackSpeed = 0.6f; //공격 속도
@@ -82,7 +84,7 @@ public class Nano : Unit
             else if (MonsterInCircle() == true)
             {
                 //마나 100일 경우 스킬 시전
-                if (mana >= 100)
+                if (mana >= 100 - insectSynergyReducedMana)
                 {
                     Skill();
                     mana = 0;
