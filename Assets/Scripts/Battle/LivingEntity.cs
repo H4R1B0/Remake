@@ -14,10 +14,10 @@ public class LivingEntity : MonoBehaviour
     
     protected float attackRange = 1f; //공격 범위
     protected float attackSpeed = 0f; //공격 속도
-    protected int criticalRate; //치명타율
-    protected int originCriticalRate; //원래 치명타율
-    protected int CriticalDamageRate; //치명타 피해율
-    protected int originCriticalDamageRate; //원래 치명타 피해율
+    protected int criticalRate = 0; //치명타율
+    protected int originCriticalRate = 10; //원래 치명타율
+    protected int CriticalDamageRate = 0; //치명타 피해율
+    protected int originCriticalDamageRate = 130; //원래 치명타 피해율
     protected Rigidbody2D rigid; //물리
     public GameObject UIText; //데미지, 힐 텍스트
     
@@ -140,5 +140,6 @@ public class LivingEntity : MonoBehaviour
         yield return new WaitForSeconds(0.15f);
         //원래 메테리얼 변경
         spriteRenderer.material = defaultMaterial;
+        runningFlashCoroutine = null;
     }
 }
