@@ -191,6 +191,12 @@ public class Unit : LivingEntity
         power = originPower + fossilSynergyPower;
     }
 
+    public void SetCriticalRateSynergy()
+    {
+        Debug.Log("치명타율 시너지 적용");
+        //치명타율 시너지
+        criticalRate = originCriticalRate + birdSynergyCritical;
+    }
 
     //몇초간 count만큼 체력 회복하는 코루틴
     public IEnumerator IncreasingHPCoroutine(int time, int count) //시간, 회복하는 체력량

@@ -66,6 +66,13 @@ public class UnitSynergy : MonoBehaviour
             Fossils[i].GetComponent<Unit>().SetHealthSynergy();
             Fossils[i].GetComponent<Unit>().SetPowerSynergy();
         }
+
+        //치명타율 증가
+        for (int i = 0; i < Birds.Count; i++)
+        {
+            //버드 시너지 효과 만큼 치명타율 증가
+            Birds[i].GetComponent<Unit>().SetCriticalRateSynergy();
+        }
     }
 
     //메멀 시너지
