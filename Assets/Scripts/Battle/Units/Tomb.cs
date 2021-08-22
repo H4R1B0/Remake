@@ -203,14 +203,32 @@ public class Tomb : Unit
             attackCount = 0;
             GameObject attack = Instantiate(attackPrefab);
             attack.transform.position = this.transform.position + new Vector3(0, -0.8f, 0);
-            attack.GetComponent<Attack>().SetPowerDir(power, target);
+            //크리티컬
+            int rand = Random.Range(0, 100);
+            if (rand >= 0 && rand <= criticalRate)
+            {
+                attack.GetComponent<Attack>().SetPowerDir(power * CriticalDamageRate / 100, target); //크리티컬 공격
+            }
+            else
+            {
+                attack.GetComponent<Attack>().SetPowerDir(power, target);
+            }
             StartCoroutine(target.GetComponent<LivingEntity>().SternCoroutine(1));
         }
         else
         {
             GameObject attack = Instantiate(attackPrefab);
             attack.transform.position = this.transform.position + new Vector3(0, -0.8f, 0);
-            attack.GetComponent<Attack>().SetPowerDir(power, target);
+            //크리티컬
+            int rand = Random.Range(0, 100);
+            if (rand >= 0 && rand <= criticalRate)
+            {
+                attack.GetComponent<Attack>().SetPowerDir(power * CriticalDamageRate / 100, target); //크리티컬 공격
+            }
+            else
+            {
+                attack.GetComponent<Attack>().SetPowerDir(power, target);
+            }
             attackCount++;
         }
         

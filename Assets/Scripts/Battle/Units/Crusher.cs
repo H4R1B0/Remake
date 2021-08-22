@@ -205,8 +205,20 @@ public class Crusher : Unit
     IEnumerator AttackAnim()
     {
         animators[0].SetBool("isAttack", true);
+        
         yield return new WaitForSeconds(animators[0].GetFloat("attackTime")); //공격 쿨타임
-        target.GetComponent<LivingEntity>().OnDamage(power, false); //공격
+
+        //크리티컬
+        int rand = Random.Range(0, 100);
+        if (rand >= 0 && rand <= criticalRate)
+        {
+            target.GetComponent<LivingEntity>().OnDamage(power * CriticalDamageRate / 100, true); //크리티컬 공격
+        }
+        else
+        {
+            target.GetComponent<LivingEntity>().OnDamage(power, false); //공격
+        }
+
         mana += 10; //공격시 마나 10획득        
         animators[0].SetBool("isAttack", false);
     }

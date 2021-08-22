@@ -192,26 +192,20 @@ public class Baroque : Unit
     {
         animators[1].SetBool("isAttack", true);
         mana += 10; //공격시 마나 10획득
+
         yield return new WaitForSeconds(animators[1].GetFloat("attackTime")); //공격 쿨타임
-        // 원거리        
-        target.GetComponent<LivingEntity>().OnDamage(power, false); //공격
-        //GameObject attack = Instantiate(attackPrefab, transform.position, Quaternion.identity);
-        //vec3dir = target.transform.position - transform.position;
-        //vec3dir.Normalize();
-        //attack.GetComponent<Attack>().target = target;
-        //attack.GetComponent<Bullet>().setDir(vec3dir);
-        ////크리티컬
-        //int rand = Random.Range(0, 100);
-        //if (rand >= 0 && rand <= critical)
-        //{
-        //    attack.GetComponent<Attack>().isCritical = true;
-        //    attack.GetComponent<Bullet>().Power = power * 2;
-        //}
-        //else
-        //{
-        //    attack.GetComponent<Attack>().isCritical = false;
-        //    attack.GetComponent<Bullet>().Power = power;
-        //}
+
+        //크리티컬
+        int rand = Random.Range(0, 100);
+        if (rand >= 0 && rand <= criticalRate)
+        {
+            target.GetComponent<LivingEntity>().OnDamage(power * CriticalDamageRate / 100, true); //크리티컬 공격
+        }
+        else
+        {
+            target.GetComponent<LivingEntity>().OnDamage(power, false); //공격
+        }
+
         animators[1].SetBool("isAttack", false);
     }
 

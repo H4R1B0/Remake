@@ -206,7 +206,17 @@ public class Rifi : Unit
 
         GameObject attack = Instantiate(attackPrefab);
         attack.transform.position = this.transform.position + new Vector3(0, -0.8f, 0);
-        attack.GetComponent<Attack>().SetPowerDir(power, target);
+        //크리티컬
+        int rand = Random.Range(0, 100);
+        if (rand >= 0 && rand <= criticalRate)
+        {
+            attack.GetComponent<Attack>().SetPowerDir(power * CriticalDamageRate / 100, target); //크리티컬 공격
+        }
+        else
+        {
+            attack.GetComponent<Attack>().SetPowerDir(power, target);
+        }
+
         mana += 10; //공격시 마나 10획득        
         animators[0].SetBool("isAttack", false);
     }

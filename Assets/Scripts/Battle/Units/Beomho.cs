@@ -209,7 +209,6 @@ public class Beomho : Unit
         int rand = Random.Range(0, 100);
         if (rand >= 0 && rand <= criticalRate)
         {
-            Debug.Log("크리티컬");
             target.GetComponent<LivingEntity>().OnDamage(power * CriticalDamageRate / 100, true); //크리티컬 공격
             if (isSkill == true) //스킬 시전시에만 크리티컬시 가능
             {

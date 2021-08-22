@@ -197,21 +197,38 @@ public class Spinps : Unit
         vec3dir.Normalize();
 
         yield return null; //공격 애니메이션 쿨타임
-
+        
+        GameObject attack = Instantiate(attackPrefab);
+        attack.transform.position = this.transform.position + new Vector3(0, -0.8f, 0);
         //8/6/4번째 공격마다 40(+1)% 추가 데미지
         if (attackCount == 10 - unitLevel * 2)
         {
-            attackCount = 0;
-            GameObject attack = Instantiate(attackPrefab);
-            attack.transform.position = this.transform.position + new Vector3(0, -0.8f, 0);
-            attack.GetComponent<Attack>().SetPowerDir(power * (13 + unitLevel) / 10, target);
+            attackCount = 0;            
 
+            //크리티컬
+            int rand = Random.Range(0, 100);
+            if (rand >= 0 && rand <= criticalRate)
+            {
+                attack.GetComponent<Attack>().SetPowerDir(power * (CriticalDamageRate + 30 + unitLevel * 10) / 100, target); //크리티컬 공격
+            }
+            else
+            {
+                attack.GetComponent<Attack>().SetPowerDir(power * (130 + unitLevel * 10) / 100, target);
+            }            
         }
         else
         {
-            GameObject attack = Instantiate(attackPrefab);
-            attack.transform.position = this.transform.position + new Vector3(0, -0.8f, 0);
-            attack.GetComponent<Attack>().SetPowerDir(power, target);
+            //크리티컬
+            int rand = Random.Range(0, 100);
+            if (rand >= 0 && rand <= criticalRate)
+            {
+                attack.GetComponent<Attack>().SetPowerDir(power * CriticalDamageRate / 100, target); //크리티컬 공격
+            }
+            else
+            {
+                attack.GetComponent<Attack>().SetPowerDir(power, target);
+            }
+
             attackCount++;
         }
 
