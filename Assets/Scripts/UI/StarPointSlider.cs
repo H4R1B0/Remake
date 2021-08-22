@@ -14,8 +14,6 @@ public class StarPointSlider : MonoBehaviour
 
     void Update()
     {
-        starPointSlider.value = Player.instance.StarPoint;
-
         //플레이어의 스타포인트가 10개 이상 있는경우
         if (Player.instance.StarPoint >= 10)
         {
@@ -23,5 +21,7 @@ public class StarPointSlider : MonoBehaviour
             Player.instance.Crystal += 100 + (Player.instance.StarPointLevel - 1) * 50;
             Player.instance.StarPoint -= 10;
         }
+
+        starPointSlider.value = Player.instance.StarPoint;
     }
 }
