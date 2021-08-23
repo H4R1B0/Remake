@@ -73,6 +73,13 @@ public class UnitSynergy : MonoBehaviour
             //버드 시너지 효과 만큼 치명타율 증가
             Birds[i].GetComponent<Unit>().SetCriticalRateSynergy();
         }
+
+        //회피율 증가
+        for (int i = 0; i < Fishs.Count; i++)
+        {
+            //피쉬 시너지 효과 만큼 회피율 증가
+            Fishs[i].GetComponent<Unit>().SetAvoidRateSynergy();
+        }
     }
 
     //메멀 시너지
