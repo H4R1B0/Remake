@@ -130,6 +130,9 @@ public class Dicafrio : Unit
     }
     public override void OnDamage(int damage, bool isCritical)
     {
+        //쉘 종족 유닛 피해량 감소
+        damage *= (100 - shellSynergyReducedDamagePercent) / 100;
+
         base.OnDamage(damage * (100 - DecreasingDamage) / 100, isCritical);
 
         //체력이 0보다 작을경우 비활성화
