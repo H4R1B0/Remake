@@ -174,7 +174,7 @@ public class Anima : Unit
     }
     public override void OnDamage(int damage, bool isCritical)
     {
-        base.OnDamage(damage, isCritical);
+        base.OnDamage(damage - guardiansSynergyReducedDamage, isCritical);
 
         //체력이 0보다 작을경우 비활성화
         if (health <= 0)

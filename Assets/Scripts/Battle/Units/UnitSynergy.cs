@@ -57,6 +57,9 @@ public class UnitSynergy : MonoBehaviour
         WizardSynergy(); //마법사 시너지
         AssassinSynergy(); //암살자 시너지
 
+
+        GuardianSynergy(); //수호자 시너지
+
         //소환된 유닛들 시너지 적용(체력, 공격력)
         List<GameObject> units = new List<GameObject>(GameObject.FindGameObjectsWithTag("Unit"));
         foreach(GameObject unit in units)
@@ -390,7 +393,7 @@ public class UnitSynergy : MonoBehaviour
         }
     } 
     
-    //마법사 시너지
+    //암살자 시너지
     private void AssassinSynergy()
     {
         if (Assassins.Count >= 5)
@@ -418,6 +421,35 @@ public class UnitSynergy : MonoBehaviour
                 Assassins[i].GetComponent<Unit>().AssassinSynergyBool = false;
                 //타겟의 즉사 조건 체력의 15% 이하
                 Assassins[i].GetComponent<Unit>().AssassinSynergyExecutionCondition = 0;
+            }
+        }
+    }
+    
+    //수호자 시너지
+    private void GuardianSynergy()
+    {
+        if (Guardians.Count >= 5)
+        {
+            for (int i = 0; i < Guardians.Count; i++)
+            {
+                //피해량 10 감소
+                Guardians[i].GetComponent<Unit>().GuardiansSynergyReducedDamage = 10;
+            }
+        }
+        else if (Guardians.Count >= 3)
+        {
+            for (int i = 0; i < Guardians.Count; i++)
+            {
+                //피해량 5 감소
+                Guardians[i].GetComponent<Unit>().GuardiansSynergyReducedDamage = 5;
+            }
+        }
+        else
+        {
+            for (int i = 0; i < Guardians.Count; i++)
+            {
+                //피해량 0 감소
+                Guardians[i].GetComponent<Unit>().GuardiansSynergyReducedDamage = 0;
             }
         }
     }

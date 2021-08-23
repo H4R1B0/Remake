@@ -208,6 +208,15 @@ public class Unit : LivingEntity
         {
             assassinSynergyExecutionCondition = value;
         }
+    }
+
+    protected int guardiansSynergyReducedDamage = 0; //수호자 시너지로 피해량 감소
+    public int GuardiansSynergyReducedDamage
+    {
+        set
+        {
+            guardiansSynergyReducedDamage = value;
+        }
     }    
 
     //체력 count만큼 회복

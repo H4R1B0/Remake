@@ -130,6 +130,9 @@ public class Dicafrio : Unit
     }
     public override void OnDamage(int damage, bool isCritical)
     {
+        //수호자 시너지
+        damage -= guardiansSynergyReducedDamage;
+
         //쉘 종족 유닛 피해량 감소
         damage *= (100 - shellSynergyReducedDamagePercent) / 100;
 
