@@ -100,6 +100,13 @@ public class LivingEntity : MonoBehaviour
         rigid.AddForce(new Vector2(reaction, 1) * 10, ForceMode2D.Impulse); //넉백 정도
     }
 
+    //최대 체력에 비해 현재 체력이 몇 퍼센트인지
+    public int GetHealthPercent()
+    {
+        //Debug.Log(health * 100 / maxHealth);
+        return health * 100 / maxHealth;
+    }
+
     //출혈 코루틴 : time초간 매 초 damage 피해
     public IEnumerator BleedingCoroutine(int time, int damage, string attribute = "")
     {
