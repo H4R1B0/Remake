@@ -226,6 +226,18 @@ public class Crusher : Unit
             target.GetComponent<LivingEntity>().OnDamage(power, false); //공격
         }
 
+        //전사 시너지인경우 공격횟수 증가
+        if (warriorSynergyExtraAttackBool)
+        {
+            warriorSynergyExtraAttackCount++;
+        }
+        //전사 시너지로 공격횟수 최대치인경우
+        if (warriorSynergyExtraAttackBool && warriorSynergyExtraAttackCount == warriorSynergyExtraAttackCountMax)
+        {
+            target.GetComponent<LivingEntity>().OnDamage(power, false); //공격
+            warriorSynergyExtraAttackCount = 0;
+        }
+
         mana += 10; //공격시 마나 10획득        
         animators[0].SetBool("isAttack", false);
     }

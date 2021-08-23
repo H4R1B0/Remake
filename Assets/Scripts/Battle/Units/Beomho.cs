@@ -9,7 +9,7 @@ public class Beomho : Unit
     private bool isSkill; //스킬 사용 가능 여부
 
     private Coroutine runningBeomhoSkillCoroutine = null; //실행중인 범호 스킬 코루틴
-    private int beomhoSkillOriginPower=0; //범호 스킬 쓰기 전 원래 공격력
+    private int beomhoSkillOriginPower = 0; //범호 스킬 쓰기 전 원래 공격력
 
     private void Awake()
     {
@@ -125,7 +125,7 @@ public class Beomho : Unit
                 power = beomhoSkillOriginPower;
                 isSkill = false;
             }
-            
+
             StopAllCoroutines();
             health = maxHealth; //최대 체력으로 회복
             mana = 0; //마나 초기화
@@ -184,7 +184,7 @@ public class Beomho : Unit
         base.OnDamage(damage, isCritical);
         if (isSkill == false) //스킬 시전이 안돼야 마나 획득
             mana += 5; //공격시 마나 5획득
-        
+
 
         //체력이 0보다 작을경우 비활성화
         if (health <= 0)
@@ -207,8 +207,6 @@ public class Beomho : Unit
     IEnumerator AttackAnim()
     {
         animators[1].SetBool("isAttack", true);
-        if (isSkill == false) //스킬 시전이 안돼야 마나 획득
-            mana += 10; //공격시 마나 10획득
 
         yield return new WaitForSeconds(animators[1].GetFloat("attackTime")); //공격 쿨타임
 
@@ -223,12 +221,27 @@ public class Beomho : Unit
                 {
                     Debug.Log("범호 스킬");
                     runningBeomhoSkillCoroutine = StartCoroutine(nameof(BeomhoSkill));
-                }                
+                }
             }
         }
         else
         {
             target.GetComponent<LivingEntity>().OnDamage(power, false); //공격
+        }
+
+        if (isSkill == false) //스킬 시전이 안돼야 마나 획득
+            mana += 10; //공격시 마나 10획득
+
+        //전사 시너지인경우 공격횟수 증가
+        if (warriorSynergyExtraAttackBool)
+        {
+            warriorSynergyExtraAttackCount++;
+        }
+        //전사 시너지로 공격횟수 최대치인경우
+        if (warriorSynergyExtraAttackBool && warriorSynergyExtraAttackCount == warriorSynergyExtraAttackCountMax)
+        {
+            target.GetComponent<LivingEntity>().OnDamage(power, false); //공격
+            warriorSynergyExtraAttackCount = 0;
         }
 
         animators[1].SetBool("isAttack", false);

@@ -205,6 +205,17 @@ public class Baroque : Unit
         {
             target.GetComponent<LivingEntity>().OnDamage(power, false); //공격
         }
+        //전사 시너지인경우 공격횟수 증가
+        if (warriorSynergyExtraAttackBool)
+        {
+            warriorSynergyExtraAttackCount++;
+        }
+        //전사 시너지로 공격횟수 최대치인경우
+        if(warriorSynergyExtraAttackBool && warriorSynergyExtraAttackCount == warriorSynergyExtraAttackCountMax)
+        {
+            target.GetComponent<LivingEntity>().OnDamage(power, false); //공격
+            warriorSynergyExtraAttackCount = 0;
+        }
 
         animators[1].SetBool("isAttack", false);
     }
