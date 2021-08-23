@@ -194,15 +194,23 @@ public class Orihiru : Unit
 
         yield return new WaitForSeconds(animators[1].GetFloat("attackTime")); //공격 애니메이션 쿨타임
 
-        //크리티컬
-        int rand = Random.Range(0, 100);
-        if (rand >= 0 && rand <= criticalRate)
+        //암살자 시너지이면서 조건 충족할때
+        if (assassinSynergyBool && target.GetComponent<LivingEntity>().GetHealthPercent() <= assassinSynergyExecutionCondition)
         {
-            target.GetComponent<LivingEntity>().OnDamage(power * CriticalDamageRate / 100, true); //크리티컬 공격
+            target.GetComponent<LivingEntity>().OnDamage(999999, false); //공격
         }
         else
         {
-            target.GetComponent<LivingEntity>().OnDamage(power, false); //공격
+            //크리티컬
+            int rand = Random.Range(0, 100);
+            if (rand >= 0 && rand <= criticalRate)
+            {
+                target.GetComponent<LivingEntity>().OnDamage(power * CriticalDamageRate / 100, true); //크리티컬 공격
+            }
+            else
+            {
+                target.GetComponent<LivingEntity>().OnDamage(power, false); //공격
+            }
         }
 
         if (isSkill == false) //스킬 시전이 안돼야 마나 획득

@@ -184,22 +184,30 @@ public class Destiny : Unit
     IEnumerator AttackAnim()
     {
         animators[1].SetBool("isAttack", true);
-                
+
         yield return new WaitForSeconds(animators[1].GetFloat("attackTime")); //공격 쿨타임
 
-        //크리티컬
-        int rand = Random.Range(0, 100);
-        if (rand >= 0 && rand <= criticalRate)
+        //암살자 시너지이면서 조건 충족할때
+        if (assassinSynergyBool && target.GetComponent<LivingEntity>().GetHealthPercent() <= assassinSynergyExecutionCondition)
         {
-            target.GetComponent<LivingEntity>().OnDamage(power * CriticalDamageRate / 100, true); //크리티컬 공격
+            target.GetComponent<LivingEntity>().OnDamage(999999, false); //공격
         }
         else
         {
-            target.GetComponent<LivingEntity>().OnDamage(power, false); //공격
+            //크리티컬
+            int rand = Random.Range(0, 100);
+            if (rand >= 0 && rand <= criticalRate)
+            {
+                target.GetComponent<LivingEntity>().OnDamage(power * CriticalDamageRate / 100, true); //크리티컬 공격
+            }
+            else
+            {
+                target.GetComponent<LivingEntity>().OnDamage(power, false); //공격
+            }
         }
 
         mana += 10; //공격시 마나 10획득
-        
+
         animators[1].SetBool("isAttack", false);
     }
 
