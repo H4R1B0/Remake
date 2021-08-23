@@ -77,6 +77,13 @@ public class Beomho : Unit
             //타겟이 정해지지 않았거나 죽었을경우 FindMonster
             if (target == null || target.GetComponent<LivingEntity>().IsDie == true)
             {
+                //타겟이 죽은 경우
+                if (target.GetComponent<LivingEntity>().IsDie == true)
+                {
+                    //비스트 시너지 효과 만큼 최대 체력 일부분 회복
+                    HealHP(maxHealth * beastSynergyHealHPPercent / 100);
+                }
+
                 animators[1].SetBool("isAttack", false);
                 //Debug.Log("타겟 찾기");
                 FindMonster();

@@ -53,10 +53,6 @@ public class Rang : Unit
 
         isAlter = false; //본체
     }
-    private void Start()
-    {
-
-    }
     private void Update()
     {
         //체력 게이지값, 위치 변경
@@ -88,6 +84,13 @@ public class Rang : Unit
             //타겟이 정해지지 않았거나 죽었을경우 FindMonster
             if (target == null || target.GetComponent<LivingEntity>().IsDie == true)
             {
+                //타겟이 죽은 경우 //분신이 아닌 경우만                
+                if (isAlter==false && target.GetComponent<LivingEntity>().IsDie == true)
+                {
+                    //비스트 시너지 효과 만큼 최대 체력 일부분 회복
+                    HealHP(maxHealth * beastSynergyHealHPPercent / 100);
+                }
+
                 animators[1].SetBool("isAttack", false);
                 //Debug.Log("타겟 찾기");
                 FindMonster();

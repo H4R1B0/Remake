@@ -86,6 +86,13 @@ public class Crusher : Unit
             //타겟이 죽었을경우
             else if (target.GetComponent<LivingEntity>().IsDie == true)
             {
+                //타겟이 죽은 경우
+                if (target.GetComponent<LivingEntity>().IsDie == true)
+                {
+                    //비스트 시너지 효과 만큼 최대 체력 일부분 회복
+                    HealHP(maxHealth * beastSynergyHealHPPercent / 100);
+                }
+
                 target = null;
                 //Debug.Log("타겟 찾기");
                 FindMonster();
