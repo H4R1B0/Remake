@@ -158,6 +158,41 @@ public class Unit : LivingEntity
         }
     }
 
+    protected bool warriorSynergyExtraAttackBool = false; //전사 시너지 여부
+    public bool WarriorSynergyExtraAttackBool
+    {
+        set
+        {
+            warriorSynergyExtraAttackBool = value;
+        }
+    }
+    protected int warriorSynergyExtraAttackCountMax = 0; //전사 시너지로 6/4번째마다 추가 공격 
+    public int WarriorSynergyExtraAttackCountMax
+    {
+        set
+        {
+            warriorSynergyExtraAttackCountMax = value;
+        }
+    }
+    protected int warriorSynergyExtraAttackCount = 0; //전사 시너지로 현재 공격 횟수
+
+    protected int wizardSynergyHPPercent = 0; //마법사 시너지 얻는 체력 퍼센트
+    public int WizardSynergyHPPercent
+    {
+        set
+        {
+            wizardSynergyHPPercent = value;
+        }
+    }
+    protected int wizardSynergyPowerPercent = 0; //마법사 시너지 얻는 공격력 퍼센트
+    public int WizardSynergyPowerPercent
+    {
+        set
+        {
+            wizardSynergyPowerPercent = value;
+        }
+    }
+
     //체력 count만큼 회복
     public void HealHP(int count)
     {
@@ -178,9 +213,9 @@ public class Unit : LivingEntity
 
     public void SetHealthSynergy()
     {
-        Debug.Log(this.unitName+"체력 시너지 적용");
+        Debug.Log(this.unitName + "체력 시너지 적용");
         //체력 시너지
-        health = originHealth + memelSynergyHP + fossilSynergyHP;
+        health = originHealth * (100 + wizardSynergyHPPercent) / 100 + memelSynergyHP + fossilSynergyHP;
         maxHealth = health;
     }
 
@@ -188,7 +223,7 @@ public class Unit : LivingEntity
     {
         Debug.Log("공격력 시너지 적용");
         //공격력 시너지
-        power = originPower + fossilSynergyPower;
+        power = originPower * (100 + wizardSynergyPowerPercent) / 100 + fossilSynergyPower;
     }
 
     public void SetCriticalRateSynergy()

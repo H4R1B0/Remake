@@ -53,18 +53,15 @@ public class UnitSynergy : MonoBehaviour
         BirdSynergy(); //버드 시너지
         FossilSynergy(); //화석 시너지
 
-        //체력 증가
-        for (int i = 0; i < Memels.Count; i++)
+        WarriorSynergy(); //전사 시너지
+        WizardSynergy(); //마법사 시너지
+
+        //소환된 유닛들 시너지 적용(체력, 공격력)
+        List<GameObject> units = new List<GameObject>(GameObject.FindGameObjectsWithTag("Unit"));
+        foreach(GameObject unit in units)
         {
-            //메멀 시너지 효과 만큼 체력 증가
-            Memels[i].GetComponent<Unit>().SetHealthSynergy();
-        }
-        //체력, 공격력 증가
-        for (int i = 0; i < Fossils.Count; i++)
-        {
-            //화석 시너지 효과 만큼 체력 증가
-            Fossils[i].GetComponent<Unit>().SetHealthSynergy();
-            Fossils[i].GetComponent<Unit>().SetPowerSynergy();
+            unit.GetComponent<Unit>().SetHealthSynergy();
+            unit.GetComponent<Unit>().SetPowerSynergy();
         }
 
         //치명타율 증가
@@ -321,6 +318,73 @@ public class UnitSynergy : MonoBehaviour
                 //공격력, 체력 그대로
                 Fossils[i].GetComponent<Unit>().FossilSynergyPower = 0;
                 Fossils[i].GetComponent<Unit>().FossilSynergyHP = 0;
+            }
+        }
+    }
+
+    //전사 시너지
+    private void WarriorSynergy()
+    {
+        if (Warriors.Count >= 5)
+        {
+            for (int i = 0; i < Warriors.Count; i++)
+            {
+                //4번째마다 추가 공격
+                Warriors[i].GetComponent<Unit>().WarriorSynergyExtraAttackBool = true;
+                Warriors[i].GetComponent<Unit>().WarriorSynergyExtraAttackCountMax = 4;
+            }
+        }
+        else if (Warriors.Count >= 3)
+        {
+            for (int i = 0; i < Warriors.Count; i++)
+            {
+                //6번째마다 추가 공격
+                Warriors[i].GetComponent<Unit>().WarriorSynergyExtraAttackBool = true;
+                Warriors[i].GetComponent<Unit>().WarriorSynergyExtraAttackCountMax = 6;
+            }
+        }
+        else
+        {
+            for (int i = 0; i < Warriors.Count; i++)
+            {
+                //추가 공격 없음
+                Warriors[i].GetComponent<Unit>().WarriorSynergyExtraAttackBool = false;
+                Warriors[i].GetComponent<Unit>().WarriorSynergyExtraAttackCountMax = 0;
+            }
+        }
+    }
+
+    //마법사 시너지
+    private void WizardSynergy()
+    {
+        if (Wizards.Count >= 5)
+        {
+            for (int i = 0; i < Wizards.Count; i++)
+            {
+                //체력 100% 증가
+                Wizards[i].GetComponent<Unit>().WizardSynergyHPPercent = 100;
+                //공격력 100% 증가
+                Wizards[i].GetComponent<Unit>().WizardSynergyPowerPercent = 100;
+            }
+        }
+        else if (Wizards.Count >= 3)
+        {
+            for (int i = 0; i < Wizards.Count; i++)
+            {
+                //체력 50% 증가
+                Wizards[i].GetComponent<Unit>().WizardSynergyHPPercent = 50;
+                //공격력 50% 증가
+                Wizards[i].GetComponent<Unit>().WizardSynergyPowerPercent = 50;
+            }
+        }
+        else
+        {
+            for (int i = 0; i < Wizards.Count; i++)
+            {
+                //체력 0% 증가
+                Wizards[i].GetComponent<Unit>().WizardSynergyHPPercent = 0;
+                //공격력 0% 증가
+                Wizards[i].GetComponent<Unit>().WizardSynergyPowerPercent = 0;
             }
         }
     }
