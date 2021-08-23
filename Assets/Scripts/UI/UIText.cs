@@ -7,12 +7,12 @@ using TMPro;
 public class UIText : MonoBehaviour
 {
     private TextMeshProUGUI uiText; //표시할 텍스트
-    private int number; //표시할 숫자
-    public int Number
+    private string content; //표시할 숫자
+    public string Content
     {
         set
         {
-            number = value;
+            content = value;
         }
     }
 
@@ -29,7 +29,7 @@ public class UIText : MonoBehaviour
     private void Start()
     {
         alpha = uiText.color;
-        uiText.text = number.ToString();
+        uiText.text = content;
 
         Invoke("DestroyObject", destroyTime);
     }

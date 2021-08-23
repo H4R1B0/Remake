@@ -164,7 +164,7 @@ public class Unit : LivingEntity
         Instantiate(HealEffect, this.transform.position + new Vector3(0, 1, 0), Quaternion.identity);
 
         GameObject HealText = Instantiate(UIText, Camera.main.WorldToScreenPoint(this.transform.position + new Vector3(0, 0.8f, 0)), Quaternion.identity);
-        HealText.GetComponent<UIText>().Number = count;
+        HealText.GetComponent<UIText>().Content = count.ToString();
         HealText.GetComponent<TextMeshProUGUI>().color = Color.green;
 
         health = maxHealth > health + count ? health + count : maxHealth;
@@ -196,6 +196,13 @@ public class Unit : LivingEntity
         Debug.Log("치명타율 시너지 적용");
         //치명타율 시너지
         criticalRate = originCriticalRate + birdSynergyCritical;
+    }
+
+    public void SetAvoidRateSynergy()
+    {
+        Debug.Log("회피율 시너지 적용");
+        //회피율 시너지
+        avoidRate = fishSynergyAvoid;
     }
 
     //몇초간 count만큼 체력 회복하는 코루틴
