@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -60,13 +59,30 @@ public class LivingEntity : MonoBehaviour
     public Slider HPSliderPrefab; //체력 게이지 프리팹
     protected Slider HPSlider; //체력 게이지
 
+    protected int avoidRate = 0; //회피율
+
     //OnDamage 메서드
     public virtual void OnDamage(int damage, bool isCritical)
     {
-        health -= damage;
-
         GameObject DamageText = Instantiate(UIText, Camera.main.WorldToScreenPoint(this.transform.position + new Vector3(0, 1, 0)), Quaternion.identity);
-        DamageText.GetComponent<UIText>().Number = damage;
+        //회피할 경우
+        int rand = Random.Range(0, 100);
+        if (rand >= 0 && rand < avoidRate)
+        {
+            DamageText.GetComponent<UIText>().Content = "회피";
+        }
+        else
+        {
+            health -= damage;
+            DamageText.GetComponent<UIText>().Content = damage.ToString();
+
+            //크리티컬인 경우
+            if(isCritical == true)
+            {
+                //Debug.Log("크리티컬");
+                DamageText.transform.localScale += new Vector3(0.4f, 0.4f, 0);
+            }
+        }
 
         if (runningFlashCoroutine == null)
         {
