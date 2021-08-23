@@ -55,6 +55,7 @@ public class UnitSynergy : MonoBehaviour
 
         WarriorSynergy(); //전사 시너지
         WizardSynergy(); //마법사 시너지
+        AssassinSynergy(); //암살자 시너지
 
         //소환된 유닛들 시너지 적용(체력, 공격력)
         List<GameObject> units = new List<GameObject>(GameObject.FindGameObjectsWithTag("Unit"));
@@ -385,6 +386,38 @@ public class UnitSynergy : MonoBehaviour
                 Wizards[i].GetComponent<Unit>().WizardSynergyHPPercent = 0;
                 //공격력 0% 증가
                 Wizards[i].GetComponent<Unit>().WizardSynergyPowerPercent = 0;
+            }
+        }
+    } 
+    
+    //마법사 시너지
+    private void AssassinSynergy()
+    {
+        if (Assassins.Count >= 5)
+        {
+            for (int i = 0; i < Assassins.Count; i++)
+            {
+                Assassins[i].GetComponent<Unit>().AssassinSynergyBool = true;
+                //타겟의 즉사 조건 체력의 15% 이하
+                Assassins[i].GetComponent<Unit>().AssassinSynergyExecutionCondition = 15;
+            }
+        }
+        else if (Assassins.Count >= 3)
+        {
+            for (int i = 0; i < Assassins.Count; i++)
+            {
+                Assassins[i].GetComponent<Unit>().AssassinSynergyBool = true;
+                //타겟의 즉사 조건 체력의 15% 이하
+                Assassins[i].GetComponent<Unit>().AssassinSynergyExecutionCondition = 10;
+            }
+        }
+        else
+        {
+            for (int i = 0; i < Assassins.Count; i++)
+            {
+                Assassins[i].GetComponent<Unit>().AssassinSynergyBool = false;
+                //타겟의 즉사 조건 체력의 15% 이하
+                Assassins[i].GetComponent<Unit>().AssassinSynergyExecutionCondition = 0;
             }
         }
     }

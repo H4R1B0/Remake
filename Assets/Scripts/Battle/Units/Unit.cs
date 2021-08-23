@@ -193,6 +193,23 @@ public class Unit : LivingEntity
         }
     }
 
+    protected bool assassinSynergyBool = false; //암살자 시너지 여부
+    public bool AssassinSynergyBool
+    {
+        set
+        {
+            assassinSynergyBool = value;
+        }
+    }    
+    protected int assassinSynergyExecutionCondition = 0; //암살자 시너지로 처형할 타겟의 체력 조건
+    public int AssassinSynergyExecutionCondition
+    {
+        set
+        {
+            assassinSynergyExecutionCondition = value;
+        }
+    }    
+
     //체력 count만큼 회복
     public void HealHP(int count)
     {
