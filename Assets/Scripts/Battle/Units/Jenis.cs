@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class Jenis : Unit
 {
+    float oringAnimAttackTime = 0; //원래 애니메이션 공격 시간
+
     private void Awake()
     {
         //생성시 원래 공격력과 체력 저장
@@ -21,9 +23,11 @@ public class Jenis : Unit
         originCriticalDamageRate = CriticalDamageRate; //원래 치명타 피해율
 
         attackRange = 5f; //공격 범위
-        attackSpeed = 0.7f; //공격 속도
+        originAttackSpeed = 0.7f; //원래 공격 속도
+        attackSpeed = originAttackSpeed; //공격 속도
 
         animators = GetComponentsInChildren<Animator>(); //애니메이터들 가져오기
+        oringAnimAttackTime = animators[1].GetFloat("attackTime");
 
         //HP, MP 생성
         HPSlider = Instantiate(HPSliderPrefab, Camera.main.WorldToScreenPoint(transform.Find("HPPosition").position), Quaternion.identity);
@@ -186,6 +190,7 @@ public class Jenis : Unit
         vec3dir = target.transform.position - transform.position;
         vec3dir.Normalize();
 
+        animators[1].SetFloat("attackTime", oringAnimAttackTime * (100 - gunnerSynergyAtttackSpeed) /100); //애니메이션 속도 쿨
         yield return new WaitForSeconds(animators[1].GetFloat("attackTime")); //공격 쿨타임
 
         //크리티컬

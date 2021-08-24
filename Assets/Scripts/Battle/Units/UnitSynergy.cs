@@ -56,7 +56,7 @@ public class UnitSynergy : MonoBehaviour
         WarriorSynergy(); //전사 시너지
         WizardSynergy(); //마법사 시너지
         AssassinSynergy(); //암살자 시너지
-
+        GunnerSynergy(); //사수 시너지
 
         GuardianSynergy(); //수호자 시너지
 
@@ -80,6 +80,13 @@ public class UnitSynergy : MonoBehaviour
         {
             //피쉬 시너지 효과 만큼 회피율 증가
             Fishs[i].GetComponent<Unit>().SetAvoidRateSynergy();
+        }
+
+        //공격 속도 증가
+        for (int i = 0; i < Gunners.Count; i++)
+        {
+            //사수 시너지 효과 만큼 공격 속도 증가
+            Gunners[i].GetComponent<Unit>().SetAttackSpeedSynergy();
         }
     }
 
@@ -421,6 +428,35 @@ public class UnitSynergy : MonoBehaviour
                 Assassins[i].GetComponent<Unit>().AssassinSynergyBool = false;
                 //타겟의 즉사 조건 체력의 15% 이하
                 Assassins[i].GetComponent<Unit>().AssassinSynergyExecutionCondition = 0;
+            }
+        }
+    }
+
+    //사수 시너지
+    private void GunnerSynergy()
+    {
+        if (Gunners.Count >= 5)
+        {
+            for (int i = 0; i < Gunners.Count; i++)
+            {
+                //공격 속도 50% 증가
+                Gunners[i].GetComponent<Unit>().GunnerSynergyAtttackSpeed = 50;
+            }
+        }
+        else if (Gunners.Count >= 3)
+        {
+            for (int i = 0; i < Gunners.Count; i++)
+            {
+                //공격 속도 30% 증가
+                Gunners[i].GetComponent<Unit>().GunnerSynergyAtttackSpeed = 30;
+            }
+        }
+        else
+        {
+            for (int i = 0; i < Gunners.Count; i++)
+            {
+                //공격 속도 그대로
+                Gunners[i].GetComponent<Unit>().GunnerSynergyAtttackSpeed = 0;
             }
         }
     }

@@ -210,6 +210,16 @@ public class Unit : LivingEntity
         }
     }
 
+    protected int gunnerSynergyAtttackSpeed = 0; //사수 시너지로 공격 속도 증가
+    public int GunnerSynergyAtttackSpeed
+    {
+        set
+        {
+            gunnerSynergyAtttackSpeed = value;
+        }
+    }
+    protected float originAttackSpeed = 0; //원래 공격 속도
+
     protected int guardiansSynergyReducedDamage = 0; //수호자 시너지로 피해량 감소
     public int GuardiansSynergyReducedDamage
     {
@@ -217,7 +227,7 @@ public class Unit : LivingEntity
         {
             guardiansSynergyReducedDamage = value;
         }
-    }    
+    }
 
     //체력 count만큼 회복
     public void HealHP(int count)
@@ -264,6 +274,13 @@ public class Unit : LivingEntity
         Debug.Log("회피율 시너지 적용");
         //회피율 시너지
         avoidRate = fishSynergyAvoid;
+    }
+
+    public void SetAttackSpeedSynergy()
+    {
+        Debug.Log("공격 속도 시너지 적용");
+        //회피율 시너지
+        attackSpeed = originAttackSpeed * (100 + gunnerSynergyAtttackSpeed) / 100;
     }
 
     //몇초간 count만큼 체력 회복하는 코루틴

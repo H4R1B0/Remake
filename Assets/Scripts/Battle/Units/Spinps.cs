@@ -25,7 +25,8 @@ public class Spinps : Unit
         originCriticalDamageRate = CriticalDamageRate; //원래 치명타 피해율
 
         attackRange = 5; //공격 범위
-        attackSpeed = 0.9f; //공격 속도
+        originAttackSpeed = 0.9f; //공격 속도
+        attackSpeed = originAttackSpeed; //공격 속도
 
         animators = GetComponentsInChildren<Animator>(); //애니메이터들 가져오기
 
