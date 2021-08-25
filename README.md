@@ -112,3 +112,7 @@
 
 ### (2) 스타포인트를 채우고 추가 수정을 획득.
 #### 스타포인트 10개마다 수정 100(+50) 지급
+
+## 9. 로비 화면 상점 추가
+![image](https://user-images.githubusercontent.com/12294460/130795386-062cb12a-976b-4d54-9308-4640d848550a.png)
+![image](https://user-images.githubusercontent.com/12294460/130795431-7c9cea38-c603-49fe-a9c1-474e0728cbb9.png)
