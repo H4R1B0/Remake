@@ -64,4 +64,27 @@ public class ShopPanel : MonoBehaviour
             clickObject.GetComponent<Button>().interactable = false;
         }
     }
+
+    //크리스탈 구매 : 1000코인 -> 100크리스탈
+    public void PurchaseCrystal()
+    {
+        //1000 코인 갖고 있는경우
+        if (player.Coin >= 1000)
+        {
+            player.Coin -= 1000;
+            player.Crystal += 100;
+        }
+        
+    }
+    
+    //코인 구매 : 100크리스탈 -> 1000코인
+    public void PurchaseCoin()
+    {
+        //100 크리스탈 갖고 있는 경우
+        if (player.Crystal >= 100)
+        {
+            player.Crystal -= 100;
+            player.Coin += 1000;
+        }
+    }
 }
