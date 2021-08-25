@@ -282,6 +282,7 @@ public class GameStartButton : MonoBehaviour
         WinLosePanel.SetActive(false);
 
         player.Crystal += gamemanager.Round * 10; //해당 라운드마다 플레이어에게 수정 지급
+        player.Coin += gamemanager.Round * 500; //해당 라운드마다 플레이어에게 코인 지급
         gamemanager.Round++; //라운드 증가
         
         MovePlace();       
