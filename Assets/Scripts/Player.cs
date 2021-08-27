@@ -56,6 +56,10 @@ public class Player : MonoBehaviour
         {
             return callUnitCountMax;
         }
+        set
+        {
+            callUnitCountMax = value;
+        }
     }
 
     private int callUnitCountAddPrice = 40; //유닛 소환 최대수 증가 비용
@@ -64,6 +68,10 @@ public class Player : MonoBehaviour
         get
         {
             return callUnitCountAddPrice;
+        }
+        set
+        {
+            callUnitCountAddPrice = value;
         }
     }
 
