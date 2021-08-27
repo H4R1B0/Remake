@@ -11,6 +11,8 @@ public class Beomho : Unit
     private Coroutine runningBeomhoSkillCoroutine = null; //실행중인 범호 스킬 코루틴
     private int beomhoSkillOriginPower = 0; //범호 스킬 쓰기 전 원래 공격력
 
+    private bool isbeastSynergyHeal = true;
+
     private void Awake()
     {
         //생성시 원래 공격력과 체력 저장
@@ -78,10 +80,9 @@ public class Beomho : Unit
             if (target == null || target.GetComponent<LivingEntity>().IsDie == true)
             {
                 //타겟이 죽은 경우
-                if (target.GetComponent<LivingEntity>().IsDie == true)
+                if (target != null && target.GetComponent<LivingEntity>().IsDie == true && isbeastSynergyHeal == true)
                 {
-                    //비스트 시너지 효과 만큼 최대 체력 일부분 회복
-                    HealHP(maxHealth * beastSynergyHealHPPercent / 100);
+                    StartCoroutine(nameof(BeastSynergy));
                 }
 
                 animators[1].SetBool("isAttack", false);
@@ -268,5 +269,14 @@ public class Beomho : Unit
         runningBeomhoSkillCoroutine = null;
         power = beomhoSkillOriginPower;
         isSkill = false;
+    }
+
+    IEnumerator BeastSynergy()
+    {
+        //비스트 시너지 효과 만큼 최대 체력 일부분 회복
+        HealHP(maxHealth * beastSynergyHealHPPercent / 100);
+        isbeastSynergyHeal = false;
+        yield return new WaitForSeconds(5);
+        isbeastSynergyHeal = true;
     }
 }

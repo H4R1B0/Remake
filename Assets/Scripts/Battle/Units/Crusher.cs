@@ -8,11 +8,7 @@ public class Crusher : Unit
     public GameObject CrusherEffectPrefab; //스킬 사용시 이펙트 프리팹
     private GameObject crusherEffect; //스킬 사용시 이펙트 프리팹
 
-    //public bool isWeapon = true; //무기가 있는지
-    //public bool isWeaponRotate = true; //무기가 회전하는지
-    //[ShowIf("isWeapon")] //무기 있을때만 표시
-    //public float attackAnimTime = 0; //공격 애니메이션 쿨타임
-    //public GameObject attackPrefab; //공격 프리팹
+    private bool isbeastSynergyHeal = true;
 
     private void Awake()
     {
@@ -84,13 +80,12 @@ public class Crusher : Unit
                 animators[0].SetBool("isMove", false);
             }
             //타겟이 죽었을경우
-            else if (target.GetComponent<LivingEntity>().IsDie == true)
+            else if (target != null && target.GetComponent<LivingEntity>().IsDie == true)
             {
                 //타겟이 죽은 경우
-                if (target.GetComponent<LivingEntity>().IsDie == true)
+                if (target != null && target.GetComponent<LivingEntity>().IsDie == true && isbeastSynergyHeal == true)
                 {
-                    //비스트 시너지 효과 만큼 최대 체력 일부분 회복
-                    HealHP(maxHealth * beastSynergyHealHPPercent / 100);
+                    StartCoroutine(nameof(BeastSynergy));
                 }
 
                 target = null;
@@ -259,5 +254,14 @@ public class Crusher : Unit
         target.GetComponent<LivingEntity>().OnDamage(damage, false); //공격
         StartCoroutine(target.GetComponent<LivingEntity>().BleedingCoroutine(5, power * 20 / 100));
         yield return null;
+    }
+
+    IEnumerator BeastSynergy()
+    {
+        //비스트 시너지 효과 만큼 최대 체력 일부분 회복
+        HealHP(maxHealth * beastSynergyHealHPPercent / 100);
+        isbeastSynergyHeal = false;
+        yield return new WaitForSeconds(5);
+        isbeastSynergyHeal = true;
     }
 }

@@ -83,7 +83,7 @@ public class Spinps : Unit
                 animators[0].SetBool("isMove", false);
             }
             //타겟이 죽었을경우
-            else if (target.GetComponent<LivingEntity>().IsDie == true)
+            else if (target != null && target.GetComponent<LivingEntity>().IsDie == true)
             {
                 target = null;
                 //Debug.Log("타겟 찾기");
