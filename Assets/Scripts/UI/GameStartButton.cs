@@ -290,6 +290,7 @@ public class GameStartButton : MonoBehaviour
         //게임 끝났으니 리프레시
         player.Crystal += 10;
         GameObject.Find("CardSelects").GetComponent<CardSelects>().RefreshUnitCard();
+        GameObject.Find("SaveGame").GetComponent<SaveGame>().SaveOverlapXml();
 
         yield return new WaitForSeconds(1);
 
