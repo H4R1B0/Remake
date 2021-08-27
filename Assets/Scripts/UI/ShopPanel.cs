@@ -37,7 +37,7 @@ public class ShopPanel : MonoBehaviour
     {
         GameObject clickObject = EventSystem.current.currentSelectedGameObject;
         //Debug.Log(clickObject);
-        Debug.Log(UnitPurchaseButtons.IndexOf(clickObject));
+        //Debug.Log(UnitPurchaseButtons.IndexOf(clickObject));
         int index = UnitPurchaseButtons.IndexOf(clickObject);
         if(index>=0 && index <= 5)
         {
