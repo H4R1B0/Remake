@@ -1,5 +1,7 @@
 # 모여라 발굴단! 리메이크
-###### 과거에 만든게 잦은 버그로 인해 리메이크..^^
+###### 과거에 만든게 잦은 버그로 인해 리메이크
+###### [다운로드](https://github.com/H4R1B0/Remake/releases/tag/v1.1)
+
 
 ## 1. 구성
 ![image](https://user-images.githubusercontent.com/12294460/129524017-ad965eb6-5db1-499e-bab0-88d79a2b5f50.png)
